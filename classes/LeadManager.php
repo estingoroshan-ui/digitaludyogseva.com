@@ -133,14 +133,27 @@ class LeadManager {
                 $customer_id = $existing_cust['id'];
             } else {
                 $cust_code = generate_code('CUST', 6);
-                $c_ins = $pdo->prepare("
-                    INSERT INTO customers (user_id, customer_code, lead_id, name, mobile, email, state, district, city, pincode, address)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ");
-                $c_ins->execute([
-                    $user_id, $cust_code, $lead_id, $lead['name'], $lead['mobile'], $lead['email'],
-                    $lead['state'], $lead['district'], $lead['city'], $lead['pincode'], $lead['address']
-                ]);
+                
+                try {
+                    $c_ins = $pdo->prepare("
+                        INSERT INTO customers (user_id, customer_code, lead_id, name, mobile, email, state, district)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    ");
+                    $c_ins->execute([
+                        $user_id, $cust_code, $lead_id, $lead['name'], $lead['mobile'], $lead['email'],
+                        $lead['state'] ?? 'Rajasthan', $lead['district'] ?? 'Jaipur'
+                    ]);
+                } catch (Exception $ex) {
+                    // Fallback for live servers where lead_id column is not yet present
+                    $c_ins = $pdo->prepare("
+                        INSERT INTO customers (user_id, customer_code, name, mobile, email, state, district)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    ");
+                    $c_ins->execute([
+                        $user_id, $cust_code, $lead['name'], $lead['mobile'], $lead['email'],
+                        $lead['state'] ?? 'Rajasthan', $lead['district'] ?? 'Jaipur'
+                    ]);
+                }
                 $customer_id = $pdo->lastInsertId();
 
                 // Create default business profile if business name exists

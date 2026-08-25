@@ -116,6 +116,7 @@ CREATE TABLE IF NOT EXISTS `customers` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT UNIQUE NOT NULL,
   `customer_code` VARCHAR(50) UNIQUE NOT NULL,
+  `lead_id` INT NULL,
   `name` VARCHAR(150) NOT NULL,
   `mobile` VARCHAR(20) NOT NULL,
   `email` VARCHAR(150) DEFAULT NULL,
