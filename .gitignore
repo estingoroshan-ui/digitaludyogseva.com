@@ -1,0 +1,14 @@
+# Environment and Secrets
+.env
+.env.*
+
+# Logs and databases dumps (optional)
+*.log
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+
+# IDE Configuration
+.idea/
+.vscode/

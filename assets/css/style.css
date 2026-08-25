@@ -1,0 +1,931 @@
+/* ==========================================================================
+   DIGITAL UDYOG SEVA - FINTECH / LEGALTECH DESIGN SYSTEM (2026 EDITION)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Color System */
+  --dus-navy-dark: #07152F;
+  --dus-navy-medium: #0D1E3D;
+  --dus-navy-card: #13274D;
+  --dus-royal-blue: #1769FF;
+  --dus-electric-blue: #2784FF;
+  --dus-blue-gradient: linear-gradient(135deg, #1769FF 0%, #2784FF 100%);
+  --dus-hero-gradient: linear-gradient(135deg, #07152F 0%, #0D1E3D 50%, #1769FF 100%);
+  
+  --dus-saffron: #FFB800;
+  --dus-saffron-hover: #E6A600;
+  --dus-saffron-gradient: linear-gradient(135deg, #FFB800 0%, #FF9900 100%);
+  
+  --dus-success-green: #0E9F6E;
+  --dus-success-light: #DEF7EC;
+  --dus-danger: #F05252;
+  --dus-warning-light: #FEF08A;
+  
+  --dus-bg-light: #F6F8FC;
+  --dus-bg-white: #FFFFFF;
+  --dus-text-primary: #101828;
+  --dus-text-secondary: #667085;
+  --dus-text-muted: #98A2B3;
+  --dus-border-light: #E6EAF0;
+  --dus-border-dark: rgba(255, 255, 255, 0.12);
+  
+  /* Layout & Geometry */
+  --dus-max-width: 1280px;
+  --dus-radius-sm: 8px;
+  --dus-radius-md: 12px;
+  --dus-radius-lg: 18px;
+  --dus-radius-pill: 50px;
+  
+  /* Elevation Shadows */
+  --dus-shadow-sm: 0 2px 8px rgba(16, 24, 40, 0.04);
+  --dus-shadow-md: 0 8px 24px -4px rgba(16, 24, 40, 0.08);
+  --dus-shadow-lg: 0 16px 40px -8px rgba(16, 24, 40, 0.12);
+  --dus-shadow-blue: 0 12px 30px -5px rgba(23, 105, 255, 0.35);
+  --dus-shadow-saffron: 0 10px 25px -5px rgba(255, 184, 0, 0.4);
+}
+
+/* Reset & Global Base Settings */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--dus-text-primary);
+  background-color: var(--dus-bg-light);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: 'Outfit', 'Manrope', sans-serif;
+  font-weight: 700;
+  color: var(--dus-text-primary);
+  letter-spacing: -0.02em;
+}
+
+/* Global Container Constraint */
+.container, .dus-container {
+  max-width: var(--dus-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+/* Accent Highlight Utility */
+.highlight-saffron {
+  background: linear-gradient(135deg, #FFB800 0%, #FFA800 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+}
+
+.text-saffron {
+  color: var(--dus-saffron) !important;
+}
+
+/* Buttons System */
+.dus-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.75rem 1.6rem;
+  border-radius: var(--dus-radius-pill);
+  border: 1px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.dus-btn-primary {
+  background: var(--dus-royal-blue);
+  color: #ffffff !important;
+  box-shadow: var(--dus-shadow-blue);
+}
+
+.dus-btn-primary:hover {
+  background: #1059db;
+  transform: translateY(-2px);
+  box-shadow: 0 16px 35px -5px rgba(23, 105, 255, 0.45);
+}
+
+.dus-btn-accent {
+  background: var(--dus-saffron);
+  color: var(--dus-navy-dark) !important;
+  box-shadow: var(--dus-shadow-saffron);
+}
+
+.dus-btn-accent:hover {
+  background: var(--dus-saffron-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -5px rgba(255, 184, 0, 0.5);
+}
+
+.dus-btn-outline-white {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff !important;
+}
+
+.dus-btn-outline-white:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #ffffff;
+}
+
+.dus-btn-outline-dark {
+  background: transparent;
+  border-color: var(--dus-border-light);
+  color: var(--dus-text-primary) !important;
+}
+
+.dus-btn-outline-dark:hover {
+  border-color: var(--dus-royal-blue);
+  color: var(--dus-royal-blue) !important;
+  background: rgba(23, 105, 255, 0.04);
+}
+
+/* ==========================================================================
+   HEADER & NAVBAR (TWO-LEVEL ARCHITECTURE)
+   ========================================================================== */
+
+/* Level 1: Top Utility Bar */
+.top-utility-bar {
+  background: var(--dus-navy-dark);
+  color: #94A3B8;
+  font-size: 0.825rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.top-utility-bar a {
+  color: #CBD5E1;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.top-utility-bar a:hover {
+  color: var(--dus-saffron);
+}
+
+.top-utility-bar .divider {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+/* Level 2: Main Navigation Bar */
+.navbar-dus {
+  background: #ffffff;
+  box-shadow: var(--dus-shadow-sm);
+  padding: 0.75rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1050;
+  transition: all 0.3s ease;
+}
+
+.navbar-dus.scrolled {
+  box-shadow: var(--dus-shadow-md);
+  padding: 0.6rem 0;
+}
+
+.brand-badge-dus {
+  background: var(--dus-blue-gradient);
+  color: #ffffff;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: var(--dus-radius-sm);
+  font-size: 1.15rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(23, 105, 255, 0.3);
+}
+
+.brand-title-dus {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: var(--dus-navy-dark);
+  line-height: 1.1;
+}
+
+.brand-subtitle-dus {
+  font-size: 0.7rem;
+  color: var(--dus-text-secondary);
+  font-weight: 600;
+  display: block;
+  letter-spacing: 0.2px;
+}
+
+.nav-link-dus {
+  color: var(--dus-text-primary) !important;
+  font-weight: 600;
+  font-size: 0.925rem;
+  padding: 0.5rem 0.9rem !important;
+  border-radius: var(--dus-radius-sm);
+  transition: all 0.2s ease;
+}
+
+.nav-link-dus:hover, .nav-link-dus.active {
+  color: var(--dus-royal-blue) !important;
+  background: rgba(23, 105, 255, 0.05);
+}
+
+/* Mega Menu Dropdown */
+.mega-dropdown-menu {
+  width: 100%;
+  max-width: 1200px;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  border-radius: var(--dus-radius-lg);
+  border: 1px solid var(--dus-border-light);
+  box-shadow: var(--dus-shadow-lg);
+  padding: 1.75rem;
+  margin-top: 0.5rem !important;
+  background: #ffffff;
+}
+
+.mega-menu-column-title {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--dus-navy-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 2px solid rgba(23, 105, 255, 0.15);
+}
+
+.mega-menu-link {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  color: var(--dus-text-secondary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--dus-radius-sm);
+  transition: all 0.2s ease;
+}
+
+.mega-menu-link:hover {
+  color: var(--dus-royal-blue);
+  background: rgba(23, 105, 255, 0.06);
+  padding-left: 14px;
+}
+
+.mega-menu-banner {
+  background: linear-gradient(135deg, var(--dus-navy-dark) 0%, var(--dus-navy-medium) 100%);
+  border-radius: var(--dus-radius-md);
+  padding: 1.25rem;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   HOMEPAGE HERO & BUSINESS COMMAND CARD
+   ========================================================================== */
+
+.hero-wrapper {
+  background: var(--dus-hero-gradient);
+  color: #ffffff;
+  padding: 4.5rem 0 5.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(39, 132, 255, 0.25) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-badge {
+  background: rgba(255, 184, 0, 0.15);
+  border: 1px solid rgba(255, 184, 0, 0.4);
+  color: var(--dus-saffron);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 6px 16px;
+  border-radius: var(--dus-radius-pill);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hero-title {
+  font-size: 3.2rem;
+  line-height: 1.15;
+  font-weight: 800;
+  margin-top: 1rem;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+}
+
+.hero-subtitle {
+  font-size: 1.125rem;
+  color: #CBD5E1;
+  max-width: 620px;
+  margin-bottom: 1.75rem;
+  line-height: 1.6;
+}
+
+.hero-trust-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.hero-trust-item {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #E2E8F0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hero-trust-item i {
+  color: var(--dus-saffron);
+}
+
+/* Global Search Box in Hero */
+.hero-search-box {
+  background: #ffffff;
+  border-radius: var(--dus-radius-pill);
+  padding: 6px;
+  box-shadow: 0 20px 40px rgba(7, 21, 47, 0.4);
+  display: flex;
+  align-items: center;
+  position: relative;
+  max-width: 620px;
+  margin-bottom: 2rem;
+}
+
+.hero-search-input {
+  border: none;
+  outline: none;
+  padding: 0.8rem 1.25rem;
+  font-size: 0.95rem;
+  width: 100%;
+  border-radius: var(--dus-radius-pill);
+  color: var(--dus-text-primary);
+}
+
+.hero-search-btn {
+  background: var(--dus-blue-gradient);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--dus-radius-pill);
+  padding: 0.8rem 1.75rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.2s ease;
+}
+
+.hero-search-btn:hover {
+  transform: scale(1.02);
+}
+
+.search-results-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-radius: var(--dus-radius-md);
+  margin-top: 10px;
+  box-shadow: var(--dus-shadow-lg);
+  z-index: 1080;
+  display: none;
+  max-height: 340px;
+  overflow-y: auto;
+  color: var(--dus-text-primary);
+}
+
+.search-item {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--dus-border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.search-item:hover {
+  background: var(--dus-bg-light);
+}
+
+/* Interactive Business Command Card */
+.command-card {
+  background: var(--dus-navy-card);
+  border: 1px solid var(--dus-border-dark);
+  border-radius: var(--dus-radius-lg);
+  padding: 2rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.command-card-nav {
+  display: flex;
+  background: rgba(7, 21, 47, 0.6);
+  padding: 4px;
+  border-radius: var(--dus-radius-pill);
+  margin-bottom: 1.5rem;
+}
+
+.command-nav-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: #94A3B8;
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 8px 16px;
+  border-radius: var(--dus-radius-pill);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.command-nav-btn.active {
+  background: var(--dus-royal-blue);
+  color: #ffffff;
+  box-shadow: var(--dus-shadow-blue);
+}
+
+.command-tab-pane {
+  display: none;
+}
+
+.command-tab-pane.active {
+  display: block;
+}
+
+/* Floating Status Chips */
+.floating-chip {
+  position: absolute;
+  background: #ffffff;
+  color: var(--dus-navy-dark);
+  border-radius: var(--dus-radius-md);
+  padding: 10px 16px;
+  box-shadow: var(--dus-shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.825rem;
+  font-weight: 700;
+  z-index: 10;
+  animation: floatAnim 4s ease-in-out infinite alternate;
+}
+
+@keyframes floatAnim {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-8px); }
+}
+
+.floating-chip-1 { top: -20px; left: -25px; }
+.floating-chip-2 { bottom: -20px; right: -20px; }
+
+/* Hero Bottom Trust Bar */
+.hero-trust-bar {
+  background: var(--dus-navy-dark);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1.25rem 0;
+  color: #94A3B8;
+}
+
+.hero-trust-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #E2E8F0;
+}
+
+.hero-trust-bar-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: rgba(23, 105, 255, 0.15);
+  color: var(--dus-electric-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+/* ==========================================================================
+   POPULAR SERVICES SECTION & CARDS
+   ========================================================================== */
+
+.dus-section {
+  padding: 5.5rem 0;
+}
+
+.dus-section-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 3.5rem;
+}
+
+.dus-section-badge {
+  color: var(--dus-royal-blue);
+  font-weight: 800;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.dus-section-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  color: var(--dus-text-primary);
+}
+
+.dus-section-desc {
+  color: var(--dus-text-secondary);
+  font-size: 1.05rem;
+}
+
+.dus-service-card {
+  background: #ffffff;
+  border: 1px solid var(--dus-border-light);
+  border-radius: var(--dus-radius-lg);
+  padding: 2rem;
+  box-shadow: var(--dus-shadow-sm);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dus-service-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--dus-royal-blue);
+  box-shadow: var(--dus-shadow-lg);
+}
+
+.dus-service-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: var(--dus-radius-md);
+  background: rgba(23, 105, 255, 0.08);
+  color: var(--dus-royal-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.dus-service-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--dus-text-primary);
+}
+
+.dus-service-price {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--dus-royal-blue);
+}
+
+/* ==========================================================================
+   BROWSE BY BUSINESS NEED CATEGORIES
+   ========================================================================== */
+
+.need-card {
+  background: #ffffff;
+  border: 1px solid var(--dus-border-light);
+  border-radius: var(--dus-radius-md);
+  padding: 1.5rem 1.25rem;
+  text-align: center;
+  text-decoration: none;
+  color: var(--dus-text-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.25s ease;
+  height: 100%;
+}
+
+.need-card:hover {
+  background: rgba(23, 105, 255, 0.04);
+  border-color: var(--dus-royal-blue);
+  transform: translateY(-4px);
+  color: var(--dus-royal-blue);
+}
+
+.need-card-icon {
+  font-size: 2rem;
+}
+
+.need-card-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* ==========================================================================
+   GOVERNMENT BUSINESS LOAN CONSULTANCY SECTION (DARK THEME)
+   ========================================================================== */
+
+.dark-loan-section {
+  background: var(--dus-navy-dark);
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+.loan-scheme-card {
+  background: var(--dus-navy-card);
+  border: 1px solid var(--dus-border-dark);
+  border-radius: var(--dus-radius-lg);
+  padding: 2rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.loan-scheme-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--dus-saffron);
+}
+
+/* ==========================================================================
+   HOW IT WORKS TIMELINE STEPPER
+   ========================================================================== */
+
+.step-card {
+  background: #ffffff;
+  border: 1px solid var(--dus-border-light);
+  border-radius: var(--dus-radius-lg);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  position: relative;
+  height: 100%;
+}
+
+.step-number-badge {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--dus-blue-gradient);
+  color: #ffffff;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--dus-shadow-blue);
+}
+
+/* ==========================================================================
+   BUSINESS SCORECARD SECTION
+   ========================================================================== */
+
+.scorecard-banner {
+  background: linear-gradient(135deg, #07152F 0%, #13274D 100%);
+  border-radius: var(--dus-radius-lg);
+  padding: 3.5rem;
+  color: #ffffff;
+}
+
+.score-progress-bar {
+  height: 12px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.score-progress-fill {
+  height: 100%;
+  background: var(--dus-saffron-gradient);
+  border-radius: 6px;
+  width: 78%;
+}
+
+/* ==========================================================================
+   WHY DIGITAL UDYOG SEVA (ASYMMETRIC GRID)
+   ========================================================================== */
+
+.why-feature-card {
+  background: #ffffff;
+  border: 1px solid var(--dus-border-light);
+  border-radius: var(--dus-radius-md);
+  padding: 1.75rem;
+  height: 100%;
+  transition: all 0.25s ease;
+}
+
+.why-feature-card:hover {
+  box-shadow: var(--dus-shadow-md);
+  border-color: var(--dus-royal-blue);
+}
+
+/* ==========================================================================
+   APPLICATION TRACKING TIMELINE PREVIEW
+   ========================================================================== */
+
+.tracking-card {
+  background: var(--dus-navy-dark);
+  color: #ffffff;
+  border-radius: var(--dus-radius-lg);
+  padding: 3rem;
+}
+
+.tracking-timeline {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin: 2rem 0;
+}
+
+.tracking-step {
+  text-align: center;
+  flex: 1;
+  position: relative;
+  z-index: 2;
+}
+
+.tracking-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--dus-navy-card);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: #94A3B8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.tracking-step.done .tracking-icon {
+  background: var(--dus-success-green);
+  border-color: var(--dus-success-green);
+  color: #ffffff;
+}
+
+.tracking-step.active .tracking-icon {
+  background: var(--dus-royal-blue);
+  border-color: var(--dus-royal-blue);
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(23, 105, 255, 0.3);
+}
+
+/* ==========================================================================
+   FAQ ACCORDION
+   ========================================================================== */
+
+.dus-accordion-item {
+  background: #ffffff;
+  border: 1px solid var(--dus-border-light);
+  border-radius: var(--dus-radius-md);
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.dus-accordion-button {
+  background: #ffffff;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--dus-text-primary);
+  padding: 1.25rem 1.5rem;
+  width: 100%;
+  text-align: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dus-accordion-body {
+  padding: 0 1.5rem 1.25rem;
+  color: var(--dus-text-secondary);
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   FINAL CTA BANNER & FOOTER
+   ========================================================================== */
+
+.final-cta-banner {
+  background: linear-gradient(135deg, var(--dus-navy-dark) 0%, var(--dus-royal-blue) 100%);
+  color: #ffffff;
+  border-radius: var(--dus-radius-lg);
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+footer {
+  background: var(--dus-navy-dark);
+  color: #94A3B8;
+  padding: 4.5rem 0 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+footer h5 {
+  color: #ffffff;
+  font-size: 1.1rem;
+  margin-bottom: 1.25rem;
+}
+
+footer a {
+  color: #CBD5E1;
+  text-decoration: none;
+  line-height: 2.2;
+  transition: color 0.2s;
+  font-size: 0.9rem;
+}
+
+footer a:hover {
+  color: var(--dus-saffron);
+}
+
+/* Mobile Sticky CTA Bar */
+.mobile-sticky-cta {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--dus-navy-dark);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 8px 12px;
+  z-index: 1090;
+  display: flex;
+  gap: 8px;
+  box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Floating Contact Action Icons Desktop */
+.floating-contact-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #25D366;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
+  z-index: 1080;
+  transition: transform 0.2s;
+  text-decoration: none;
+}
+
+.floating-contact-btn:hover {
+  transform: scale(1.1);
+  color: #ffffff;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 991.98px) {
+  .hero-title { font-size: 2.4rem; }
+  .command-card { margin-top: 2rem; }
+  .floating-chip { display: none; }
+  .dus-section { padding: 3.5rem 0; }
+  .scorecard-banner { padding: 2rem 1.5rem; }
+}
+
+@media (max-width: 575.98px) {
+  .hero-title { font-size: 2rem; }
+  .hero-search-box { flex-direction: column; border-radius: var(--dus-radius-md); padding: 8px; gap: 8px; }
+  .hero-search-btn { width: 100%; border-radius: var(--dus-radius-md); }
+}
