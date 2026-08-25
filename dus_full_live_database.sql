@@ -7,8 +7,32 @@ SET FOREIGN_KEY_CHECKS = 0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET TIME_ZONE = "+05:30";
 
--- Drop existing tables to ensure clean schema rebuild
-DROP TABLE IF EXISTS `ticket_messages`, `support_tickets`, `training_materials`, `loan_financial_details`, `loan_applications`, `loan_schemes`, `case_checklist_status`, `case_status_history`, `cases`, `services`, `service_categories`, `website_settings`, `commission_transactions`, `commission_withdrawals`, `franchise_service_commissions`, `franchises`, `customer_business_profiles`, `customers`, `users`, `franchise_types`, `role_permissions`, `permissions`, `roles`;
+-- Clean rebuild: Drop child tables first then parent tables
+DROP TABLE IF EXISTS `ticket_messages`;
+DROP TABLE IF EXISTS `support_tickets`;
+DROP TABLE IF EXISTS `training_materials`;
+DROP TABLE IF EXISTS `loan_financial_details`;
+DROP TABLE IF EXISTS `loan_applications`;
+DROP TABLE IF EXISTS `case_checklist_status`;
+DROP TABLE IF EXISTS `case_status_history`;
+DROP TABLE IF EXISTS `cases`;
+DROP TABLE IF EXISTS `services`;
+DROP TABLE IF EXISTS `service_categories`;
+DROP TABLE IF EXISTS `website_settings`;
+DROP TABLE IF EXISTS `commission_transactions`;
+DROP TABLE IF EXISTS `commission_withdrawals`;
+DROP TABLE IF EXISTS `franchise_service_commissions`;
+DROP TABLE IF EXISTS `franchises`;
+DROP TABLE IF EXISTS `customer_business_profiles`;
+DROP TABLE IF EXISTS `credit_checks`;
+DROP TABLE IF EXISTS `credit_consents`;
+DROP TABLE IF EXISTS `customers`;
+DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `franchise_types`;
+DROP TABLE IF EXISTS `role_permissions`;
+DROP TABLE IF EXISTS `permissions`;
+DROP TABLE IF EXISTS `roles`;
+
 
 
 -- 1. Roles Table
