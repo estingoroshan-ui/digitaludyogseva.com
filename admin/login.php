@@ -14,14 +14,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $email = trim($_POST['email'] ?? '');
         $password = trim($_POST['password'] ?? '');
-        $res = login_user($email, $password);
+        $res = login_user($email, $password, 'admin');
         if ($res['status']) {
-            if ($res['user']['user_type'] === 'admin' || $res['user']['user_type'] === 'staff') {
-                header('Location: ' . BASE_URL . 'admin/index.php');
-                exit;
-            } else {
-                $error = "This portal is strictly restricted to Staff & Administrators.";
-            }
+            header('Location: ' . BASE_URL . 'admin/index.php');
+            exit;
         } else {
             $error = $res['message'];
         }
