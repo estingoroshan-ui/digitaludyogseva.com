@@ -9,11 +9,11 @@ $dbname   = getenv('DB_NAME') ?: "dus";
 
 // If deployed on live cPanel/hosting server (digitaludyogseva.com)
 if (isset($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'], 'digitaludyogseva.com') !== false) {
-    // Note: If your live cPanel MySQL credentials differ, update them here or set environment variables:
+    // Live Hostinger MySQL Credentials
     $host     = getenv('DB_HOST') ?: "localhost";
-    $user     = getenv('DB_USER') ?: "root"; 
-    $password = getenv('DB_PASS') !== false ? getenv('DB_PASS') : "";
-    $dbname   = getenv('DB_NAME') ?: "dus";
+    $user     = getenv('DB_USER') ?: "u298279387_newv"; 
+    $password = getenv('DB_PASS') !== false ? getenv('DB_PASS') : "9K=muz2lT";
+    $dbname   = getenv('DB_NAME') ?: "u298279387_newv";
 }
 
 if (function_exists('mysqli_report')) {
