@@ -7,6 +7,10 @@ SET FOREIGN_KEY_CHECKS = 0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET TIME_ZONE = "+05:30";
 
+-- Drop existing tables to ensure clean schema rebuild
+DROP TABLE IF EXISTS `ticket_messages`, `support_tickets`, `training_materials`, `loan_financial_details`, `loan_applications`, `loan_schemes`, `case_checklist_status`, `case_status_history`, `cases`, `services`, `service_categories`, `website_settings`, `commission_transactions`, `commission_withdrawals`, `franchise_service_commissions`, `franchises`, `customer_business_profiles`, `customers`, `users`, `franchise_types`, `role_permissions`, `permissions`, `roles`;
+
+
 -- 1. Roles Table
 CREATE TABLE IF NOT EXISTS `roles` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
