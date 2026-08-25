@@ -2,16 +2,12 @@
 # DIGITAL UDYOG SEVA (digitaludyogseva.com) - PRODUCTION APACHE HTACCESS
 # ==========================================================================
 
+# Default Index Page
+DirectoryIndex index.php index.html
+
 # 1. Enable Rewrite Engine
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /
-
-    # Force HTTPS on Production Domain digitaludyogseva.com
-    RewriteCond %{HTTP_HOST} ^(www\.)?digitaludyogseva\.com$ [NC]
-    RewriteCond %{HTTPS} off
-    RewriteCond %{HTTP:X-Forwarded-Proto} !https
-    RewriteRule ^(.*)$ https://digitaludyogseva.com/$1 [L,R=301]
 
     # Handle Front Controller / Clean URLs fallback
     RewriteCond %{REQUEST_FILENAME} !-f
@@ -24,14 +20,24 @@ Options -Indexes
 
 # 3. Protect Sensitive System Files & SQL Backups
 <FilesMatch "\.(sql|log|md|env|json|git|gitignore|sh|bak)$">
-    Order allow,deny
-    Deny from all
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
 </FilesMatch>
 
 # Prevent direct browsing of config and database files
-<FilesMatch "^(db\.php|database_schema\.sql)$">
-    Order allow,deny
-    Deny from all
+<FilesMatch "^(db\.php)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
 </FilesMatch>
 
 # 4. Enable Gzip Compression for Fast Loading
