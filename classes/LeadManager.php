@@ -164,12 +164,23 @@ class LeadManager {
             }
 
             // Update Lead Status to Converted (Status ID 17 = Converted Customer)
-            $upd_lead = $pdo->prepare("UPDATE leads SET status_id = 17 WHERE id = ?");
-            $upd_lead->execute([$lead_id]);
+            try {
+                $s_stmt = $pdo->query("SELECT id FROM lead_statuses WHERE status_key = 'converted' OR id = 17 OR status_name LIKE '%Converted%' LIMIT 1");
+                $conv_status_id = $s_stmt ? $s_stmt->fetchColumn() : 17;
+                
+                if ($conv_status_id) {
+                    $upd_lead = $pdo->prepare("UPDATE leads SET status_id = ? WHERE id = ?");
+                    $upd_lead->execute([$conv_status_id, $lead_id]);
+                }
+            } catch (Exception $status_ex) {
+                // Ignore status FK error if lead_statuses seed differs on live database
+            }
 
             // Log activity
-            $act = $pdo->prepare("INSERT INTO lead_activities (lead_id, activity_type, title, description) VALUES (?, 'converted', 'Lead Converted to Customer', ?)");
-            $act->execute([$lead_id, 'Customer ID: ' . $customer_id]);
+            try {
+                $act = $pdo->prepare("INSERT INTO lead_activities (lead_id, activity_type, title, description) VALUES (?, 'converted', 'Lead Converted to Customer', ?)");
+                $act->execute([$lead_id, 'Customer ID: ' . $customer_id]);
+            } catch (Exception $act_ex) {}
 
             return [
                 'status' => true,

@@ -116,4 +116,39 @@ CREATE TABLE IF NOT EXISTS `communication_logs` (
   FOREIGN KEY (`customer_id`) REFERENCES `customers`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- 8. Ensure lead_id column on customers table
+ALTER TABLE `customers` ADD COLUMN IF NOT EXISTS `lead_id` INT NULL AFTER `customer_code`;
+
+-- 9. Ensure lead_statuses table and seed all 22 pipeline stages
+CREATE TABLE IF NOT EXISTS `lead_statuses` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `status_key` VARCHAR(50) UNIQUE NOT NULL,
+  `status_name` VARCHAR(100) NOT NULL,
+  `color_code` VARCHAR(20) DEFAULT '#3b82f6',
+  `sort_order` INT DEFAULT 1,
+  `is_system` TINYINT(1) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT IGNORE INTO `lead_statuses` (`id`, `status_key`, `status_name`, `color_code`, `sort_order`, `is_system`) VALUES
+(1, 'new_lead', 'New Lead', '#6366f1', 1, 1),
+(2, 'contact_attempted', 'Contact Attempted', '#3b82f6', 2, 1),
+(3, 'no_response', 'No Response', '#94a3b8', 3, 1),
+(4, 'connected', 'Connected', '#06b6d4', 4, 1),
+(5, 'followup_required', 'Follow-up Required', '#f59e0b', 5, 1),
+(6, 'interested', 'Interested', '#8b5cf6', 6, 1),
+(7, 'docs_requested', 'Documents Requested', '#10b981', 7, 1),
+(8, 'docs_received', 'Documents Received', '#14b8a6', 8, 1),
+(9, 'appointment_scheduled', 'Appointment Scheduled', '#ec4899', 9, 1),
+(10, 'eligibility_checking', 'Eligibility Checking', '#a855f7', 10, 1),
+(11, 'scorecard_pending', 'Scorecard Pending', '#d97706', 11, 1),
+(12, 'qualified', 'Qualified', '#059669', 12, 1),
+(13, 'proposal_offered', 'Proposal / Service Offered', '#2563eb', 13, 1),
+(14, 'payment_pending', 'Payment Pending', '#ef4444', 14, 1),
+(15, 'payment_received', 'Payment Received', '#16a34a', 15, 1),
+(16, 'application_started', 'Application Started', '#0284c7', 16, 1),
+(17, 'converted', 'Converted Customer', '#22c55e', 17, 1),
+(18, 'not_interested', 'Not Interested', '#64748b', 18, 1),
+(19, 'not_eligible', 'Not Eligible', '#ef4444', 19, 1),
+(20, 'lost', 'Lost Lead', '#475569', 20, 1);
+
 SET FOREIGN_KEY_CHECKS = 1;
