@@ -69,14 +69,20 @@ try {
                 <i class="bi bi-journal-bookmark"></i> Loan Schemes Master
             </a>
 
-            <div class="sidebar-group-title">Services & CMS</div>
-            <a href="<?php echo BASE_URL; ?>admin/services.php" class="sidebar-link <?php echo ($active_menu ?? '') === 'services' ? 'active' : ''; ?>">
+            <div class="sidebar-group-title">Services & Operations</div>
+            <a href="<?php echo BASE_URL; ?>admin/services.php" class="sidebar-link <?php echo ($active_menu ?? '') === 'services' && strpos($_SERVER['REQUEST_URI'], 'service_workflow_builder') === false ? 'active' : ''; ?>">
                 <i class="bi bi-gear"></i> Service Catalog CMS
             </a>
+            <a href="<?php echo BASE_URL; ?>admin/service_workflow_builder.php" class="sidebar-link <?php echo strpos($_SERVER['REQUEST_URI'], 'service_workflow_builder') !== false ? 'active' : ''; ?>">
+                <i class="bi bi-diagram-3-fill"></i> Dynamic Workflow Builder
+            </a>
 
-            <div class="sidebar-group-title">Franchise & Finance</div>
+            <div class="sidebar-group-title">Franchise & Ecosystem</div>
             <a href="<?php echo BASE_URL; ?>admin/franchises.php" class="sidebar-link <?php echo ($active_menu ?? '') === 'franchises' ? 'active' : ''; ?>">
                 <i class="bi bi-diagram-3"></i> Franchise Network
+            </a>
+            <a href="<?php echo BASE_URL; ?>admin/ecosystem_requirements.php" class="sidebar-link <?php echo ($active_menu ?? '') === 'ecosystem' ? 'active' : ''; ?>">
+                <i class="bi bi-cpu-fill"></i> Ecosystem (Machinery/Raw)
             </a>
             <a href="<?php echo BASE_URL; ?>admin/commissions.php" class="sidebar-link <?php echo ($active_menu ?? '') === 'commissions' ? 'active' : ''; ?>">
                 <i class="bi bi-wallet2"></i> Commissions & Payouts

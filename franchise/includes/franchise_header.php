@@ -180,9 +180,12 @@ try {
             <i class="bi bi-funnel-fill"></i> Potential Client Leads
         </a>
 
-        <div class="sidebar-menu-group">Services & Loans</div>
+        <div class="sidebar-menu-group">Services & Ecosystem</div>
         <a href="<?php echo BASE_URL; ?>franchise/service_catalog.php" class="sidebar-nav-link <?php echo ($active_menu ?? '') === 'catalog' ? 'active' : ''; ?>">
             <i class="bi bi-journal-bookmark-fill"></i> Service Catalog (14 Groups)
+        </a>
+        <a href="<?php echo BASE_URL; ?>franchise/ecosystem_catalog.php" class="sidebar-nav-link <?php echo ($active_menu ?? '') === 'ecosystem' ? 'active' : ''; ?>">
+            <i class="bi bi-shop"></i> Machinery & Raw Materials
         </a>
         <a href="<?php echo BASE_URL; ?>franchise/new_application.php" class="sidebar-nav-link <?php echo ($active_menu ?? '') === 'new_app' ? 'active' : ''; ?>">
             <i class="bi bi-lightning-charge-fill"></i> 5-Step Application Wizard
