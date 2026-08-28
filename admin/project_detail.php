@@ -12,7 +12,7 @@ $stmt = $pdo->prepare("
            cust.address AS customer_address, cust.city AS customer_city, cust.state AS customer_state, cust.pincode AS customer_pincode,
            COALESCE(lt.name, c.loan_type, 'Other Loan') AS loan_type_display,
            COALESCE(ld.name, c.preferred_bank, 'Multiple Banks') AS bank_display,
-           u.name AS staff_name, u.email AS staff_email, u.phone AS staff_phone
+           u.name AS staff_name, u.email AS staff_email, u.mobile AS staff_phone
     FROM cases c
     JOIN customers cust ON c.customer_id = cust.id
     LEFT JOIN loan_types lt ON c.loan_type_id = lt.id
@@ -245,7 +245,7 @@ $case_followups = $pdo->query("SELECT f.*, u.name AS author_name FROM case_follo
 $case_tasks = $pdo->query("SELECT * FROM tasks WHERE case_id = {$case_id} ORDER BY due_date ASC")->fetchAll();
 $case_payments = $pdo->query("SELECT * FROM payments WHERE case_id = {$case_id} ORDER BY id DESC")->fetchAll();
 $case_assignments = $pdo->query("SELECT a.*, u.name AS staff_name, u2.name AS assigned_by_name FROM case_staff_assignments a LEFT JOIN employees e ON a.staff_id = e.id LEFT JOIN users u ON e.user_id = u.id LEFT JOIN users u2 ON a.assigned_by = u2.id WHERE a.case_id = {$case_id} ORDER BY a.id DESC")->fetchAll();
-$case_activities = $pdo->query("SELECT * FROM activity_logs WHERE entity_type = 'case' AND entity_id = {$case_id} ORDER BY id DESC LIMIT 50")->fetchAll();
+$case_activities = $pdo->query("SELECT * FROM activity_logs WHERE module = 'case' AND record_id = {$case_id} ORDER BY id DESC LIMIT 50")->fetchAll();
 
 $loan_types_list = $pdo->query("SELECT * FROM loan_types WHERE status = 'active' ORDER BY name ASC")->fetchAll();
 $lenders_list = $pdo->query("SELECT * FROM lenders WHERE status = 'active' ORDER BY name ASC")->fetchAll();

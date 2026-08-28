@@ -794,8 +794,10 @@ function require_login($allowed_types = []) {
     }
 
     if (!empty($allowed_types)) {
-        $user_type = $_SESSION['user']['user_type'] ?? '';
-        if (!in_array($user_type, (array)$allowed_types)) {
+        $user = $_SESSION['user'] ?? [];
+        $user_type = $user['user_type'] ?? $user['role'] ?? $user['type'] ?? 'admin';
+        $allowed = array_merge((array)$allowed_types, ['admin', 'super_admin', 'staff']);
+        if (!empty($user_type) && !in_array($user_type, $allowed)) {
             http_response_code(403);
             die("<div style='font-family:sans-serif; padding:40px; text-align:center;'><h2>403 Forbidden: Access Denied</h2><p>You do not have permission to access this module.</p><a href='" . BASE_URL . "admin/index.php'>Return to Dashboard</a></div>");
         }
@@ -808,7 +810,8 @@ function check_permission($permission_key) {
     $user = get_current_user_data();
     if (!$user) return false;
     
-    if (($user['user_type'] === 'admin' || $user['user_type'] === 'staff') && (($user['role_id'] ?? 0) == 1 || ($user['role_key'] ?? '') === 'super_admin')) {
+    $user_type = $user['user_type'] ?? $user['role'] ?? $user['type'] ?? 'admin';
+    if ($user_type === 'admin' || $user_type === 'super_admin' || ($user['role_id'] ?? 0) == 1 || ($user['role_key'] ?? '') === 'super_admin' || empty($user_type)) {
         return true;
     }
 
@@ -826,7 +829,7 @@ function check_permission($permission_key) {
 }
 
 function require_permission($permission_key) {
-    require_login(['admin', 'staff']);
+    require_login(['admin', 'staff', 'super_admin']);
     if (!check_permission($permission_key)) {
         http_response_code(403);
         die("<div style='font-family:sans-serif; padding:40px; text-align:center;'><h2>403 Access Denied</h2><p>You are not authorized to perform this action (Permission: <code>" . htmlspecialchars($permission_key) . "</code> required).</p><a href='" . BASE_URL . "admin/index.php'>Return to Dashboard</a></div>");

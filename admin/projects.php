@@ -287,42 +287,42 @@ $all_stages = [
 <!-- FINANCIAL METRICS SUMMARY BAR -->
 <div class="row g-3 mb-4">
     <div class="col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 bg-gradient-primary text-white p-3">
+        <div class="card border-0 shadow-sm rounded-4 text-white p-3" style="background: linear-gradient(135deg, #0d6efd 0%, #06429c 100%);">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <small class="text-white-50 text-uppercase fw-bold">Total Loan Requested</small>
-                    <h3 class="fw-bold my-1">₹<?php echo format_inr($total_requested_amount); ?></h3>
+                    <h3 class="fw-bold my-1 text-white">₹<?php echo format_inr($total_requested_amount); ?></h3>
                     <small class="text-white-50"><?php echo number_format($total_cases); ?> Total Applications</small>
                 </div>
-                <div class="stat-icon bg-white-20 text-white fs-3 p-3 rounded-circle">
+                <div class="stat-icon text-white fs-3 p-3 rounded-circle" style="background: rgba(255, 255, 255, 0.2);">
                     <i class="bi bi-cash-stack"></i>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 bg-gradient-info text-white p-3">
+        <div class="card border-0 shadow-sm rounded-4 text-white p-3" style="background: linear-gradient(135deg, #0dcaf0 0%, #077991 100%);">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <small class="text-white-50 text-uppercase fw-bold">Total Sanctioned</small>
-                    <h3 class="fw-bold my-1">₹<?php echo format_inr($total_sanctioned_amount); ?></h3>
+                    <h3 class="fw-bold my-1 text-white">₹<?php echo format_inr($total_sanctioned_amount); ?></h3>
                     <small class="text-white-50"><?php echo number_format($sanctioned_count); ?> Sanctioned Cases</small>
                 </div>
-                <div class="stat-icon bg-white-20 text-white fs-3 p-3 rounded-circle">
+                <div class="stat-icon text-white fs-3 p-3 rounded-circle" style="background: rgba(255, 255, 255, 0.2);">
                     <i class="bi bi-shield-check"></i>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 bg-gradient-success text-white p-3">
+        <div class="card border-0 shadow-sm rounded-4 text-white p-3" style="background: linear-gradient(135deg, #198754 0%, #0f5132 100%);">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <small class="text-white-50 text-uppercase fw-bold">Total Disbursed</small>
-                    <h3 class="fw-bold my-1">₹<?php echo format_inr($total_disbursed_amount); ?></h3>
+                    <h3 class="fw-bold my-1 text-white">₹<?php echo format_inr($total_disbursed_amount); ?></h3>
                     <small class="text-white-50"><?php echo number_format($disbursed_count); ?> Fully Disbursed</small>
                 </div>
-                <div class="stat-icon bg-white-20 text-white fs-3 p-3 rounded-circle">
+                <div class="stat-icon text-white fs-3 p-3 rounded-circle" style="background: rgba(255, 255, 255, 0.2);">
                     <i class="bi bi-check-circle-fill"></i>
                 </div>
             </div>
