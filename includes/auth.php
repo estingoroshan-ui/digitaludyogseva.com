@@ -352,11 +352,178 @@ function ensure_phase5_project_tables_exist($pdo) {
     }
 }
 
+function ensure_loan_case_tables_exist($pdo) {
+    static $checked_loan = false;
+    if ($checked_loan || !$pdo) return;
+    $checked_loan = true;
+
+    try {
+        $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
+        
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `loan_types` (
+          `id` INT AUTO_INCREMENT PRIMARY KEY,
+          `name` VARCHAR(100) NOT NULL UNIQUE,
+          `code` VARCHAR(50) DEFAULT NULL,
+          `description` TEXT DEFAULT NULL,
+          `status` ENUM('active', 'inactive') DEFAULT 'active',
+          `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+        $pdo->exec("INSERT IGNORE INTO `loan_types` (`name`, `code`) VALUES
+        ('Business Loan', 'BL'), ('Personal Loan', 'PL'), ('Home Loan', 'HL'),
+        ('Loan Against Property', 'LAP'), ('Mortgage Loan', 'ML'), ('Working Capital', 'WC'),
+        ('Cash Credit (CC)', 'CC'), ('Overdraft (OD)', 'OD'), ('MSME Loan', 'MSME'),
+        ('Mudra Loan', 'MUDRA'), ('PMEGP Loan', 'PMEGP'), ('Machinery Loan', 'MAC'),
+        ('Vehicle Loan', 'VL'), ('Education Loan', 'EDU'), ('Agriculture Loan', 'AGRI'),
+        ('Government Subsidy Loan', 'GSL'), ('Other Loan', 'OTHER');");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `lenders` (
+          `id` INT AUTO_INCREMENT PRIMARY KEY,
+          `name` VARCHAR(150) NOT NULL UNIQUE,
+          `type` ENUM('Bank', 'NBFC', 'Fintech', 'Cooperative', 'Other') DEFAULT 'Bank',
+          `code` VARCHAR(50) DEFAULT NULL,
+          `contact_person` VARCHAR(100) DEFAULT NULL,
+          `contact_number` VARCHAR(50) DEFAULT NULL,
+          `email` VARCHAR(100) DEFAULT NULL,
+          `status` ENUM('active', 'inactive') DEFAULT 'active',
+          `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+        $pdo->exec("INSERT IGNORE INTO `lenders` (`name`, `type`, `code`) VALUES
+        ('State Bank of India (SBI)', 'Bank', 'SBI'), ('HDFC Bank', 'Bank', 'HDFC'),
+        ('ICICI Bank', 'Bank', 'ICICI'), ('Axis Bank', 'Bank', 'AXIS'),
+        ('Punjab National Bank (PNB)', 'Bank', 'PNB'), ('Bank of Baroda (BOB)', 'Bank', 'BOB'),
+        ('Kotak Mahindra Bank', 'Bank', 'KOTAK'), ('IndusInd Bank', 'Bank', 'INDUS'),
+        ('Yes Bank', 'Bank', 'YES'), ('IDFC FIRST Bank', 'Bank', 'IDFC'),
+        ('Union Bank of India', 'Bank', 'UNION'), ('Canara Bank', 'Bank', 'CANARA'),
+        ('Bajaj Finance', 'NBFC', 'BAJAJ'), ('Tata Capital', 'NBFC', 'TATA'),
+        ('Aditya Birla Capital', 'NBFC', 'BIRLA'), ('L&T Finance', 'NBFC', 'LTF');");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `case_bank_applications` (
+          `id` INT AUTO_INCREMENT PRIMARY KEY,
+          `case_id` INT NOT NULL,
+          `lender_id` INT NULL,
+          `bank_name` VARCHAR(150) NOT NULL,
+          `branch` VARCHAR(150) DEFAULT NULL,
+          `contact_person` VARCHAR(100) DEFAULT NULL,
+          `contact_number` VARCHAR(50) DEFAULT NULL,
+          `loan_product` VARCHAR(100) DEFAULT NULL,
+          `applied_amount` DECIMAL(15,2) DEFAULT 0.00,
+          `application_date` DATE DEFAULT NULL,
+          `bank_app_number` VARCHAR(100) DEFAULT NULL,
+          `login_id_lan` VARCHAR(100) DEFAULT NULL,
+          `current_bank_status` VARCHAR(100) DEFAULT 'Submitted',
+          `interest_rate_offered` DECIMAL(5,2) DEFAULT 0.00,
+          `tenure_offered` INT DEFAULT 0,
+          `processing_fee` DECIMAL(12,2) DEFAULT 0.00,
+          `approved_amount` DECIMAL(15,2) DEFAULT 0.00,
+          `sanction_date` DATE DEFAULT NULL,
+          `rejection_reason` TEXT DEFAULT NULL,
+          `remarks` TEXT DEFAULT NULL,
+          `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          FOREIGN KEY (`case_id`) REFERENCES `cases`(`id`) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `case_stage_history` (
+          `id` INT AUTO_INCREMENT PRIMARY KEY,
+          `case_id` INT NOT NULL,
+          `previous_stage` VARCHAR(100) DEFAULT NULL,
+          `new_stage` VARCHAR(100) NOT NULL,
+          `changed_by` INT NOT NULL,
+          `remarks` TEXT DEFAULT NULL,
+          `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (`case_id`) REFERENCES `cases`(`id`) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `case_staff_assignments` (
+          `id` INT AUTO_INCREMENT PRIMARY KEY,
+          `case_id` INT NOT NULL,
+          `staff_id` INT NOT NULL,
+          `role_title` VARCHAR(100) NOT NULL,
+          `assigned_by` INT DEFAULT NULL,
+          `assigned_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (`case_id`) REFERENCES `cases`(`id`) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `case_followups` (
+          `id` INT AUTO_INCREMENT PRIMARY KEY,
+          `case_id` INT NOT NULL,
+          `followup_type` VARCHAR(50) DEFAULT 'Call',
+          `remarks` TEXT NOT NULL,
+          `next_followup_date` DATETIME DEFAULT NULL,
+          `created_by` INT NOT NULL,
+          `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (`case_id`) REFERENCES `cases`(`id`) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+        $cols = [
+            "application_date DATE NULL",
+            "alternate_mobile VARCHAR(20) NULL",
+            "pan_number VARCHAR(20) NULL",
+            "aadhaar_last_4 VARCHAR(4) NULL",
+            "customer_type VARCHAR(50) DEFAULT 'Individual'",
+            "business_name VARCHAR(255) NULL",
+            "business_type VARCHAR(100) NULL",
+            "constitution VARCHAR(100) NULL",
+            "business_start_date DATE NULL",
+            "vintage_years DECIMAL(4,1) DEFAULT 0.0",
+            "gstin VARCHAR(20) NULL",
+            "udyam_number VARCHAR(50) NULL",
+            "industry VARCHAR(100) NULL",
+            "nature_of_business VARCHAR(100) NULL",
+            "annual_turnover DECIMAL(15,2) DEFAULT 0.00",
+            "monthly_sales DECIMAL(15,2) DEFAULT 0.00",
+            "existing_emi DECIMAL(12,2) DEFAULT 0.00",
+            "existing_loan_amount DECIMAL(15,2) DEFAULT 0.00",
+            "existing_bank VARCHAR(150) NULL",
+            "itr_income DECIMAL(15,2) DEFAULT 0.00",
+            "cibil_score INT DEFAULT 0",
+            "cibil_status VARCHAR(50) DEFAULT 'Pending'",
+            "address TEXT NULL",
+            "city VARCHAR(100) NULL",
+            "state VARCHAR(100) NULL",
+            "pin_code VARCHAR(20) NULL",
+            "loan_type_id INT NULL",
+            "loan_type VARCHAR(100) NULL",
+            "required_loan_amount DECIMAL(15,2) DEFAULT 0.00",
+            "loan_purpose TEXT NULL",
+            "preferred_bank_id INT NULL",
+            "preferred_bank VARCHAR(150) NULL",
+            "expected_interest_rate DECIMAL(5,2) DEFAULT 0.00",
+            "expected_tenure_months INT DEFAULT 0",
+            "collateral_required ENUM('Yes', 'No') DEFAULT 'No'",
+            "property_available ENUM('Yes', 'No') DEFAULT 'No'",
+            "estimated_property_value DECIMAL(15,2) DEFAULT 0.00",
+            "applicant_contribution DECIMAL(15,2) DEFAULT 0.00",
+            "expected_emi DECIMAL(12,2) DEFAULT 0.00",
+            "sanctioned_amount DECIMAL(15,2) DEFAULT 0.00",
+            "sanction_date DATE NULL",
+            "disbursed_amount DECIMAL(15,2) DEFAULT 0.00",
+            "disbursement_date DATE NULL",
+            "loan_account_number VARCHAR(100) NULL",
+            "priority ENUM('Low', 'Medium', 'High', 'Urgent') DEFAULT 'Medium'",
+            "next_followup_date DATETIME NULL"
+        ];
+
+        foreach ($cols as $col_def) {
+            try {
+                @$pdo->exec("ALTER TABLE `cases` ADD COLUMN {$col_def}");
+            } catch (Throwable $e) {}
+        }
+
+        $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
+    } catch (Throwable $ex) {
+        error_log("Loan Case Auto migration error: " . $ex->getMessage());
+    }
+}
+
 function ensure_phase1_tables_exist($pdo) {
     ensure_phase2_customer_tables_exist($pdo);
     ensure_phase3_lead_tables_exist($pdo);
     ensure_phase4_hr_tables_exist($pdo);
     ensure_phase5_project_tables_exist($pdo);
+    ensure_loan_case_tables_exist($pdo);
     static $checked = false;
     if ($checked || !$pdo) return;
     $checked = true;

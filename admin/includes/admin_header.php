@@ -141,10 +141,19 @@ $is_comm_active = ($active_menu === 'commissions' || strpos($uri, 'commissions')
                 <span><i class="bi bi-file-earmark item-icon"></i> Contracts</span>
             </a>
 
-            <!-- 12. Projects -->
-            <a href="<?php echo BASE_URL; ?>admin/projects.php" class="sidebar-item-link <?php echo ($active_menu === 'projects') ? 'active' : ''; ?>">
-                <span><i class="bi bi-bar-chart-steps item-icon"></i> Projects</span>
-            </a>
+            <!-- 12. Projects & Loan Cases -->
+            <?php $is_proj_active = in_array($active_menu, ['projects', 'loan_types', 'lenders']); ?>
+            <div class="sidebar-group-item">
+                <a class="sidebar-item-link <?php echo !$is_proj_active ? 'collapsed' : 'active'; ?>" data-bs-toggle="collapse" href="#menuProjects" role="button" aria-expanded="<?php echo $is_proj_active ? 'true' : 'false'; ?>">
+                    <span><i class="bi bi-briefcase-fill item-icon"></i> Loan Cases & Projects</span>
+                    <i class="bi bi-chevron-left chevron-icon"></i>
+                </a>
+                <div class="collapse sidebar-submenu-list <?php echo $is_proj_active ? 'show' : ''; ?>" id="menuProjects">
+                    <a href="<?php echo BASE_URL; ?>admin/projects.php" class="sidebar-submenu-link <?php echo ($active_menu === 'projects') ? 'active' : ''; ?>"><i class="bi bi-folder2-open me-2"></i> All Loan Cases</a>
+                    <a href="<?php echo BASE_URL; ?>admin/loan_types.php" class="sidebar-submenu-link <?php echo ($active_menu === 'loan_types') ? 'active' : ''; ?>"><i class="bi bi-tags me-2"></i> Loan Types Master</a>
+                    <a href="<?php echo BASE_URL; ?>admin/lenders.php" class="sidebar-submenu-link <?php echo ($active_menu === 'lenders') ? 'active' : ''; ?>"><i class="bi bi-bank me-2"></i> Bank / NBFC Master</a>
+                </div>
+            </div>
 
             <!-- 13. Commission (Collapsible) -->
             <div class="sidebar-group-item">
