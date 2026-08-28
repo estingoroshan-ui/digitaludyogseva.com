@@ -2,15 +2,14 @@
 require_once __DIR__ . '/../../config/app.php';
 require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/csrf.php';
+require_once __DIR__ . '/../../classes/NotificationService.php';
 
 require_login(['admin', 'staff']);
 $current_user = get_current_user_data();
 
-global $pdo;
-$unread_notifications = 0;
-try {
-    $unread_notifications = $pdo->query("SELECT COUNT(*) FROM followups WHERE followup_date <= CURDATE() AND status = 'pending'")->fetchColumn();
-} catch (Exception $e) {}
+$user_id = (int)($current_user['id'] ?? 0);
+$unread_notifications = NotificationService::get_unread_count($user_id);
+$recent_notifications = NotificationService::get_latest($user_id, 5);
 
 $uri = $_SERVER['REQUEST_URI'] ?? '';
 $active_menu = $active_menu ?? '';
@@ -191,26 +190,94 @@ $is_comm_active = ($active_menu === 'commissions' || strpos($uri, 'commissions')
         <header class="admin-header">
             <!-- Global Header Search Bar -->
             <div class="d-flex align-items-center gap-3 flex-grow-1 max-w-500">
-                <form action="<?php echo BASE_URL; ?>admin/crm_leads.php" method="GET" class="w-100 position-relative">
+                <form action="<?php echo BASE_URL; ?>admin/search.php" method="GET" class="w-100 position-relative">
                     <input type="text" name="q" class="form-control rounded-pill px-4" placeholder="Global Search (Lead ID, Cust ID, Mobile, Name)...">
                 </form>
             </div>
 
             <!-- Header Utility Actions -->
             <div class="d-flex align-items-center gap-3">
-                <!-- Notification Bell -->
-                <a href="<?php echo BASE_URL; ?>admin/followups_today.php" class="position-relative text-dark fs-5 text-decoration-none" title="Follow-up Reminders">
-                    <i class="bi bi-bell-fill text-warning"></i>
-                    <?php if ($unread_notifications > 0): ?>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fs-7">
-                            <?php echo $unread_notifications; ?>
-                        </span>
-                    <?php endif; ?>
-                </a>
+                <!-- Permission-Aware Quick Actions Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-primary rounded-pill px-3 fw-bold dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-plus-lg me-1"></i> Quick Action
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end rounded-3 shadow border-0 p-2">
+                        <?php if (check_permission('customers_create')): ?>
+                            <li><a class="dropdown-item rounded-2 py-2 small" href="<?php echo BASE_URL; ?>admin/customers.php?action=create"><i class="bi bi-person-plus me-2 text-primary"></i> Add Customer</a></li>
+                        <?php endif; ?>
+                        <?php if (check_permission('leads_create')): ?>
+                            <li><a class="dropdown-item rounded-2 py-2 small" href="<?php echo BASE_URL; ?>admin/crm_leads.php?action=create"><i class="bi bi-funnel me-2 text-success"></i> Add Lead</a></li>
+                        <?php endif; ?>
+                        <?php if (check_permission('proposals_create')): ?>
+                            <li><a class="dropdown-item rounded-2 py-2 small" href="<?php echo BASE_URL; ?>admin/crm_leads.php?view=proposals"><i class="bi bi-file-earmark-check me-2 text-info"></i> Create Proposal</a></li>
+                        <?php endif; ?>
+                        <?php if (check_permission('estimates_create')): ?>
+                            <li><a class="dropdown-item rounded-2 py-2 small" href="<?php echo BASE_URL; ?>admin/crm_leads.php?view=estimates"><i class="bi bi-file-earmark-text me-2 text-warning"></i> Create Estimate</a></li>
+                        <?php endif; ?>
+                        <?php if (check_permission('invoices_create')): ?>
+                            <li><a class="dropdown-item rounded-2 py-2 small" href="<?php echo BASE_URL; ?>admin/payments.php"><i class="bi bi-receipt me-2 text-danger"></i> Create Invoice</a></li>
+                        <?php endif; ?>
+                        <?php if (check_permission('tasks_create')): ?>
+                            <li><a class="dropdown-item rounded-2 py-2 small" href="<?php echo BASE_URL; ?>admin/tasks.php"><i class="bi bi-check2-square me-2 text-secondary"></i> Create Task</a></li>
+                        <?php endif; ?>
+                        <?php if (check_permission('projects_create')): ?>
+                            <li><a class="dropdown-item rounded-2 py-2 small" href="<?php echo BASE_URL; ?>admin/projects.php"><i class="bi bi-briefcase me-2 text-dark"></i> Create Project</a></li>
+                        <?php endif; ?>
+                    </ul>
+                </div>
 
-                <span class="badge bg-primary px-3 py-2 rounded-pill"><?php echo htmlspecialchars($current_user['role_name'] ?? 'Staff'); ?></span>
-                <span class="fw-bold text-dark"><?php echo htmlspecialchars($current_user['name']); ?></span>
-                <a href="<?php echo BASE_URL; ?>logout.php" class="btn btn-sm btn-outline-danger rounded-pill px-3">Logout</a>
+                <!-- Header In-App Notifications Dropdown -->
+                <div class="dropdown">
+                    <a href="#" class="position-relative text-dark fs-5 text-decoration-none p-1" data-bs-toggle="dropdown">
+                        <i class="bi bi-bell-fill text-warning"></i>
+                        <?php if ($unread_notifications > 0): ?>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fs-7">
+                                <?php echo $unread_notifications; ?>
+                            </span>
+                        <?php endif; ?>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end rounded-4 shadow border-0 p-3" style="width: 340px;">
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                            <h6 class="fw-bold mb-0 text-dark">Notifications</h6>
+                            <a href="<?php echo BASE_URL; ?>admin/notifications.php" class="small text-decoration-none fw-bold">View All</a>
+                        </div>
+                        <?php if (empty($recent_notifications)): ?>
+                            <div class="text-center py-3 text-muted small">No notifications</div>
+                        <?php else: ?>
+                            <div class="list-group list-group-flush">
+                                <?php foreach ($recent_notifications as $rn): ?>
+                                    <a href="<?php echo $rn['link'] ?: BASE_URL . 'admin/notifications.php'; ?>" class="list-group-item list-group-item-action border-0 px-2 py-2 rounded-2 mb-1 <?php echo !$rn['is_read'] ? 'bg-light fw-bold' : ''; ?>">
+                                        <div class="small text-dark mb-1"><?php echo htmlspecialchars($rn['title']); ?></div>
+                                        <div class="text-muted fs-7 text-truncate"><?php echo htmlspecialchars($rn['message']); ?></div>
+                                    </a>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- User Profile Menu -->
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle gap-2" data-bs-toggle="dropdown">
+                        <div class="rounded-circle bg-primary-subtle text-primary fw-bold d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">
+                            <?php echo strtoupper(substr($current_user['name'] ?? 'S', 0, 1)); ?>
+                        </div>
+                        <span class="fw-bold text-dark small d-none d-md-inline"><?php echo htmlspecialchars($current_user['name'] ?? 'Staff'); ?></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end rounded-3 shadow border-0 p-2">
+                        <li class="px-3 py-2 border-bottom mb-1">
+                            <div class="fw-bold text-dark small"><?php echo htmlspecialchars($current_user['name'] ?? ''); ?></div>
+                            <div class="text-muted fs-7"><?php echo htmlspecialchars($current_user['role_name'] ?? 'Staff'); ?></div>
+                        </li>
+                        <li><a class="dropdown-item rounded-2 py-2 small" href="<?php echo BASE_URL; ?>admin/profile.php"><i class="bi bi-person-gear me-2"></i> My Profile</a></li>
+                        <?php if (check_permission('settings_view')): ?>
+                            <li><a class="dropdown-item rounded-2 py-2 small" href="<?php echo BASE_URL; ?>admin/settings.php"><i class="bi bi-sliders me-2"></i> System Settings</a></li>
+                        <?php endif; ?>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item rounded-2 py-2 small text-danger fw-bold" href="<?php echo BASE_URL; ?>logout.php"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+                    </ul>
+                </div>
             </div>
         </header>
         <div class="admin-content">
