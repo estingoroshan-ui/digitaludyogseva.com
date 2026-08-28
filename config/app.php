@@ -6,24 +6,30 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once __DIR__ . '/../db.php';
 
-// Dynamic Base URL auto-detection for Localhost & Live Domain (digitaludyogseva.com)
+// Dynamic Base URL auto-detection for Localhost & Live Domain
 $is_https = (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] === 'on' || $_SERVER['HTTPS'] == 1)) 
          || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
 $protocol = $is_https ? 'https://' : 'http://';
 $host_name = $_SERVER['HTTP_HOST'] ?? 'digitaludyogseva.com';
 $script_name = $_SERVER['SCRIPT_NAME'] ?? '';
 
-if (strpos($host_name, 'digitaludyogseva.com') !== false) {
+if (strpos($host_name, 'digitaludyogseva.com') !== false || strpos($host_name, 'digitalvyaparseva.com') !== false) {
     // Live domain root
     $base_path = '/';
+} elseif (strpos($script_name, '/projects/digitaludyogseva.com/') !== false) {
+    $base_path = '/projects/digitaludyogseva.com/';
 } elseif (strpos($script_name, '/projects/dus/') !== false) {
-    // Local XAMPP sub-folder
     $base_path = '/projects/dus/';
 } elseif (strpos($script_name, '/dus/') !== false) {
-    // Secondary local folder
     $base_path = '/dus/';
 } else {
-    $base_path = '/';
+    // Dynamic fallthrough for XAMPP subfolders
+    $pos = strpos($script_name, '/admin/');
+    if ($pos !== false) {
+        $base_path = substr($script_name, 0, $pos + 1);
+    } else {
+        $base_path = '/';
+    }
 }
 
 define('BASE_URL', $protocol . $host_name . $base_path);
