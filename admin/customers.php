@@ -342,27 +342,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
         }
 
-        // --- 14. DELETE CUSTOMER ---
-        elseif ($action === 'delete_customer') {
-            if (!$is_admin && !check_permission('customers_delete')) {
-                $msg = "Permission denied. You do not have permission to delete customer records.";
-                $msg_type = "danger";
-            } else {
-                $cust_id = (int)$_POST['customer_id'];
-                $check = CustomerManager::can_delete($cust_id);
-                if (!$check['can_delete']) {
-                    $msg = $check['reason'];
-                    $msg_type = "danger";
-                } else {
-                    $c_user = $pdo->query("SELECT user_id, name FROM customers WHERE id = {$cust_id}")->fetch();
-                    if ($c_user) {
-                        $pdo->prepare("DELETE FROM users WHERE id = ?")->execute([$c_user['user_id']]);
-                        $pdo->prepare("DELETE FROM customers WHERE id = ?")->execute([$cust_id]);
-                        ActivityLogger::log('delete_customer', 'customer', $cust_id, "Deleted customer {$c_user['name']}");
-                        $msg = "Customer record deleted cleanly.";
-                    }
-                }
-            }
+        // --- 15. CREATE PROJECT FOR CUSTOMER ---
+        elseif ($action === 'create_project') {
+            $cust_id = (int)$_POST['customer_id'];
+            $p_name = sanitize($_POST['project_name'] ?? '');
+            $srv_id = !empty($_POST['service_id']) ? (int)$_POST['service_id'] : null;
+            $amount = (float)($_POST['total_amount'] ?? 0);
+            $deadline = !empty($_POST['deadline']) ? $_POST['deadline'] : null;
+            $staff_id = !empty($_POST['assigned_staff_id']) ? (int)$_POST['assigned_staff_id'] : null;
+            $desc = sanitize($_POST['project_description'] ?? '');
+
+            $case_code = generate_code('PRJ', 6);
+            $ins = $pdo->prepare("
+                INSERT INTO cases (case_code, project_name, customer_id, service_id, assigned_staff_id, total_amount, deadline, project_description, status, progress_percent, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'active', 0, NOW())
+            ");
+            $ins->execute([$case_code, $p_name ?: 'Service Project', $cust_id, $srv_id, $staff_id, $amount, $deadline, $desc]);
+            $prj_id = $pdo->lastInsertId();
+
+            ActivityLogger::log('create_project', 'customer', $cust_id, "Created project {$case_code} - {$p_name}");
+            $msg = "Project created successfully! Code: <strong>{$case_code}</strong>";
         }
     }
 }
@@ -775,30 +774,58 @@ try {
                 </div>
             </div>
 
-            <!-- TAB 3: CASES -->
+            <!-- TAB 3: CASES / PROJECTS -->
             <div class="tab-pane fade" id="tab-cases">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0">Linked Customer Projects & Orders</h6>
+                    <button class="btn btn-sm btn-primary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#createProjectModal">
+                        <i class="bi bi-plus-lg me-1"></i> + Create New Project
+                    </button>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-bordered align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th>Case ID</th>
-                                <th>Service Name</th>
+                                <th>Project Code</th>
+                                <th>Project / Service Name</th>
                                 <th>Stage</th>
-                                <th>Amount</th>
-                                <th>Payment Status</th>
+                                <th>Progress</th>
+                                <th>Total Amount</th>
+                                <th>Status</th>
+                                <th class="text-end">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (empty($profile_data['cases'])): ?>
-                                <tr><td colspan="5" class="text-center py-4 text-muted">No service cases found for this customer.</td></tr>
+                                <tr><td colspan="7" class="text-center py-4 text-muted">No service projects or orders found for this customer. Click <strong>+ Create New Project</strong> to register one.</td></tr>
                             <?php else: ?>
                                 <?php foreach ($profile_data['cases'] as $cs): ?>
                                     <tr>
-                                        <td class="fw-bold text-primary"><?php echo htmlspecialchars($cs['case_code']); ?></td>
-                                        <td><?php echo htmlspecialchars($cs['service_name'] ?: 'General Service'); ?></td>
-                                        <td><span class="badge bg-primary rounded-pill"><?php echo htmlspecialchars($cs['current_stage']); ?></span></td>
-                                        <td class="fw-bold"><?php echo format_inr($cs['total_amount']); ?></td>
-                                        <td><span class="badge bg-<?php echo $cs['payment_status'] === 'paid' ? 'success' : 'warning'; ?> rounded-pill"><?php echo htmlspecialchars($cs['payment_status']); ?></span></td>
+                                        <td class="fw-bold">
+                                            <a href="project_detail.php?id=<?php echo $cs['id']; ?>" class="text-primary text-decoration-none font-monospace">
+                                                <?php echo htmlspecialchars($cs['case_code']); ?>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href="project_detail.php?id=<?php echo $cs['id']; ?>" class="fw-bold text-dark text-decoration-none">
+                                                <?php echo htmlspecialchars($cs['project_name'] ?: ($cs['service_name'] ?: 'General Service Project')); ?>
+                                            </a>
+                                        </td>
+                                        <td><span class="badge bg-info-subtle text-dark border rounded-pill px-2 py-1"><?php echo htmlspecialchars($cs['current_stage'] ?: 'In Process'); ?></span></td>
+                                        <td style="min-width: 120px;">
+                                            <div class="progress rounded-pill" style="height: 14px;">
+                                                <div class="progress-bar bg-success rounded-pill" style="width: <?php echo (int)($cs['progress_percent'] ?? 0); ?>%;">
+                                                    <?php echo (int)($cs['progress_percent'] ?? 0); ?>%
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="fw-bold text-success">₹<?php echo format_inr($cs['total_amount']); ?></td>
+                                        <td><span class="badge bg-<?php echo $cs['status'] === 'completed' ? 'success' : 'primary'; ?> rounded-pill"><?php echo ucfirst($cs['status']); ?></span></td>
+                                        <td class="text-end">
+                                            <a href="project_detail.php?id=<?php echo $cs['id']; ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">
+                                                <i class="bi bi-folder2-open me-1"></i> View 360°
+                                            </a>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php endif; ?>
@@ -1570,5 +1597,72 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+<!-- MODAL: CREATE PROJECT FOR CUSTOMER -->
+<?php if (!empty($profile_data) && !empty($profile_data['status'])): ?>
+<div class="modal fade" id="createProjectModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title font-heading fw-bold"><i class="bi bi-folder-plus text-primary me-2"></i> Create New Project / Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="" method="POST">
+                <?php render_csrf_field(); ?>
+                <input type="hidden" name="action" value="create_project">
+                <input type="hidden" name="customer_id" value="<?php echo $profile_data['customer']['id']; ?>">
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Project Name *</label>
+                            <input type="text" name="project_name" class="form-control" required placeholder="e.g. PMEGP Loan Processing & Filing">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Service Category</label>
+                            <select name="service_id" class="form-select">
+                                <option value="">Select Service Category...</option>
+                                <?php
+                                $services_list = $pdo->query("SELECT id, name FROM services WHERE status = 'active'")->fetchAll();
+                                foreach ($services_list as $srv):
+                                ?>
+                                    <option value="<?php echo $srv['id']; ?>"><?php echo htmlspecialchars($srv['name']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Project Deal Amount (₹)</label>
+                            <input type="number" name="total_amount" class="form-control" placeholder="e.g. 25000">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Target Completion Deadline</label>
+                            <input type="date" name="deadline" class="form-control" value="<?php echo date('Y-m-d', strtotime('+30 days')); ?>">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label small fw-bold">Assigned Staff Officer</label>
+                            <select name="assigned_staff_id" class="form-select">
+                                <option value="">Unassigned</option>
+                                <?php
+                                $staff_list = $pdo->query("SELECT e.id, u.name FROM employees e JOIN users u ON e.user_id = u.id")->fetchAll();
+                                foreach ($staff_list as $stf):
+                                ?>
+                                    <option value="<?php echo $stf['id']; ?>"><?php echo htmlspecialchars($stf['name']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label small fw-bold">Project Description / Scope of Work</label>
+                            <textarea name="project_description" class="form-control" rows="3" placeholder="Scope of work, deliverables, notes..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">Create Project Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
 <?php require_once __DIR__ . '/includes/admin_footer.php'; ?>

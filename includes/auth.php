@@ -294,10 +294,69 @@ function ensure_phase4_hr_tables_exist($pdo) {
     }
 }
 
+function ensure_phase5_project_tables_exist($pdo) {
+    static $checked_phase5 = false;
+    if ($checked_phase5 || !$pdo) return;
+    $checked_phase5 = true;
+
+    try {
+        $pdo->query("SELECT progress_percent FROM cases LIMIT 1");
+    } catch (Throwable $e) {
+        try {
+            $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
+            
+            @$pdo->exec("ALTER TABLE `cases` ADD COLUMN `project_name` VARCHAR(255) NULL");
+            @$pdo->exec("ALTER TABLE `cases` ADD COLUMN `progress_percent` INT DEFAULT 0");
+            @$pdo->exec("ALTER TABLE `cases` ADD COLUMN `start_date` DATE NULL");
+            @$pdo->exec("ALTER TABLE `cases` ADD COLUMN `deadline` DATE NULL");
+            @$pdo->exec("ALTER TABLE `cases` ADD COLUMN `assigned_staff_id` INT NULL");
+            @$pdo->exec("ALTER TABLE `cases` ADD COLUMN `billing_type` ENUM('fixed', 'hourly', 'milestone') DEFAULT 'fixed'");
+            @$pdo->exec("ALTER TABLE `cases` ADD COLUMN `total_amount` DECIMAL(12,2) DEFAULT 0.00");
+            @$pdo->exec("ALTER TABLE `cases` ADD COLUMN `paid_amount` DECIMAL(12,2) DEFAULT 0.00");
+            @$pdo->exec("ALTER TABLE `cases` ADD COLUMN `project_description` TEXT NULL");
+
+            $pdo->exec("CREATE TABLE IF NOT EXISTS `project_files` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `case_id` INT NOT NULL,
+              `file_path` VARCHAR(255) NOT NULL,
+              `file_name` VARCHAR(255) NOT NULL,
+              `original_filename` VARCHAR(255) NOT NULL,
+              `file_size` INT DEFAULT 0,
+              `file_type` VARCHAR(50) DEFAULT NULL,
+              `uploaded_by` INT DEFAULT NULL,
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+            $pdo->exec("CREATE TABLE IF NOT EXISTS `project_notes` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `case_id` INT NOT NULL,
+              `note` TEXT NOT NULL,
+              `created_by` INT NOT NULL,
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+            $pdo->exec("CREATE TABLE IF NOT EXISTS `project_milestones` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `case_id` INT NOT NULL,
+              `milestone_name` VARCHAR(255) NOT NULL,
+              `due_date` DATE DEFAULT NULL,
+              `status` ENUM('pending', 'completed') DEFAULT 'pending',
+              `completed_at` DATETIME DEFAULT NULL,
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+            $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
+        } catch (Throwable $ex) {
+            error_log("Phase 5 Project Auto migration error: " . $ex->getMessage());
+        }
+    }
+}
+
 function ensure_phase1_tables_exist($pdo) {
     ensure_phase2_customer_tables_exist($pdo);
     ensure_phase3_lead_tables_exist($pdo);
     ensure_phase4_hr_tables_exist($pdo);
+    ensure_phase5_project_tables_exist($pdo);
     static $checked = false;
     if ($checked || !$pdo) return;
     $checked = true;
