@@ -391,30 +391,57 @@ if (!$view_all && $view_own) {
 $where_sql = implode(' AND ', $where_clauses);
 
 // Fetch Metrics Counters
-$total_customers = (int)$pdo->query("SELECT COUNT(*) FROM customers c WHERE {$where_sql}")->fetchColumn();
-$active_customers = (int)$pdo->query("SELECT COUNT(*) FROM customers c JOIN users u ON c.user_id = u.id WHERE u.status = 'active' AND {$where_sql}")->fetchColumn();
-$inactive_customers = (int)$pdo->query("SELECT COUNT(*) FROM customers c JOIN users u ON c.user_id = u.id WHERE u.status = 'inactive' AND {$where_sql}")->fetchColumn();
-$new_this_month = (int)$pdo->query("SELECT COUNT(*) FROM customers c WHERE MONTH(c.created_at) = MONTH(CURRENT_DATE()) AND YEAR(c.created_at) = YEAR(CURRENT_DATE()) AND {$where_sql}")->fetchColumn();
-$open_cases_cust = (int)$pdo->query("SELECT COUNT(DISTINCT customer_id) FROM cases WHERE status IN ('active', 'on_hold')")->fetchColumn();
-$outstanding_pay_cust = (int)$pdo->query("SELECT COUNT(DISTINCT customer_id) FROM cases WHERE payment_status IN ('unpaid', 'partially_paid')")->fetchColumn();
+try {
+    $total_customers = (int)$pdo->query("SELECT COUNT(*) FROM customers c WHERE {$where_sql}")->fetchColumn();
+    $active_customers = (int)$pdo->query("SELECT COUNT(*) FROM customers c JOIN users u ON c.user_id = u.id WHERE u.status = 'active' AND {$where_sql}")->fetchColumn();
+    $inactive_customers = (int)$pdo->query("SELECT COUNT(*) FROM customers c JOIN users u ON c.user_id = u.id WHERE u.status = 'inactive' AND {$where_sql}")->fetchColumn();
+    $new_this_month = (int)$pdo->query("SELECT COUNT(*) FROM customers c WHERE MONTH(c.created_at) = MONTH(CURRENT_DATE()) AND YEAR(c.created_at) = YEAR(CURRENT_DATE()) AND {$where_sql}")->fetchColumn();
+    $open_cases_cust = (int)$pdo->query("SELECT COUNT(DISTINCT customer_id) FROM cases WHERE status IN ('active', 'on_hold')")->fetchColumn();
+    $outstanding_pay_cust = (int)$pdo->query("SELECT COUNT(DISTINCT customer_id) FROM cases WHERE payment_status IN ('unpaid', 'partially_paid')")->fetchColumn();
+} catch (Throwable $e_stats) {
+    ensure_phase2_customer_tables_exist($pdo);
+    $total_customers = 0; $active_customers = 0; $inactive_customers = 0;
+    $new_this_month = 0; $open_cases_cust = 0; $outstanding_pay_cust = 0;
+}
 
 // Fetch Directory List
-$customers_query = $pdo->prepare("
-    SELECT c.*, u.status AS user_status, u.created_at AS user_created_at,
-           su.name AS assigned_staff_name,
-           (SELECT business_name FROM customer_business_profiles WHERE customer_id = c.id ORDER BY id ASC LIMIT 1) AS business_name_record,
-           (SELECT COUNT(*) FROM cases WHERE customer_id = c.id) AS case_count,
-           (SELECT COUNT(*) FROM loan_applications WHERE customer_id = c.id) AS loan_count,
-           (SELECT COALESCE(SUM(total_amount), 0) FROM cases WHERE customer_id = c.id AND payment_status != 'paid') AS outstanding_amount
-    FROM customers c
-    JOIN users u ON c.user_id = u.id
-    LEFT JOIN employees e ON c.assigned_staff_id = e.id
-    LEFT JOIN users su ON e.user_id = su.id
-    WHERE {$where_sql}
-    ORDER BY c.id DESC
-");
-$customers_query->execute($params);
-$customers = $customers_query->fetchAll();
+try {
+    $customers_query = $pdo->prepare("
+        SELECT c.*, u.status AS user_status, u.created_at AS user_created_at,
+               su.name AS assigned_staff_name,
+               (SELECT business_name FROM customer_business_profiles WHERE customer_id = c.id ORDER BY id ASC LIMIT 1) AS business_name_record,
+               (SELECT COUNT(*) FROM cases WHERE customer_id = c.id) AS case_count,
+               (SELECT COUNT(*) FROM loan_applications WHERE customer_id = c.id) AS loan_count,
+               (SELECT COALESCE(SUM(total_amount), 0) FROM cases WHERE customer_id = c.id AND payment_status != 'paid') AS outstanding_amount
+        FROM customers c
+        JOIN users u ON c.user_id = u.id
+        LEFT JOIN employees e ON c.assigned_staff_id = e.id
+        LEFT JOIN users su ON e.user_id = su.id
+        WHERE {$where_sql}
+        ORDER BY c.id DESC
+    ");
+    $customers_query->execute($params);
+    $customers = $customers_query->fetchAll();
+} catch (Throwable $e_query) {
+    ensure_phase2_customer_tables_exist($pdo);
+    try {
+        $customers_query = $pdo->prepare("
+            SELECT c.*, u.status AS user_status, u.created_at AS user_created_at,
+                   '' AS assigned_staff_name,
+                   '' AS business_name_record,
+                   (SELECT COUNT(*) FROM cases WHERE customer_id = c.id) AS case_count,
+                   (SELECT COUNT(*) FROM loan_applications WHERE customer_id = c.id) AS loan_count,
+                   0.00 AS outstanding_amount
+            FROM customers c
+            JOIN users u ON c.user_id = u.id
+            ORDER BY c.id DESC
+        ");
+        $customers_query->execute();
+        $customers = $customers_query->fetchAll();
+    } catch (Throwable $e_fallback) {
+        $customers = [];
+    }
+}
 ?>
 
 <!-- ALERT MESSAGE DISPLAY -->

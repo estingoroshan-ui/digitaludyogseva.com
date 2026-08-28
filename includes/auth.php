@@ -4,7 +4,116 @@ require_once __DIR__ . '/../config/app.php';
 require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/../classes/ActivityLogger.php';
 
+function ensure_phase2_customer_tables_exist($pdo) {
+    static $checked_phase2 = false;
+    if ($checked_phase2 || !$pdo) return;
+    $checked_phase2 = true;
+
+    try {
+        $pdo->query("SELECT assigned_staff_id FROM customers LIMIT 1");
+    } catch (Throwable $e) {
+        try {
+            $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
+            
+            @$pdo->exec("ALTER TABLE `customers` ADD COLUMN `customer_type` ENUM('individual', 'business') DEFAULT 'individual'");
+            @$pdo->exec("ALTER TABLE `customers` ADD COLUMN `first_name` VARCHAR(100) NULL");
+            @$pdo->exec("ALTER TABLE `customers` ADD COLUMN `middle_name` VARCHAR(100) NULL");
+            @$pdo->exec("ALTER TABLE `customers` ADD COLUMN `last_name` VARCHAR(100) NULL");
+            @$pdo->exec("ALTER TABLE `customers` ADD COLUMN `company_name` VARCHAR(200) NULL");
+            @$pdo->exec("ALTER TABLE `customers` ADD COLUMN `whatsapp_number` VARCHAR(20) NULL");
+            @$pdo->exec("ALTER TABLE `customers` ADD COLUMN `preferred_language` VARCHAR(50) DEFAULT 'en'");
+            @$pdo->exec("ALTER TABLE `customers` ADD COLUMN `customer_source` VARCHAR(100) DEFAULT 'Direct'");
+            @$pdo->exec("ALTER TABLE `customers` ADD COLUMN `assigned_staff_id` INT NULL");
+            @$pdo->exec("ALTER TABLE `customers` ADD COLUMN `address_line_1` TEXT NULL");
+            @$pdo->exec("ALTER TABLE `customers` ADD COLUMN `address_line_2` TEXT NULL");
+            @$pdo->exec("ALTER TABLE `customers` ADD COLUMN `area` VARCHAR(100) NULL");
+            @$pdo->exec("ALTER TABLE `customers` ADD COLUMN `country` VARCHAR(100) DEFAULT 'India'");
+            @$pdo->exec("ALTER TABLE `customers` ADD COLUMN `gstin` VARCHAR(20) NULL");
+            @$pdo->exec("ALTER TABLE `customers` ADD COLUMN `business_type` VARCHAR(100) NULL");
+            @$pdo->exec("ALTER TABLE `customers` ADD COLUMN `industry` VARCHAR(100) NULL");
+            @$pdo->exec("ALTER TABLE `customers` ADD COLUMN `website` VARCHAR(255) NULL");
+            @$pdo->exec("ALTER TABLE `customers` ADD COLUMN `description` TEXT NULL");
+            @$pdo->exec("ALTER TABLE `customers` ADD COLUMN `internal_notes` TEXT NULL");
+
+            $pdo->exec("CREATE TABLE IF NOT EXISTS `customer_contacts` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `customer_id` INT NOT NULL,
+              `first_name` VARCHAR(100) NOT NULL,
+              `last_name` VARCHAR(100) DEFAULT NULL,
+              `job_position` VARCHAR(150) DEFAULT NULL,
+              `email` VARCHAR(150) DEFAULT NULL,
+              `phone` VARCHAR(20) DEFAULT NULL,
+              `whatsapp` VARCHAR(20) DEFAULT NULL,
+              `profile_photo` VARCHAR(255) DEFAULT NULL,
+              `department` VARCHAR(100) DEFAULT NULL,
+              `is_primary` TINYINT(1) DEFAULT 0,
+              `status` ENUM('active', 'inactive') DEFAULT 'active',
+              `portal_permissions` TEXT DEFAULT NULL,
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+              `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+            $pdo->exec("CREATE TABLE IF NOT EXISTS `customer_notes` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `customer_id` INT NOT NULL,
+              `note` TEXT NOT NULL,
+              `is_pinned` TINYINT(1) DEFAULT 0,
+              `created_by` INT NOT NULL,
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+              `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+            $pdo->exec("CREATE TABLE IF NOT EXISTS `customer_reminders` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `customer_id` INT NOT NULL,
+              `reminder_date` DATE NOT NULL,
+              `reminder_time` TIME DEFAULT '10:00:00',
+              `description` TEXT NOT NULL,
+              `assigned_staff_id` INT NOT NULL,
+              `send_notification` TINYINT(1) DEFAULT 1,
+              `send_email` TINYINT(1) DEFAULT 0,
+              `status` ENUM('pending', 'completed', 'cancelled') DEFAULT 'pending',
+              `created_by` INT NOT NULL,
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+            @$pdo->exec("ALTER TABLE `documents` ADD COLUMN `file_type` VARCHAR(50) NULL");
+            @$pdo->exec("ALTER TABLE `documents` ADD COLUMN `description` TEXT NULL");
+            @$pdo->exec("ALTER TABLE `documents` ADD COLUMN `original_filename` VARCHAR(255) NULL");
+
+            $pdo->exec("CREATE TABLE IF NOT EXISTS `customer_assignments` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `customer_id` INT NOT NULL,
+              `staff_id` INT NOT NULL,
+              `assigned_by` INT NOT NULL,
+              `notes` TEXT DEFAULT NULL,
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+            $pdo->exec("CREATE TABLE IF NOT EXISTS `customer_emails` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `customer_id` INT NOT NULL,
+              `to_email` VARCHAR(150) NOT NULL,
+              `cc_email` VARCHAR(255) DEFAULT NULL,
+              `bcc_email` VARCHAR(255) DEFAULT NULL,
+              `subject` VARCHAR(255) NOT NULL,
+              `message` LONGTEXT NOT NULL,
+              `attachment` VARCHAR(255) DEFAULT NULL,
+              `sent_by` INT NOT NULL,
+              `status` ENUM('sent', 'failed') DEFAULT 'sent',
+              `error_message` TEXT DEFAULT NULL,
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+            $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
+        } catch (Throwable $ex) {
+            error_log("Phase 2 Auto migration error: " . $ex->getMessage());
+        }
+    }
+}
+
 function ensure_phase1_tables_exist($pdo) {
+    ensure_phase2_customer_tables_exist($pdo);
     static $checked = false;
     if ($checked || !$pdo) return;
     $checked = true;
