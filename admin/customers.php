@@ -1166,10 +1166,18 @@ try {
                         <tr data-status="<?php echo htmlspecialchars($c['user_status']); ?>" data-type="<?php echo htmlspecialchars($c['customer_type']); ?>" data-staff="<?php echo htmlspecialchars($c['assigned_staff_name'] ?: ''); ?>" data-cases="<?php echo $c['case_count']; ?>">
                             <td><input type="checkbox" class="form-check-input cust-checkbox" value="<?php echo $c['id']; ?>"></td>
                             <td class="small text-muted fw-bold"><?php echo $idx++; ?></td>
-                            <td class="fw-bold text-primary"><?php echo htmlspecialchars($c['customer_code']); ?></td>
+                            <td class="fw-bold">
+                                <a href="customers.php?id=<?php echo $c['id']; ?>" class="text-primary text-decoration-none fw-bold">
+                                    <?php echo htmlspecialchars($c['customer_code']); ?>
+                                </a>
+                            </td>
                             <td>
-                                <div class="fw-bold text-dark"><?php echo htmlspecialchars($c['company_name'] ?: $c['name']); ?></div>
-                                <small class="text-muted"><?php echo htmlspecialchars($c['name']); ?></small>
+                                <a href="customers.php?id=<?php echo $c['id']; ?>" class="text-dark text-decoration-none fw-bold">
+                                    <?php echo htmlspecialchars($c['company_name'] ?: $c['name']); ?>
+                                </a>
+                                <?php if (!empty($c['company_name']) && $c['company_name'] !== $c['name']): ?>
+                                    <small class="text-muted d-block"><?php echo htmlspecialchars($c['name']); ?></small>
+                                <?php endif; ?>
                             </td>
                             <td>
                                 <a href="tel:<?php echo htmlspecialchars($c['mobile']); ?>" class="text-decoration-none text-dark fw-semibold small">
@@ -1187,13 +1195,16 @@ try {
                                 </div>
                             </td>
                             <td class="small text-muted"><?php echo date('d-m-Y', strtotime($c['user_created_at'] ?: $c['created_at'])); ?></td>
-                            <td class="text-end">
+                            <td class="text-end text-nowrap">
+                                <a href="customers.php?id=<?php echo $c['id']; ?>" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm me-1 fw-bold">
+                                    <i class="bi bi-eye me-1"></i> View 360°
+                                </a>
                                 <div class="dropdown d-inline">
-                                    <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                        Action
+                                    <button class="btn btn-sm btn-outline-secondary rounded-circle" type="button" data-bs-toggle="dropdown" title="More Options">
+                                        <i class="bi bi-three-dots-vertical"></i>
                                     </button>
                                     <ul class="dropdown-menu shadow border-0 rounded-3 dropdown-menu-end">
-                                        <li><a class="dropdown-item py-2" href="customers.php?id=<?php echo $c['id']; ?>"><i class="bi bi-eye text-primary me-2"></i> View 360°</a></li>
+                                        <li><a class="dropdown-item py-2" href="customers.php?id=<?php echo $c['id']; ?>"><i class="bi bi-eye text-primary me-2"></i> View 360° Portfolio</a></li>
                                         <li><a class="dropdown-item py-2" href="#" onclick="openEditModal(<?php echo htmlspecialchars(json_encode($c)); ?>);"><i class="bi bi-pencil text-warning me-2"></i> Edit Profile</a></li>
                                         <?php if ($is_admin || check_permission('customers_delete')): ?>
                                             <li><hr class="dropdown-divider"></li>
