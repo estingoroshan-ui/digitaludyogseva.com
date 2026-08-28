@@ -188,9 +188,116 @@ function ensure_phase3_lead_tables_exist($pdo) {
     }
 }
 
+function ensure_phase4_hr_tables_exist($pdo) {
+    static $checked_phase4 = false;
+    if ($checked_phase4 || !$pdo) return;
+    $checked_phase4 = true;
+
+    try {
+        $pdo->query("SELECT id FROM job_positions LIMIT 1");
+    } catch (Throwable $e) {
+        try {
+            $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
+            
+            @$pdo->exec("ALTER TABLE `employees` ADD COLUMN `date_of_birth` DATE NULL");
+            @$pdo->exec("ALTER TABLE `employees` ADD COLUMN `gender` ENUM('male', 'female', 'other') DEFAULT 'male'");
+            @$pdo->exec("ALTER TABLE `employees` ADD COLUMN `emergency_contact_name` VARCHAR(150) NULL");
+            @$pdo->exec("ALTER TABLE `employees` ADD COLUMN `emergency_contact_phone` VARCHAR(20) NULL");
+            @$pdo->exec("ALTER TABLE `employees` ADD COLUMN `pan_number` VARCHAR(20) NULL");
+            @$pdo->exec("ALTER TABLE `employees` ADD COLUMN `aadhaar_number` VARCHAR(20) NULL");
+            @$pdo->exec("ALTER TABLE `employees` ADD COLUMN `bank_account_no` VARCHAR(50) NULL");
+            @$pdo->exec("ALTER TABLE `employees` ADD COLUMN `bank_name` VARCHAR(100) NULL");
+            @$pdo->exec("ALTER TABLE `employees` ADD COLUMN `ifsc_code` VARCHAR(20) NULL");
+            @$pdo->exec("ALTER TABLE `employees` ADD COLUMN `basic_salary` DECIMAL(12,2) DEFAULT 0.00");
+
+            $pdo->exec("CREATE TABLE IF NOT EXISTS `job_positions` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `title` VARCHAR(150) NOT NULL,
+              `department_id` INT DEFAULT NULL,
+              `description` TEXT DEFAULT NULL,
+              `requirements` TEXT DEFAULT NULL,
+              `vacancies` INT DEFAULT 1,
+              `status` ENUM('active', 'closed') DEFAULT 'active',
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+            $pdo->exec("INSERT IGNORE INTO `job_positions` (`id`, `title`, `department_id`, `description`, `vacancies`, `status`) VALUES
+            (1, 'Senior Business Loan Officer', 2, 'Responsible for client loan processing, documentation, and bank coordination.', 2, 'active'),
+            (2, 'Government Schemes Consultant', 3, 'Handles PMEGP, MSME, and Subsidy application filings.', 3, 'active'),
+            (3, 'Customer Support Specialist', 2, 'Assists clients via phone, WhatsApp, and email portal.', 1, 'active');");
+
+            $pdo->exec("CREATE TABLE IF NOT EXISTS `hr_onboarding` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `user_id` INT NOT NULL,
+              `step_name` VARCHAR(255) NOT NULL,
+              `description` TEXT DEFAULT NULL,
+              `is_completed` TINYINT(1) DEFAULT 0,
+              `completed_at` DATETIME DEFAULT NULL,
+              `notes` TEXT DEFAULT NULL,
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+            $pdo->exec("CREATE TABLE IF NOT EXISTS `hr_training` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `title` VARCHAR(255) NOT NULL,
+              `description` TEXT DEFAULT NULL,
+              `trainer` VARCHAR(150) DEFAULT NULL,
+              `start_date` DATE DEFAULT NULL,
+              `end_date` DATE DEFAULT NULL,
+              `status` ENUM('scheduled', 'ongoing', 'completed') DEFAULT 'scheduled',
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+            $pdo->exec("INSERT IGNORE INTO `hr_training` (`id`, `title`, `description`, `trainer`, `start_date`, `end_date`, `status`) VALUES
+            (1, 'CRM & Service Delivery Operations', 'Complete training on Digital Udyog Seva portal and loan workflow.', 'Manish Pareek', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 7 DAY), 'ongoing');");
+
+            $pdo->exec("CREATE TABLE IF NOT EXISTS `hr_dependants` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `user_id` INT NOT NULL,
+              `name` VARCHAR(150) NOT NULL,
+              `relationship` VARCHAR(50) NOT NULL,
+              `phone` VARCHAR(20) DEFAULT NULL,
+              `dob` DATE DEFAULT NULL,
+              `notes` TEXT DEFAULT NULL,
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+            $pdo->exec("CREATE TABLE IF NOT EXISTS `hr_layoff_checklist` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `user_id` INT NOT NULL,
+              `clearance_item` VARCHAR(255) NOT NULL,
+              `department` VARCHAR(100) DEFAULT 'General',
+              `is_cleared` TINYINT(1) DEFAULT 0,
+              `cleared_by` INT DEFAULT NULL,
+              `cleared_at` DATETIME DEFAULT NULL,
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+            $pdo->exec("CREATE TABLE IF NOT EXISTS `hr_qa` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `category` VARCHAR(100) DEFAULT 'General Policy',
+              `question` TEXT NOT NULL,
+              `answer` TEXT NOT NULL,
+              `created_by` INT DEFAULT 1,
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+            $pdo->exec("INSERT IGNORE INTO `hr_qa` (`id`, `category`, `question`, `answer`) VALUES
+            (1, 'Working Hours', 'What are the official working hours at Digital Udyog Seva?', 'Official working hours are 9:30 AM to 6:30 PM, Monday through Saturday.'),
+            (2, 'Leave Policy', 'How many casual and sick leaves are granted per year?', 'Employees are entitled to 12 casual leaves and 6 sick leaves annually after probation completion.'),
+            (3, 'Reimbursement', 'What is the procedure for client travel expense reimbursement?', 'Submit travel receipts in the Expenses module with manager approval before the 25th of each month.');");
+
+            $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
+        } catch (Throwable $ex) {
+            error_log("Phase 4 HR Auto migration error: " . $ex->getMessage());
+        }
+    }
+}
+
 function ensure_phase1_tables_exist($pdo) {
     ensure_phase2_customer_tables_exist($pdo);
     ensure_phase3_lead_tables_exist($pdo);
+    ensure_phase4_hr_tables_exist($pdo);
     static $checked = false;
     if ($checked || !$pdo) return;
     $checked = true;
