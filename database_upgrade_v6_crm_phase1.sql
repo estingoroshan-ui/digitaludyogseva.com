@@ -33,8 +33,7 @@ CREATE TABLE IF NOT EXISTS `login_history` (
   `user_agent` TEXT DEFAULT NULL,
   `status` ENUM('success', 'failed') NOT NULL,
   `failure_reason` VARCHAR(255) DEFAULT NULL,
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 3. Create Password Resets Table
@@ -60,9 +59,6 @@ ALTER TABLE `users` ADD COLUMN IF NOT EXISTS `department_id` INT NULL AFTER `rol
 ALTER TABLE `users` ADD COLUMN IF NOT EXISTS `job_position` VARCHAR(150) NULL AFTER `department_id`;
 ALTER TABLE `users` ADD COLUMN IF NOT EXISTS `date_of_joining` DATE NULL AFTER `job_position`;
 
--- Add FK for department_id on users if not exists
-ALTER TABLE `users` ADD CONSTRAINT `fk_users_department` FOREIGN KEY (`department_id`) REFERENCES `departments`(`id`) ON DELETE SET NULL;
-
 -- 5. Seed Additional Master Roles
 INSERT IGNORE INTO `roles` (`id`, `role_key`, `role_name`, `description`) VALUES
 (1, 'super_admin', 'Super Admin', 'Unrestricted full system access'),
@@ -76,72 +72,52 @@ INSERT IGNORE INTO `roles` (`id`, `role_key`, `role_name`, `description`) VALUES
 
 -- 6. Seed Granular Module Permissions
 INSERT IGNORE INTO `permissions` (`permission_key`, `module`, `description`) VALUES
--- Customers
 ('customers_view', 'customers', 'View all customers'),
 ('customers_view_own', 'customers', 'View own assigned customers'),
 ('customers_create', 'customers', 'Create new customer'),
 ('customers_edit', 'customers', 'Edit customer profiles'),
 ('customers_delete', 'customers', 'Delete customer records'),
-
--- Contacts
 ('contacts_view', 'contacts', 'View customer contacts'),
 ('contacts_create', 'contacts', 'Create new contacts'),
 ('contacts_edit', 'contacts', 'Edit contacts'),
 ('contacts_delete', 'contacts', 'Delete contacts'),
-
--- Leads
 ('leads_view', 'leads', 'View all leads'),
 ('leads_view_own', 'leads', 'View own assigned leads'),
 ('leads_create', 'leads', 'Create new lead'),
 ('leads_edit', 'leads', 'Edit lead records'),
 ('leads_delete', 'leads', 'Delete lead records'),
-
--- Proposals
 ('proposals_view', 'proposals', 'View proposals'),
 ('proposals_create', 'proposals', 'Create proposals'),
 ('proposals_edit', 'proposals', 'Edit proposals'),
 ('proposals_delete', 'proposals', 'Delete proposals'),
-
--- Estimates
 ('estimates_view', 'estimates', 'View estimates'),
 ('estimates_create', 'estimates', 'Create estimates'),
 ('estimates_edit', 'estimates', 'Edit estimates'),
 ('estimates_delete', 'estimates', 'Delete estimates'),
-
--- Invoices & Payments
 ('invoices_view', 'invoices', 'View invoices'),
 ('invoices_create', 'invoices', 'Create invoices'),
 ('invoices_edit', 'invoices', 'Edit invoices'),
 ('invoices_delete', 'invoices', 'Delete invoices'),
 ('payments_view', 'payments', 'View payments'),
 ('payments_create', 'payments', 'Record payments'),
-
--- Projects & Cases
 ('projects_view', 'projects', 'View projects'),
 ('projects_create', 'projects', 'Create projects'),
 ('projects_edit', 'projects', 'Edit projects'),
 ('projects_delete', 'projects', 'Delete projects'),
-
--- Tasks
 ('tasks_view', 'tasks', 'View all tasks'),
 ('tasks_view_own', 'tasks', 'View own assigned tasks'),
 ('tasks_create', 'tasks', 'Create tasks'),
 ('tasks_edit', 'tasks', 'Edit tasks'),
 ('tasks_delete', 'tasks', 'Delete tasks'),
-
--- Staff & HR
 ('staff_view', 'staff', 'View staff directory'),
 ('staff_create', 'staff', 'Create staff accounts'),
 ('staff_edit', 'staff', 'Edit staff accounts'),
 ('staff_delete', 'staff', 'Delete or deactivate staff'),
-
--- Settings & System
 ('settings_view', 'settings', 'View enterprise settings'),
 ('settings_edit', 'settings', 'Modify enterprise settings'),
 ('roles_manage', 'settings', 'Manage roles and permissions'),
 ('departments_manage', 'settings', 'Manage departments');
 
--- Map Super Admin (role_id 1) to all permissions
 INSERT IGNORE INTO `role_permissions` (`role_id`, `permission_id`)
 SELECT 1, id FROM `permissions`;
 
@@ -180,7 +156,6 @@ CREATE TABLE IF NOT EXISTS `tags` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Seed Default Tags
 INSERT IGNORE INTO `tags` (`id`, `name`, `color`) VALUES
 (1, 'VIP Client', '#ef4444'),
 (2, 'High Priority', '#f59e0b'),
@@ -199,7 +174,9 @@ CREATE TABLE IF NOT EXISTS `tag_relationships` (
   UNIQUE KEY `tag_rel_unique` (`tag_id`, `rel_type`, `rel_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 11. Seed Master Company & SMTP Settings
+-- 11. Extend Website Settings Table and Seed Config
+ALTER TABLE `website_settings` ADD COLUMN IF NOT EXISTS `setting_group` VARCHAR(50) DEFAULT 'general';
+
 INSERT IGNORE INTO `website_settings` (`setting_key`, `setting_value`, `setting_group`) VALUES
 ('company_name', 'Digital Udyog Seva', 'company'),
 ('company_tagline', 'Business Legal Services, Tax & Government Loan Consultancy', 'company'),
