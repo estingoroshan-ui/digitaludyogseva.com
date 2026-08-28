@@ -2,8 +2,9 @@
 .env
 .env.*
 
-# Logs and databases dumps (optional)
+# Logs and databases dumps
 *.log
+oldperfex.sql
 
 # OS Generated Files
 .DS_Store
