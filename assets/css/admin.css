@@ -1,122 +1,168 @@
-/* Admin & CRM Panel Styles */
+/* Admin & CRM Panel Styles (Perfex CRM Theme) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #1e293b;
+}
+
 .admin-layout {
   display: flex;
   min-height: 100vh;
-  background-color: #f1f5f9;
+  background-color: #f8fafc;
 }
 
 .admin-sidebar {
-  width: 260px;
-  background: #0f172a;
-  color: #94a3b8;
+  width: 250px;
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  color: #334155;
   display: flex;
   flex-direction: column;
   position: fixed;
   top: 0; bottom: 0; left: 0;
   z-index: 1000;
   transition: all 0.3s ease;
-}
-
-.sidebar-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.sidebar-menu {
-  padding: 1rem 0;
-  flex: 1;
   overflow-y: auto;
 }
 
-.sidebar-group-title {
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #475569;
-  padding: 0.75rem 1.25rem 0.25rem;
-  font-weight: 700;
-}
-
-.sidebar-category-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.65rem 1.25rem;
-  color: #94a3b8;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.9rem;
-  border-radius: 8px;
-  margin: 2px 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.sidebar-category-toggle:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.sidebar-category-toggle.active {
-  color: #ffffff;
-  background: rgba(59, 130, 246, 0.18);
-  border-left: 3px solid #3b82f6;
-}
-
-.sidebar-category-toggle .toggle-icon {
-  font-size: 0.75rem;
-  transition: transform 0.3s ease;
-}
-
-.sidebar-category-toggle:not(.collapsed) .toggle-icon {
-  transform: rotate(90deg);
-}
-
-.sidebar-submenu {
-  padding-left: 0.5rem;
-  margin: 2px 0 6px 14px;
-  border-left: 1px dashed rgba(255, 255, 255, 0.15);
-}
-
-.sidebar-submenu .sidebar-link {
-  padding: 0.5rem 1rem 0.5rem 1.25rem;
-  font-size: 0.85rem;
-  color: #94a3b8;
-  border-radius: 6px;
-  margin: 2px 0;
-  border-left: none;
-}
-
-.sidebar-submenu .sidebar-link:hover,
-.sidebar-submenu .sidebar-link.active {
-  color: #38bdf8;
-  background: rgba(255, 255, 255, 0.06);
-  font-weight: 600;
-}
-
-.sidebar-link {
+/* User Profile Header Box (Perfex CRM Style) */
+.sidebar-profile-card {
+  margin: 14px 14px 12px 14px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 0.65rem 1.25rem;
-  color: #cbd5e1;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
-.sidebar-link:hover, .sidebar-link.active {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.06);
-  border-left: 4px solid #3b82f6;
+.sidebar-profile-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.sidebar-profile-info {
+  overflow: hidden;
+  line-height: 1.2;
+}
+
+.sidebar-profile-name {
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-profile-email {
+  color: #64748b;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Sidebar Menu Items */
+.sidebar-menu {
+  padding: 0 0 1.5rem 0;
+  flex: 1;
+}
+
+.sidebar-item-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  margin: 2px 10px;
+  color: #334155;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.sidebar-item-link:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.sidebar-item-link.active {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.sidebar-item-link i.item-icon {
+  font-size: 1.1rem;
+  color: #475569;
+  width: 22px;
+  text-align: center;
+  margin-right: 10px;
+}
+
+.sidebar-item-link.active i.item-icon {
+  color: #0f172a;
+}
+
+.sidebar-item-link .chevron-icon {
+  font-size: 0.75rem;
+  color: #64748b;
+  transition: transform 0.2s ease;
+}
+
+.sidebar-item-link:not(.collapsed) .chevron-icon {
+  transform: rotate(-90deg);
+}
+
+/* Submenu Dropdowns */
+.sidebar-submenu-list {
+  padding-left: 0;
+  margin: 2px 0 6px 14px;
+  border-left: 2px solid #e2e8f0;
+}
+
+.sidebar-submenu-link {
+  display: flex;
+  align-items: center;
+  padding: 7px 12px 7px 16px;
+  color: #475569;
+  text-decoration: none;
+  font-size: 0.84rem;
+  font-weight: 500;
+  border-radius: 6px;
+  margin: 2px 6px;
+  transition: all 0.15s ease;
+}
+
+.sidebar-submenu-link:hover {
+  color: #0f172a;
+  background: #f1f5f9;
+}
+
+.sidebar-submenu-link.active {
+  color: #2563eb;
+  background: #eff6ff;
+  font-weight: 700;
 }
 
 .admin-main {
-  margin-left: 260px;
+  margin-left: 250px;
   flex: 1;
   display: flex;
   flex-direction: column;
