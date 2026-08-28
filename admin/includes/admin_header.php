@@ -70,6 +70,9 @@ try {
             </a>
 
             <div class="sidebar-group-title">Services & Operations</div>
+            <a href="<?php echo BASE_URL; ?>admin/projects.php" class="sidebar-link <?php echo ($active_menu ?? '') === 'projects' ? 'active' : ''; ?>">
+                <i class="bi bi-briefcase-fill"></i> Service Projects & Cases
+            </a>
             <a href="<?php echo BASE_URL; ?>admin/services.php" class="sidebar-link <?php echo ($active_menu ?? '') === 'services' && strpos($_SERVER['REQUEST_URI'], 'service_workflow_builder') === false ? 'active' : ''; ?>">
                 <i class="bi bi-gear"></i> Service Catalog CMS
             </a>
