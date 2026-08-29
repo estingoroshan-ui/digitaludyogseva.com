@@ -35,137 +35,182 @@ class CustomerManager {
             }
 
             // 2. Business Profile
-            $b_stmt = $pdo->prepare("SELECT * FROM customer_business_profiles WHERE customer_id = ? ORDER BY id DESC");
-            $b_stmt->execute([$customer_id]);
-            $business = $b_stmt->fetchAll();
+            $business = [];
+            try {
+                $b_stmt = $pdo->prepare("SELECT * FROM customer_business_profiles WHERE customer_id = ? ORDER BY id DESC");
+                $b_stmt->execute([$customer_id]);
+                $business = $b_stmt->fetchAll();
+            } catch (Throwable $e) {}
 
             // 3. Customer Contacts
-            $cnt_stmt = $pdo->prepare("SELECT * FROM customer_contacts WHERE customer_id = ? ORDER BY is_primary DESC, id ASC");
-            $cnt_stmt->execute([$customer_id]);
-            $contacts = $cnt_stmt->fetchAll();
+            $contacts = [];
+            try {
+                $cnt_stmt = $pdo->prepare("SELECT * FROM customer_contacts WHERE customer_id = ? ORDER BY is_primary DESC, id ASC");
+                $cnt_stmt->execute([$customer_id]);
+                $contacts = $cnt_stmt->fetchAll();
+            } catch (Throwable $e) {}
 
             // 4. Service Cases
-            $case_stmt = $pdo->prepare("
-                SELECT cs.*, s.name AS service_name, f.business_name AS franchise_name, u.name AS staff_name
-                FROM cases cs
-                LEFT JOIN services s ON cs.service_id = s.id
-                LEFT JOIN franchises f ON cs.franchise_id = f.id
-                LEFT JOIN employees e ON cs.assigned_staff_id = e.id
-                LEFT JOIN users u ON e.user_id = u.id
-                WHERE cs.customer_id = ?
-                ORDER BY cs.id DESC
-            ");
-            $case_stmt->execute([$customer_id]);
-            $cases = $case_stmt->fetchAll();
+            $cases = [];
+            try {
+                $case_stmt = $pdo->prepare("
+                    SELECT cs.*, s.name AS service_name, f.business_name AS franchise_name, u.name AS staff_name
+                    FROM cases cs
+                    LEFT JOIN services s ON cs.service_id = s.id
+                    LEFT JOIN franchises f ON cs.franchise_id = f.id
+                    LEFT JOIN employees e ON cs.assigned_staff_id = e.id
+                    LEFT JOIN users u ON e.user_id = u.id
+                    WHERE cs.customer_id = ?
+                    ORDER BY cs.id DESC
+                ");
+                $case_stmt->execute([$customer_id]);
+                $cases = $case_stmt->fetchAll();
+            } catch (Throwable $e) {}
 
             // 5. Loan Applications & Scorecards
-            $loan_stmt = $pdo->prepare("
-                SELECT la.*, ls.scheme_name, sc.total_score, sc.result_category, sc.payment_status AS scorecard_payment
-                FROM loan_applications la
-                LEFT JOIN loan_schemes ls ON la.scheme_id = ls.id
-                LEFT JOIN scorecards sc ON la.id = sc.loan_application_id
-                WHERE la.customer_id = ?
-                ORDER BY la.id DESC
-            ");
-            $loan_stmt->execute([$customer_id]);
-            $loans = $loan_stmt->fetchAll();
+            $loans = [];
+            try {
+                $loan_stmt = $pdo->prepare("
+                    SELECT la.*, ls.scheme_name, sc.total_score, sc.result_category, sc.payment_status AS scorecard_payment
+                    FROM loan_applications la
+                    LEFT JOIN loan_schemes ls ON la.scheme_id = ls.id
+                    LEFT JOIN scorecards sc ON la.id = sc.loan_application_id
+                    WHERE la.customer_id = ?
+                    ORDER BY la.id DESC
+                ");
+                $loan_stmt->execute([$customer_id]);
+                $loans = $loan_stmt->fetchAll();
+            } catch (Throwable $e) {}
 
             // 6. Invoices
-            $inv_stmt = $pdo->prepare("
-                SELECT inv.*, p.payment_code, p.payment_mode
-                FROM invoices inv
-                LEFT JOIN payments p ON inv.payment_id = p.id
-                WHERE inv.customer_id = ?
-                ORDER BY inv.id DESC
-            ");
-            $inv_stmt->execute([$customer_id]);
-            $invoices = $inv_stmt->fetchAll();
+            $invoices = [];
+            try {
+                $inv_stmt = $pdo->prepare("
+                    SELECT inv.*, p.payment_code, p.payment_mode
+                    FROM invoices inv
+                    LEFT JOIN payments p ON inv.payment_id = p.id
+                    WHERE inv.customer_id = ?
+                    ORDER BY inv.id DESC
+                ");
+                $inv_stmt->execute([$customer_id]);
+                $invoices = $inv_stmt->fetchAll();
+            } catch (Throwable $e) {}
 
             // 7. Payments History
-            $pay_stmt = $pdo->prepare("SELECT * FROM payments WHERE customer_id = ? ORDER BY id DESC");
-            $pay_stmt->execute([$customer_id]);
-            $payments = $pay_stmt->fetchAll();
+            $payments = [];
+            try {
+                $pay_stmt = $pdo->prepare("SELECT * FROM payments WHERE customer_id = ? ORDER BY id DESC");
+                $pay_stmt->execute([$customer_id]);
+                $payments = $pay_stmt->fetchAll();
+            } catch (Throwable $e) {}
 
             // 8. Vault Documents
-            $doc_stmt = $pdo->prepare("
-                SELECT d.*, dt.name AS doc_type_name, u.name AS uploader_name
-                FROM documents d
-                LEFT JOIN document_types dt ON d.document_type_id = dt.id
-                LEFT JOIN users u ON d.uploaded_by = u.id
-                WHERE d.customer_id = ?
-                ORDER BY d.id DESC
-            ");
-            $doc_stmt->execute([$customer_id]);
-            $documents = $doc_stmt->fetchAll();
+            $documents = [];
+            try {
+                $doc_stmt = $pdo->prepare("
+                    SELECT d.*, dt.name AS doc_type_name, u.name AS uploader_name
+                    FROM documents d
+                    LEFT JOIN document_types dt ON d.document_type_id = dt.id
+                    LEFT JOIN users u ON d.uploaded_by = u.id
+                    WHERE d.customer_id = ?
+                    ORDER BY d.id DESC
+                ");
+                $doc_stmt->execute([$customer_id]);
+                $documents = $doc_stmt->fetchAll();
+            } catch (Throwable $e) {}
 
             // 9. Internal Notes
-            $note_stmt = $pdo->prepare("
-                SELECT n.*, u.name AS author_name
-                FROM customer_notes n
-                LEFT JOIN users u ON n.created_by = u.id
-                WHERE n.customer_id = ?
-                ORDER BY n.is_pinned DESC, n.id DESC
-            ");
-            $note_stmt->execute([$customer_id]);
-            $notes = $note_stmt->fetchAll();
+            $notes = [];
+            try {
+                $note_stmt = $pdo->prepare("
+                    SELECT n.*, u.name AS author_name
+                    FROM customer_notes n
+                    LEFT JOIN users u ON n.created_by = u.id
+                    WHERE n.customer_id = ?
+                    ORDER BY n.is_pinned DESC, n.id DESC
+                ");
+                $note_stmt->execute([$customer_id]);
+                $notes = $note_stmt->fetchAll();
+            } catch (Throwable $e) {}
 
             // 10. Reminders
-            $rem_stmt = $pdo->prepare("
-                SELECT r.*, su.name AS staff_name, cu.name AS creator_name
-                FROM customer_reminders r
-                LEFT JOIN employees e ON r.assigned_staff_id = e.id
-                LEFT JOIN users su ON e.user_id = su.id
-                LEFT JOIN users cu ON r.created_by = cu.id
-                WHERE r.customer_id = ?
-                ORDER BY r.reminder_date DESC, r.reminder_time DESC
-            ");
-            $rem_stmt->execute([$customer_id]);
-            $reminders = $rem_stmt->fetchAll();
+            $reminders = [];
+            try {
+                $rem_stmt = $pdo->prepare("
+                    SELECT r.*, su.name AS staff_name, cu.name AS creator_name
+                    FROM customer_reminders r
+                    LEFT JOIN employees e ON r.assigned_staff_id = e.id
+                    LEFT JOIN users su ON e.user_id = su.id
+                    LEFT JOIN users cu ON r.created_by = cu.id
+                    WHERE r.customer_id = ?
+                    ORDER BY r.reminder_date DESC, r.reminder_time DESC
+                ");
+                $rem_stmt->execute([$customer_id]);
+                $reminders = $rem_stmt->fetchAll();
+            } catch (Throwable $e) {}
 
             // 11. Email History Logs
-            $em_stmt = $pdo->prepare("
-                SELECT e.*, u.name AS sender_name
-                FROM customer_emails e
-                LEFT JOIN users u ON e.sent_by = u.id
-                WHERE e.customer_id = ?
-                ORDER BY e.id DESC
-            ");
-            $em_stmt->execute([$customer_id]);
-            $emails = $em_stmt->fetchAll();
+            $emails = [];
+            try {
+                $em_stmt = $pdo->prepare("
+                    SELECT e.*, u.name AS sender_name
+                    FROM customer_emails e
+                    LEFT JOIN users u ON e.sent_by = u.id
+                    WHERE e.customer_id = ?
+                    ORDER BY e.id DESC
+                ");
+                $em_stmt->execute([$customer_id]);
+                $emails = $em_stmt->fetchAll();
+            } catch (Throwable $e) {}
 
             // 12. Appointments
-            $app_stmt = $pdo->prepare("
-                SELECT a.*, u.name AS staff_name
-                FROM appointments a
-                LEFT JOIN employees e ON a.staff_id = e.id
-                LEFT JOIN users u ON e.user_id = u.id
-                WHERE a.customer_id = ?
-                ORDER BY a.appointment_date DESC
-            ");
-            $app_stmt->execute([$customer_id]);
-            $appointments = $app_stmt->fetchAll();
+            $appointments = [];
+            try {
+                $app_stmt = $pdo->prepare("
+                    SELECT a.*, u.name AS staff_name
+                    FROM appointments a
+                    LEFT JOIN employees e ON a.staff_id = e.id
+                    LEFT JOIN users u ON e.user_id = u.id
+                    WHERE a.customer_id = ?
+                    ORDER BY a.appointment_date DESC
+                ");
+                $app_stmt->execute([$customer_id]);
+                $appointments = $app_stmt->fetchAll();
+            } catch (Throwable $e) {}
 
             // 13. Support Tickets
-            $tkt_stmt = $pdo->prepare("SELECT * FROM support_tickets WHERE customer_id = ? ORDER BY id DESC");
-            $tkt_stmt->execute([$customer_id]);
-            $tickets = $tkt_stmt->fetchAll();
+            $tickets = [];
+            try {
+                $tkt_stmt = $pdo->prepare("SELECT * FROM support_tickets WHERE customer_id = ? ORDER BY id DESC");
+                $tkt_stmt->execute([$customer_id]);
+                $tickets = $tkt_stmt->fetchAll();
+            } catch (Throwable $e) {}
 
             // 14. Activity Log Timeline
-            $act_stmt = $pdo->prepare("
-                SELECT al.*, u.name AS staff_name
-                FROM activity_logs al
-                LEFT JOIN users u ON al.user_id = u.id
-                WHERE (al.module = 'customer' AND al.record_id = ?)
-                   OR (al.details LIKE ?)
-                ORDER BY al.id DESC
-                LIMIT 50
-            ");
-            $act_stmt->execute([$customer_id, "%customer #{$customer_id}%"]);
-            $activity_logs = $act_stmt->fetchAll();
+            $activity_logs = [];
+            try {
+                $act_stmt = $pdo->prepare("
+                    SELECT al.*, u.name AS staff_name
+                    FROM activity_logs al
+                    LEFT JOIN users u ON al.user_id = u.id
+                    WHERE (al.module = 'customer' AND al.record_id = ?)
+                       OR (al.details LIKE ?)
+                    ORDER BY al.id DESC
+                    LIMIT 50
+                ");
+                $act_stmt->execute([$customer_id, "%customer #{$customer_id}%"]);
+                $activity_logs = $act_stmt->fetchAll();
+            } catch (Throwable $e) {}
 
             // 15. Tags & Custom Fields
-            $tags = TagEngine::get_for_entity('customer', $customer_id);
-            $custom_fields = CustomFieldsEngine::get_values_for('customers', $customer_id);
+            $tags = [];
+            $custom_fields = [];
+            try {
+                $tags = TagEngine::get_for_entity('customer', $customer_id);
+            } catch (Throwable $e) {}
+            try {
+                $custom_fields = CustomFieldsEngine::get_values_for('customers', $customer_id);
+            } catch (Throwable $e) {}
 
             // Financial & Case Overview Summary Calculation
             $total_cases = count($cases);

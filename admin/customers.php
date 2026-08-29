@@ -390,18 +390,19 @@ if (!$view_all && $view_own) {
 $where_sql = implode(' AND ', $where_clauses);
 
 // Fetch Metrics Counters
-try {
-    $total_customers = (int)$pdo->query("SELECT COUNT(*) FROM customers c WHERE {$where_sql}")->fetchColumn();
-    $active_customers = (int)$pdo->query("SELECT COUNT(*) FROM customers c JOIN users u ON c.user_id = u.id WHERE u.status = 'active' AND {$where_sql}")->fetchColumn();
-    $inactive_customers = (int)$pdo->query("SELECT COUNT(*) FROM customers c JOIN users u ON c.user_id = u.id WHERE u.status = 'inactive' AND {$where_sql}")->fetchColumn();
-    $new_this_month = (int)$pdo->query("SELECT COUNT(*) FROM customers c WHERE MONTH(c.created_at) = MONTH(CURRENT_DATE()) AND YEAR(c.created_at) = YEAR(CURRENT_DATE()) AND {$where_sql}")->fetchColumn();
-    $open_cases_cust = (int)$pdo->query("SELECT COUNT(DISTINCT customer_id) FROM cases WHERE status IN ('active', 'on_hold')")->fetchColumn();
-    $outstanding_pay_cust = (int)$pdo->query("SELECT COUNT(DISTINCT customer_id) FROM cases WHERE payment_status IN ('unpaid', 'partially_paid')")->fetchColumn();
-} catch (Throwable $e_stats) {
-    ensure_phase2_customer_tables_exist($pdo);
-    $total_customers = 0; $active_customers = 0; $inactive_customers = 0;
-    $new_this_month = 0; $open_cases_cust = 0; $outstanding_pay_cust = 0;
-}
+$total_customers = 0;
+$active_customers = 0;
+$inactive_customers = 0;
+$new_this_month = 0;
+$open_cases_cust = 0;
+$outstanding_pay_cust = 0;
+
+try { $total_customers = (int)$pdo->query("SELECT COUNT(*) FROM customers c WHERE {$where_sql}")->fetchColumn(); } catch (Throwable $e) {}
+try { $active_customers = (int)$pdo->query("SELECT COUNT(*) FROM customers c JOIN users u ON c.user_id = u.id WHERE u.status = 'active' AND {$where_sql}")->fetchColumn(); } catch (Throwable $e) {}
+try { $inactive_customers = (int)$pdo->query("SELECT COUNT(*) FROM customers c JOIN users u ON c.user_id = u.id WHERE u.status = 'inactive' AND {$where_sql}")->fetchColumn(); } catch (Throwable $e) {}
+try { $new_this_month = (int)$pdo->query("SELECT COUNT(*) FROM customers c WHERE MONTH(c.created_at) = MONTH(CURRENT_DATE()) AND YEAR(c.created_at) = YEAR(CURRENT_DATE()) AND {$where_sql}")->fetchColumn(); } catch (Throwable $e) {}
+try { $open_cases_cust = (int)$pdo->query("SELECT COUNT(DISTINCT customer_id) FROM cases WHERE status IN ('active', 'on_hold')")->fetchColumn(); } catch (Throwable $e) {}
+try { $outstanding_pay_cust = (int)$pdo->query("SELECT COUNT(DISTINCT customer_id) FROM cases WHERE payment_status IN ('unpaid', 'partially_paid')")->fetchColumn(); } catch (Throwable $e) {}
 
 // Fetch Directory List
 try {
@@ -515,7 +516,7 @@ try {
     <div class="d-flex flex-wrap align-items-center gap-2">
         <?php if (check_permission('customers_create') || $is_admin): ?>
             <button class="btn btn-dark rounded-pill fw-bold px-3 py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#saveCustomerModal" onclick="prepareAddModal();">
-                <i class="bi bi-plus-lg me-1"></i> + Add New Customer
+                <i class="bi bi-person-plus-fill me-1"></i> Add New Customer
             </button>
         <?php endif; ?>
         <button class="btn btn-outline-secondary rounded-pill fw-bold px-3 py-2 bg-white shadow-sm" data-bs-toggle="modal" data-bs-target="#importCustomerModal">
@@ -538,54 +539,53 @@ try {
     <div class="col-6 col-md-4 col-xl-2">
         <div class="card border-0 shadow-sm rounded-4 bg-white p-3 text-center h-100 border-start border-4 border-success">
             <h4 class="fw-bold text-success mb-1"><?php echo number_format($active_customers); ?></h4>
-            <small class="text-success fw-semibold">Active Customers</small>
+            <small class="text-muted fw-semibold">Active Customers</small>
         </div>
     </div>
     <div class="col-6 col-md-4 col-xl-2">
         <div class="card border-0 shadow-sm rounded-4 bg-white p-3 text-center h-100 border-start border-4 border-danger">
             <h4 class="fw-bold text-danger mb-1"><?php echo number_format($inactive_customers); ?></h4>
-            <small class="text-danger fw-semibold">Inactive Customers</small>
+            <small class="text-muted fw-semibold">Inactive Customers</small>
         </div>
     </div>
     <div class="col-6 col-md-4 col-xl-2">
         <div class="card border-0 shadow-sm rounded-4 bg-white p-3 text-center h-100 border-start border-4 border-info">
             <h4 class="fw-bold text-info mb-1"><?php echo number_format($new_this_month); ?></h4>
-            <small class="text-info fw-semibold">New This Month</small>
+            <small class="text-muted fw-semibold">New This Month</small>
         </div>
     </div>
     <div class="col-6 col-md-4 col-xl-2">
         <div class="card border-0 shadow-sm rounded-4 bg-white p-3 text-center h-100 border-start border-4 border-primary">
             <h4 class="fw-bold text-primary mb-1"><?php echo number_format($open_cases_cust); ?></h4>
-            <small class="text-primary fw-semibold">With Open Cases</small>
+            <small class="text-muted fw-semibold">With Open Cases</small>
         </div>
     </div>
     <div class="col-6 col-md-4 col-xl-2">
         <div class="card border-0 shadow-sm rounded-4 bg-white p-3 text-center h-100 border-start border-4 border-warning">
             <h4 class="fw-bold text-warning mb-1"><?php echo number_format($outstanding_pay_cust); ?></h4>
-            <small class="text-warning text-dark fw-semibold">With Outstanding</small>
+            <small class="text-muted fw-semibold">With Outstanding</small>
         </div>
     </div>
 </div>
 
-<!-- ADVANCED FILTERS COLLAPSIBLE -->
+<!-- ADVANCED FILTERS PANEL -->
 <div class="collapse mb-4" id="filterPanel">
-    <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
-        <h6 class="fw-bold text-dark mb-3"><i class="bi bi-funnel-fill text-primary me-2"></i> Advanced Customer Filters</h6>
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
         <div class="row g-3">
-            <div class="col-md-3">
-                <label class="form-label small fw-bold">Customer Status</label>
-                <select id="filterStatus" class="form-select rounded-3">
-                    <option value="">All Statuses</option>
-                    <option value="active">Active Only</option>
-                    <option value="inactive">Inactive Only</option>
-                </select>
-            </div>
             <div class="col-md-3">
                 <label class="form-label small fw-bold">Customer Type</label>
                 <select id="filterType" class="form-select rounded-3">
-                    <option value="">All Types</option>
+                    <option value="">All Customer Types</option>
                     <option value="individual">Individual</option>
                     <option value="business">Business / Corporate</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-bold">Status</label>
+                <select id="filterStatus" class="form-select rounded-3">
+                    <option value="">All Statuses</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
                 </select>
             </div>
             <div class="col-md-3">
@@ -615,7 +615,7 @@ try {
     $cust = $profile_data['customer'];
     $summary = $profile_data['summary'];
     ?>
-    <div class="card border-0 shadow-lg rounded-4 p-4 bg-white mb-5 border-top border-4 border-primary">
+    <div id="customer360" class="card border-0 shadow-lg rounded-4 p-4 bg-white mb-5 border-top border-4 border-primary">
         <!-- 360 HEADER -->
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center border-bottom pb-3 mb-4 gap-3">
             <div>
@@ -1663,6 +1663,17 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </div>
+<?php endif; ?>
+
+<?php if (!empty($selected_customer_id) && !empty($profile_data['status'])): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const el = document.getElementById('customer360');
+    if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+});
+</script>
 <?php endif; ?>
 
 <?php require_once __DIR__ . '/includes/admin_footer.php'; ?>

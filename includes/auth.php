@@ -53,6 +53,36 @@ function ensure_phase2_customer_tables_exist($pdo) {
               `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
+            $pdo->exec("CREATE TABLE IF NOT EXISTS `customer_business_profiles` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `customer_id` INT NOT NULL,
+              `business_name` VARCHAR(200) NOT NULL,
+              `constitution` ENUM('proprietorship', 'partnership', 'llp', 'pvt_ltd', 'opc', 'trust', 'society', 'other') DEFAULT 'proprietorship',
+              `industry` VARCHAR(100) DEFAULT NULL,
+              `business_category` VARCHAR(100) DEFAULT NULL,
+              `vintage_years` INT DEFAULT 0,
+              `gstin` VARCHAR(20) DEFAULT NULL,
+              `udyam_number` VARCHAR(50) DEFAULT NULL,
+              `turnover_annual` DECIMAL(15,2) DEFAULT 0.00,
+              `turnover_monthly` DECIMAL(15,2) DEFAULT 0.00,
+              `profit_monthly` DECIMAL(15,2) DEFAULT 0.00,
+              `employee_count` INT DEFAULT 1,
+              `address` TEXT,
+              `status` ENUM('active', 'inactive') DEFAULT 'active',
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+            $pdo->exec("CREATE TABLE IF NOT EXISTS `appointments` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `customer_id` INT NULL,
+              `staff_id` INT NULL,
+              `title` VARCHAR(200) NOT NULL,
+              `description` TEXT DEFAULT NULL,
+              `appointment_date` DATETIME NOT NULL,
+              `status` ENUM('scheduled', 'completed', 'cancelled') DEFAULT 'scheduled',
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
             $pdo->exec("CREATE TABLE IF NOT EXISTS `customer_notes` (
               `id` INT AUTO_INCREMENT PRIMARY KEY,
               `customer_id` INT NOT NULL,
