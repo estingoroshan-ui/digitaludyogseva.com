@@ -366,7 +366,11 @@ if ($action === 'create' || $action === 'edit') {
     }
 
     // Default Values
-    $form_est_number = $est_data ? $est_data['estimate_number'] : get_next_estimate_number($pdo);
+    try {
+        $form_est_number = $est_data ? $est_data['estimate_number'] : get_next_estimate_number($pdo);
+    } catch (Throwable $e) {
+        $form_est_number = 'EST-' . date('Y') . '-000001';
+    }
     $form_est_date = $est_data ? $est_data['estimate_date'] : date('Y-m-d');
     $form_valid_until = $est_data ? $est_data['valid_until'] : date('Y-m-d', strtotime('+15 days'));
     $form_cust_id = $est_data ? $est_data['customer_id'] : 0;
@@ -378,18 +382,49 @@ if ($action === 'create' || $action === 'edit') {
     $form_terms = $est_data ? $est_data['terms_conditions'] : "1. Government fees are statutory portal deposits.\n2. Turnaround time starts upon submission of verified required documents.\n3. Quotation valid for 15 days from date of issue.";
 
     // Customers List
-    $customers = $pdo->query("SELECT id, name, company_name, mobile, email, gstin, city, state FROM customers ORDER BY name ASC")->fetchAll();
+    $customers = [];
+    try {
+        $customers = $pdo->query("SELECT id, name, company_name, mobile, email, gstin, city, state FROM customers ORDER BY name ASC")->fetchAll();
+    } catch (Throwable $e) {
+        try {
+            $customers = $pdo->query("SELECT id, name, mobile, email FROM customers ORDER BY name ASC")->fetchAll();
+        } catch (Throwable $e2) {}
+    }
 
     // Services Catalog for Selector
-    $services_list = $pdo->query("
-        SELECT s.*, sc.name AS category_name
-        FROM services s
-        JOIN service_categories sc ON s.category_id = sc.id
-        WHERE s.status = 'active'
-        ORDER BY s.display_order ASC, s.name ASC
-    ")->fetchAll();
+    $services_list = [];
+    try {
+        $services_list = $pdo->query("
+            SELECT s.*, sc.name AS category_name
+            FROM services s
+            LEFT JOIN service_categories sc ON s.category_id = sc.id
+            WHERE s.status = 'active'
+            ORDER BY s.display_order ASC, s.name ASC
+        ")->fetchAll();
+    } catch (Throwable $e) {
+        try {
+            $services_list = $pdo->query("
+                SELECT s.*, '' AS category_name
+                FROM services s
+                WHERE s.status = 'active'
+                ORDER BY s.name ASC
+            ")->fetchAll();
+        } catch (Throwable $e2) {
+            try {
+                $services_list = $pdo->query("SELECT * FROM services ORDER BY id DESC")->fetchAll();
+            } catch (Throwable $e3) {}
+        }
+    }
 
-    $categories_list = $pdo->query("SELECT id, name FROM service_categories WHERE parent_id IS NULL ORDER BY sort_order ASC")->fetchAll();
+    // Categories List for Selector Filter
+    $categories_list = [];
+    try {
+        $categories_list = $pdo->query("SELECT id, name FROM service_categories WHERE parent_id IS NULL ORDER BY sort_order ASC")->fetchAll();
+    } catch (Throwable $e) {
+        try {
+            $categories_list = $pdo->query("SELECT id, name FROM service_categories ORDER BY id ASC")->fetchAll();
+        } catch (Throwable $e2) {}
+    }
     ?>
 
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
@@ -1023,24 +1058,30 @@ if ($action === 'create' || $action === 'edit') {
 
     $where_sql = implode(" AND ", $where_clauses);
 
-    $stmt = $pdo->prepare("
-        SELECT e.*, 
-               c.name AS customer_name, c.company_name, c.mobile, c.email,
-               (SELECT COUNT(*) FROM estimate_items ei WHERE ei.estimate_id = e.id) AS items_count
-        FROM estimates e
-        JOIN customers c ON e.customer_id = c.id
-        WHERE {$where_sql}
-        ORDER BY e.id DESC
-    ");
-    $stmt->execute($params);
-    $estimates = $stmt->fetchAll();
+    $estimates = [];
+    try {
+        $stmt = $pdo->prepare("
+            SELECT e.*, 
+                   c.name AS customer_name, c.company_name, c.mobile, c.email,
+                   (SELECT COUNT(*) FROM estimate_items ei WHERE ei.estimate_id = e.id) AS items_count
+            FROM estimates e
+            JOIN customers c ON e.customer_id = c.id
+            WHERE {$where_sql}
+            ORDER BY e.id DESC
+        ");
+        $stmt->execute($params);
+        $estimates = $stmt->fetchAll();
+    } catch (Throwable $e) {}
 
     // Stats
-    $stat_total = (int)$pdo->query("SELECT COUNT(*) FROM estimates")->fetchColumn();
-    $stat_draft = (int)$pdo->query("SELECT COUNT(*) FROM estimates WHERE status = 'draft'")->fetchColumn();
-    $stat_sent = (int)$pdo->query("SELECT COUNT(*) FROM estimates WHERE status = 'sent'")->fetchColumn();
-    $stat_accepted = (int)$pdo->query("SELECT COUNT(*) FROM estimates WHERE status = 'accepted'")->fetchColumn();
-    $stat_converted = (int)$pdo->query("SELECT COUNT(*) FROM estimates WHERE status = 'converted'")->fetchColumn();
+    $stat_total = 0; $stat_draft = 0; $stat_sent = 0; $stat_accepted = 0; $stat_converted = 0;
+    try {
+        $stat_total = (int)$pdo->query("SELECT COUNT(*) FROM estimates")->fetchColumn();
+        $stat_draft = (int)$pdo->query("SELECT COUNT(*) FROM estimates WHERE status = 'draft'")->fetchColumn();
+        $stat_sent = (int)$pdo->query("SELECT COUNT(*) FROM estimates WHERE status = 'sent'")->fetchColumn();
+        $stat_accepted = (int)$pdo->query("SELECT COUNT(*) FROM estimates WHERE status = 'accepted'")->fetchColumn();
+        $stat_converted = (int)$pdo->query("SELECT COUNT(*) FROM estimates WHERE status = 'converted'")->fetchColumn();
+    } catch (Throwable $e) {}
     ?>
 
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">

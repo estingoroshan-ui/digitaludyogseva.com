@@ -645,23 +645,43 @@ function ensure_phase6_estimate_services_tables_exist($pdo) {
     if ($checked_phase6 || !$pdo) return;
     $checked_phase6 = true;
 
-    try {
-        $pdo->query("SELECT service_code FROM services LIMIT 1");
-    } catch (Throwable $e) {
+    // Ensure services columns exist individually
+    $service_columns = [
+        'service_code' => "VARCHAR(50) NULL",
+        'other_charges' => "DECIMAL(10,2) DEFAULT 0.00",
+        'is_gst_applicable' => "TINYINT(1) DEFAULT 1",
+        'is_discount_allowed' => "TINYINT(1) DEFAULT 1",
+        'expected_completion_time' => "VARCHAR(100) DEFAULT '3-5 Working Days'",
+        'min_time' => "INT DEFAULT 1",
+        'max_time' => "INT DEFAULT 7",
+        'time_unit' => "ENUM('Hours', 'Days', 'Working Days') DEFAULT 'Working Days'",
+        'important_notes' => "TEXT NULL",
+        'display_order' => "INT DEFAULT 0"
+    ];
+    foreach ($service_columns as $col => $definition) {
         try {
-            $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
-            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `service_code` VARCHAR(50) NULL");
-            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `other_charges` DECIMAL(10,2) DEFAULT 0.00");
-            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `is_gst_applicable` TINYINT(1) DEFAULT 1");
-            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `is_discount_allowed` TINYINT(1) DEFAULT 1");
-            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `expected_completion_time` VARCHAR(100) DEFAULT '3-5 Working Days'");
-            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `min_time` INT DEFAULT 1");
-            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `max_time` INT DEFAULT 7");
-            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `time_unit` ENUM('Hours', 'Days', 'Working Days') DEFAULT 'Working Days'");
-            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `important_notes` TEXT NULL");
-            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `display_order` INT DEFAULT 0");
-            $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
-        } catch (Throwable $e2) {}
+            $pdo->query("SELECT `{$col}` FROM `services` LIMIT 1");
+        } catch (Throwable $e) {
+            try {
+                $pdo->exec("ALTER TABLE `services` ADD COLUMN `{$col}` {$definition}");
+            } catch (Throwable $e2) {}
+        }
+    }
+
+    // Ensure service_categories columns exist individually
+    $cat_columns = [
+        'parent_id' => "INT NULL",
+        'sort_order' => "INT DEFAULT 0",
+        'status' => "ENUM('active','inactive') DEFAULT 'active'"
+    ];
+    foreach ($cat_columns as $col => $definition) {
+        try {
+            $pdo->query("SELECT `{$col}` FROM `service_categories` LIMIT 1");
+        } catch (Throwable $e) {
+            try {
+                $pdo->exec("ALTER TABLE `service_categories` ADD COLUMN `{$col}` {$definition}");
+            } catch (Throwable $e2) {}
+        }
     }
 
     try {

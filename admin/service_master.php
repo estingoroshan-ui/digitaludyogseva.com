@@ -307,34 +307,53 @@ if (!empty($search)) {
 $where_sql = implode(" AND ", $where_clauses);
 
 // Fetch All Categories for dropdown & filter
-$all_categories = $pdo->query("
-    SELECT id, parent_id, name, slug 
-    FROM service_categories 
-    ORDER BY COALESCE(parent_id, id) ASC, parent_id ASC, sort_order ASC, name ASC
-")->fetchAll();
+$all_categories = [];
+try {
+    $all_categories = $pdo->query("
+        SELECT id, parent_id, name, slug 
+        FROM service_categories 
+        ORDER BY COALESCE(parent_id, id) ASC, parent_id ASC, sort_order ASC, name ASC
+    ")->fetchAll();
+} catch (Throwable $e) {
+    try {
+        $all_categories = $pdo->query("SELECT id, name, slug FROM service_categories ORDER BY id ASC")->fetchAll();
+    } catch (Throwable $e2) {}
+}
 
-$parent_categories = array_filter($all_categories, fn($c) => empty($c['parent_id']));
-$subcategories = array_filter($all_categories, fn($c) => !empty($c['parent_id']));
+$parent_categories = array_filter($all_categories, fn($c) => empty($c['parent_id'] ?? null));
+$subcategories = array_filter($all_categories, fn($c) => !empty($c['parent_id'] ?? null));
 
 // Fetch Services
-$stmt = $pdo->prepare("
-    SELECT s.*, 
-           sc.name AS category_name,
-           subc.name AS subcategory_name,
-           (SELECT COUNT(*) FROM service_required_documents srd WHERE srd.service_id = s.id) AS doc_count
-    FROM services s
-    LEFT JOIN service_categories sc ON s.category_id = sc.id
-    LEFT JOIN service_categories subc ON s.subcategory_id = subc.id
-    WHERE {$where_sql}
-    ORDER BY s.display_order ASC, s.id DESC
-");
-$stmt->execute($params);
-$services = $stmt->fetchAll();
+$services = [];
+try {
+    $stmt = $pdo->prepare("
+        SELECT s.*, 
+               sc.name AS category_name,
+               subc.name AS subcategory_name,
+               (SELECT COUNT(*) FROM service_required_documents srd WHERE srd.service_id = s.id) AS doc_count
+        FROM services s
+        LEFT JOIN service_categories sc ON s.category_id = sc.id
+        LEFT JOIN service_categories subc ON s.subcategory_id = subc.id
+        WHERE {$where_sql}
+        ORDER BY s.display_order ASC, s.id DESC
+    ");
+    $stmt->execute($params);
+    $services = $stmt->fetchAll();
+} catch (Throwable $e) {
+    try {
+        $stmt = $pdo->prepare("SELECT s.*, '' AS category_name, '' AS subcategory_name, 0 AS doc_count FROM services s WHERE {$where_sql} ORDER BY s.id DESC");
+        $stmt->execute($params);
+        $services = $stmt->fetchAll();
+    } catch (Throwable $e2) {}
+}
 
 // Metrics Summary
-$total_count = (int)$pdo->query("SELECT COUNT(*) FROM services")->fetchColumn();
-$active_count = (int)$pdo->query("SELECT COUNT(*) FROM services WHERE status = 'active'")->fetchColumn();
-$featured_count = (int)$pdo->query("SELECT COUNT(*) FROM services WHERE is_featured = 1")->fetchColumn();
+$total_count = 0; $active_count = 0; $featured_count = 0;
+try {
+    $total_count = (int)$pdo->query("SELECT COUNT(*) FROM services")->fetchColumn();
+    $active_count = (int)$pdo->query("SELECT COUNT(*) FROM services WHERE status = 'active'")->fetchColumn();
+    $featured_count = (int)$pdo->query("SELECT COUNT(*) FROM services WHERE is_featured = 1")->fetchColumn();
+} catch (Throwable $e) {}
 $total_cats = count($parent_categories);
 ?>
 

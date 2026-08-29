@@ -81,16 +81,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 }
 
 // Fetch Parent Categories for dropdown
-$parent_categories = $pdo->query("SELECT * FROM service_categories WHERE parent_id IS NULL ORDER BY sort_order ASC, name ASC")->fetchAll();
+$parent_categories = [];
+try {
+    $parent_categories = $pdo->query("SELECT * FROM service_categories WHERE parent_id IS NULL ORDER BY sort_order ASC, name ASC")->fetchAll();
+} catch (Throwable $e) {
+    try {
+        $parent_categories = $pdo->query("SELECT * FROM service_categories ORDER BY id ASC")->fetchAll();
+    } catch (Throwable $e2) {}
+}
 
 // Fetch all with counts
-$categories = $pdo->query("
-    SELECT c.*, p.name AS parent_name,
-           (SELECT COUNT(*) FROM services s WHERE s.category_id = c.id OR s.subcategory_id = c.id) AS service_count
-    FROM service_categories c
-    LEFT JOIN service_categories p ON c.parent_id = p.id
-    ORDER BY COALESCE(p.sort_order, c.sort_order) ASC, c.parent_id ASC, c.sort_order ASC, c.name ASC
-")->fetchAll();
+$categories = [];
+try {
+    $categories = $pdo->query("
+        SELECT c.*, p.name AS parent_name,
+               (SELECT COUNT(*) FROM services s WHERE s.category_id = c.id OR s.subcategory_id = c.id) AS service_count
+        FROM service_categories c
+        LEFT JOIN service_categories p ON c.parent_id = p.id
+        ORDER BY COALESCE(p.sort_order, c.sort_order) ASC, c.parent_id ASC, c.sort_order ASC, c.name ASC
+    ")->fetchAll();
+} catch (Throwable $e) {
+    try {
+        $categories = $pdo->query("SELECT c.*, '' AS parent_name, 0 AS service_count FROM service_categories c ORDER BY c.id ASC")->fetchAll();
+    } catch (Throwable $e2) {}
+}
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
