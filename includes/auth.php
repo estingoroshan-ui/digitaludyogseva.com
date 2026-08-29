@@ -118,73 +118,165 @@ function ensure_phase3_lead_tables_exist($pdo) {
     $checked_phase3 = true;
 
     try {
-        $pdo->query("SELECT lead_value FROM leads LIMIT 1");
-    } catch (Throwable $e) {
-        try {
-            $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
-            
-            @$pdo->exec("ALTER TABLE `leads` ADD COLUMN `first_name` VARCHAR(100) NULL");
-            @$pdo->exec("ALTER TABLE `leads` ADD COLUMN `last_name` VARCHAR(100) NULL");
-            @$pdo->exec("ALTER TABLE `leads` ADD COLUMN `title` VARCHAR(150) NULL");
-            @$pdo->exec("ALTER TABLE `leads` ADD COLUMN `company` VARCHAR(200) NULL");
-            @$pdo->exec("ALTER TABLE `leads` ADD COLUMN `whatsapp_number` VARCHAR(20) NULL");
-            @$pdo->exec("ALTER TABLE `leads` ADD COLUMN `address_line_1` TEXT NULL");
-            @$pdo->exec("ALTER TABLE `leads` ADD COLUMN `address_line_2` TEXT NULL");
-            @$pdo->exec("ALTER TABLE `leads` ADD COLUMN `country` VARCHAR(100) DEFAULT 'India'");
-            @$pdo->exec("ALTER TABLE `leads` ADD COLUMN `lead_value` DECIMAL(12,2) DEFAULT 0.00");
-            @$pdo->exec("ALTER TABLE `leads` ADD COLUMN `gstin` VARCHAR(20) NULL");
-            @$pdo->exec("ALTER TABLE `leads` ADD COLUMN `pan` VARCHAR(20) NULL");
-            @$pdo->exec("ALTER TABLE `leads` ADD COLUMN `website` VARCHAR(255) NULL");
-            @$pdo->exec("ALTER TABLE `leads` ADD COLUMN `is_public` TINYINT(1) DEFAULT 0");
-            @$pdo->exec("ALTER TABLE `leads` ADD COLUMN `last_contacted_at` DATETIME NULL");
-            @$pdo->exec("ALTER TABLE `leads` ADD COLUMN `next_followup_date` DATE NULL");
-            @$pdo->exec("ALTER TABLE `leads` ADD COLUMN `next_followup_time` TIME NULL");
+        $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
+        
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `lead_statuses` (
+          `id` INT AUTO_INCREMENT PRIMARY KEY,
+          `status_key` VARCHAR(50) NOT NULL UNIQUE,
+          `status_name` VARCHAR(100) NOT NULL,
+          `color_code` VARCHAR(20) DEFAULT '#3b82f6',
+          `sort_order` INT DEFAULT 1,
+          `is_system` TINYINT(1) DEFAULT 1,
+          `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
-            $pdo->exec("CREATE TABLE IF NOT EXISTS `lead_notes` (
-              `id` INT AUTO_INCREMENT PRIMARY KEY,
-              `lead_id` INT NOT NULL,
-              `note` TEXT NOT NULL,
-              `created_by` INT NOT NULL,
-              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-              `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+        $pdo->exec("INSERT IGNORE INTO `lead_statuses` (`id`, `status_key`, `status_name`, `color_code`, `sort_order`, `is_system`) VALUES
+        (1, 'new_lead', 'New Lead', '#6366f1', 1, 1),
+        (2, 'contacted', 'Contact Attempted', '#3b82f6', 2, 1),
+        (3, 'connected', 'Connected', '#06b6d4', 3, 1),
+        (4, 'interested', 'Interested', '#8b5cf6', 4, 1),
+        (5, 'followup', 'Follow-Up', '#f59e0b', 5, 1),
+        (6, 'appointment', 'Appointment Scheduled', '#ec4899', 6, 1),
+        (7, 'docs_requested', 'Documents Requested', '#10b981', 7, 1),
+        (8, 'docs_received', 'Documents Received', '#14b8a6', 8, 1),
+        (9, 'payment_pending', 'Payment Pending', '#ef4444', 9, 1),
+        (10, 'converted', 'Converted', '#22c55e', 10, 1),
+        (11, 'lost', 'Lost', '#64748b', 11, 1),
+        (12, 'qualified', 'Qualified', '#059669', 12, 1),
+        (13, 'proposal_offered', 'Proposal / Service Offered', '#2563eb', 13, 1),
+        (15, 'payment_received', 'Payment Received', '#16a34a', 15, 1),
+        (16, 'application_started', 'Application Started', '#0284c7', 16, 1),
+        (18, 'not_interested', 'Not Interested', '#64748b', 18, 1),
+        (19, 'not_eligible', 'Not Eligible', '#ef4444', 19, 1),
+        (20, 'duplicate', 'Duplicate', '#334155', 20, 1),
+        (21, 'invalid', 'Invalid Lead', '#1e293b', 21, 1);");
 
-            $pdo->exec("CREATE TABLE IF NOT EXISTS `lead_reminders` (
-              `id` INT AUTO_INCREMENT PRIMARY KEY,
-              `lead_id` INT NOT NULL,
-              `reminder_date` DATE NOT NULL,
-              `reminder_time` TIME DEFAULT '10:00:00',
-              `description` TEXT NOT NULL,
-              `assigned_staff_id` INT NOT NULL,
-              `send_notification` TINYINT(1) DEFAULT 1,
-              `send_email` TINYINT(1) DEFAULT 0,
-              `status` ENUM('pending', 'completed', 'cancelled') DEFAULT 'pending',
-              `created_by` INT NOT NULL,
-              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `lead_sources` (
+          `id` INT AUTO_INCREMENT PRIMARY KEY,
+          `source_name` VARCHAR(100) NOT NULL UNIQUE,
+          `status` ENUM('active', 'inactive') DEFAULT 'active',
+          `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
-            $pdo->exec("CREATE TABLE IF NOT EXISTS `lead_attachments` (
-              `id` INT AUTO_INCREMENT PRIMARY KEY,
-              `lead_id` INT NOT NULL,
-              `file_path` VARCHAR(255) NOT NULL,
-              `file_name` VARCHAR(255) NOT NULL,
-              `original_filename` VARCHAR(255) NOT NULL,
-              `file_size` INT DEFAULT 0,
-              `file_type` VARCHAR(50) DEFAULT NULL,
-              `uploaded_by` INT DEFAULT NULL,
-              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+        $pdo->exec("INSERT IGNORE INTO `lead_sources` (`id`, `source_name`, `status`) VALUES
+        (1, 'Website Form', 'active'),
+        (2, 'WhatsApp Direct', 'active'),
+        (3, 'Google Ads', 'active'),
+        (4, 'Facebook / Instagram Ads', 'active'),
+        (5, 'Franchise Network', 'active'),
+        (6, 'Direct Referral', 'active'),
+        (7, 'Cold Call / Field Sales', 'active');");
 
-            @$pdo->exec("ALTER TABLE `followups` ADD COLUMN `followup_type` VARCHAR(50) DEFAULT 'Call'");
-            @$pdo->exec("ALTER TABLE `followups` ADD COLUMN `followup_result` TEXT NULL");
-            @$pdo->exec("ALTER TABLE `followups` ADD COLUMN `customer_response` TEXT NULL");
-            @$pdo->exec("ALTER TABLE `followups` ADD COLUMN `next_action` TEXT NULL");
-            @$pdo->exec("ALTER TABLE `followups` ADD COLUMN `next_followup_date` DATE NULL");
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `leads` (
+          `id` INT AUTO_INCREMENT PRIMARY KEY,
+          `lead_code` VARCHAR(50) NOT NULL UNIQUE,
+          `name` VARCHAR(150) NOT NULL,
+          `first_name` VARCHAR(100) DEFAULT NULL,
+          `last_name` VARCHAR(100) DEFAULT NULL,
+          `title` VARCHAR(150) DEFAULT NULL,
+          `company` VARCHAR(200) DEFAULT NULL,
+          `mobile` VARCHAR(20) NOT NULL,
+          `whatsapp_number` VARCHAR(20) DEFAULT NULL,
+          `email` VARCHAR(150) DEFAULT NULL,
+          `service_id` INT DEFAULT NULL,
+          `source_id` INT DEFAULT NULL,
+          `status_id` INT DEFAULT 1,
+          `assigned_employee_id` INT DEFAULT NULL,
+          `priority` ENUM('low', 'medium', 'high', 'urgent') DEFAULT 'medium',
+          `temperature` ENUM('hot', 'warm', 'cold') DEFAULT 'warm',
+          `address` TEXT DEFAULT NULL,
+          `city` VARCHAR(100) DEFAULT NULL,
+          `state` VARCHAR(100) DEFAULT NULL,
+          `country` VARCHAR(100) DEFAULT 'India',
+          `pincode` VARCHAR(20) DEFAULT NULL,
+          `lead_value` DECIMAL(12,2) DEFAULT 0.00,
+          `gstin` VARCHAR(20) DEFAULT NULL,
+          `pan` VARCHAR(20) DEFAULT NULL,
+          `website` VARCHAR(255) DEFAULT NULL,
+          `is_public` TINYINT(1) DEFAULT 0,
+          `last_contacted_at` DATETIME DEFAULT NULL,
+          `next_followup_date` DATE DEFAULT NULL,
+          `next_followup_time` TIME DEFAULT NULL,
+          `created_by` INT DEFAULT NULL,
+          `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
-            $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
-        } catch (Throwable $ex) {
-            error_log("Phase 3 Lead Auto migration error: " . $ex->getMessage());
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `lead_notes` (
+          `id` INT AUTO_INCREMENT PRIMARY KEY,
+          `lead_id` INT NOT NULL,
+          `note` TEXT NOT NULL,
+          `created_by` INT NOT NULL,
+          `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `lead_reminders` (
+          `id` INT AUTO_INCREMENT PRIMARY KEY,
+          `lead_id` INT NOT NULL,
+          `reminder_date` DATE NOT NULL,
+          `reminder_time` TIME DEFAULT '10:00:00',
+          `description` TEXT NOT NULL,
+          `assigned_staff_id` INT NOT NULL,
+          `send_notification` TINYINT(1) DEFAULT 1,
+          `send_email` TINYINT(1) DEFAULT 0,
+          `status` ENUM('pending', 'completed', 'cancelled') DEFAULT 'pending',
+          `created_by` INT NOT NULL,
+          `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `lead_attachments` (
+          `id` INT AUTO_INCREMENT PRIMARY KEY,
+          `lead_id` INT NOT NULL,
+          `file_path` VARCHAR(255) NOT NULL,
+          `file_name` VARCHAR(255) NOT NULL,
+          `original_filename` VARCHAR(255) NOT NULL,
+          `file_size` INT DEFAULT 0,
+          `file_type` VARCHAR(50) DEFAULT NULL,
+          `uploaded_by` INT DEFAULT NULL,
+          `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `loan_schemes` (
+          `id` INT AUTO_INCREMENT PRIMARY KEY,
+          `scheme_name` VARCHAR(150) NOT NULL UNIQUE,
+          `code` VARCHAR(50) DEFAULT NULL,
+          `description` TEXT DEFAULT NULL,
+          `status` ENUM('active', 'inactive') DEFAULT 'active',
+          `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+        $lead_cols = [
+            "first_name VARCHAR(100) NULL",
+            "last_name VARCHAR(100) NULL",
+            "title VARCHAR(150) NULL",
+            "company VARCHAR(200) NULL",
+            "whatsapp_number VARCHAR(20) NULL",
+            "address_line_1 TEXT NULL",
+            "address_line_2 TEXT NULL",
+            "country VARCHAR(100) DEFAULT 'India'",
+            "lead_value DECIMAL(12,2) DEFAULT 0.00",
+            "gstin VARCHAR(20) NULL",
+            "pan VARCHAR(20) NULL",
+            "website VARCHAR(255) NULL",
+            "is_public TINYINT(1) DEFAULT 0",
+            "last_contacted_at DATETIME NULL",
+            "next_followup_date DATE NULL",
+            "next_followup_time TIME NULL",
+            "service_id INT NULL",
+            "interested_service_id INT NULL",
+            "interested_loan_scheme_id INT NULL"
+        ];
+
+        foreach ($lead_cols as $col_def) {
+            try {
+                @$pdo->exec("ALTER TABLE `leads` ADD COLUMN {$col_def}");
+            } catch (Throwable $e) {}
         }
+
+        $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
+    } catch (Throwable $ex) {
+        error_log("Phase 3 Lead Auto migration error: " . $ex->getMessage());
     }
 }
 

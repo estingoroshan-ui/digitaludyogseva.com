@@ -5,12 +5,25 @@ require_once __DIR__ . '/includes/admin_header.php';
 require_once __DIR__ . '/../classes/LeadManager.php';
 
 global $pdo;
+ensure_phase3_lead_tables_exist($pdo);
 
 // Fetch Dropdown Masters
-$statuses = $pdo->query("SELECT * FROM lead_statuses ORDER BY sort_order ASC")->fetchAll();
-$sources = $pdo->query("SELECT * FROM lead_sources WHERE status = 'active'")->fetchAll();
-$employees = $pdo->query("SELECT e.id, u.name FROM employees e JOIN users u ON e.user_id = u.id")->fetchAll();
-$services = $pdo->query("SELECT id, name FROM services WHERE status = 'active' ORDER BY name ASC")->fetchAll();
+$statuses = [];
+$sources = [];
+$employees = [];
+$services = [];
+try {
+    $statuses = $pdo->query("SELECT * FROM lead_statuses ORDER BY sort_order ASC")->fetchAll();
+} catch (Throwable $e) {}
+try {
+    $sources = $pdo->query("SELECT * FROM lead_sources WHERE status = 'active'")->fetchAll();
+} catch (Throwable $e) {}
+try {
+    $employees = $pdo->query("SELECT e.id, u.name FROM employees e JOIN users u ON e.user_id = u.id")->fetchAll();
+} catch (Throwable $e) {}
+try {
+    $services = $pdo->query("SELECT id, name FROM services WHERE status = 'active' ORDER BY name ASC")->fetchAll();
+} catch (Throwable $e) {}
 
 // Handle Form Submissions
 $msg = '';
@@ -87,30 +100,36 @@ $view_mode = $_GET['view'] ?? 'list'; // 'list' or 'kanban'
 $where_sql = !empty($where) ? "WHERE " . implode(" AND ", $where) : "";
 
 // Summary Metrics
-$total_leads = (int)$pdo->query("SELECT COUNT(*) FROM leads")->fetchColumn();
-$new_today = (int)$pdo->query("SELECT COUNT(*) FROM leads WHERE DATE(created_at) = CURRENT_DATE()")->fetchColumn();
-$followup_today = (int)$pdo->query("SELECT COUNT(*) FROM lead_reminders WHERE reminder_date = CURRENT_DATE() AND status = 'pending'")->fetchColumn();
-$hot_leads = (int)$pdo->query("SELECT COUNT(*) FROM leads WHERE temperature = 'hot'")->fetchColumn();
-$converted_leads = (int)$pdo->query("SELECT COUNT(*) FROM leads WHERE status_id = 17 OR status_id IN (SELECT id FROM lead_statuses WHERE status_key = 'converted')")->fetchColumn();
-$total_deal_value = (float)$pdo->query("SELECT COALESCE(SUM(lead_value), 0) FROM leads")->fetchColumn();
+$total_leads = 0; $new_today = 0; $followup_today = 0; $hot_leads = 0; $converted_leads = 0; $total_deal_value = 0.0;
+try { $total_leads = (int)$pdo->query("SELECT COUNT(*) FROM leads")->fetchColumn(); } catch (Throwable $e) {}
+try { $new_today = (int)$pdo->query("SELECT COUNT(*) FROM leads WHERE DATE(created_at) = CURRENT_DATE()")->fetchColumn(); } catch (Throwable $e) {}
+try { $followup_today = (int)$pdo->query("SELECT COUNT(*) FROM lead_reminders WHERE reminder_date = CURRENT_DATE() AND status = 'pending'")->fetchColumn(); } catch (Throwable $e) {}
+try { $hot_leads = (int)$pdo->query("SELECT COUNT(*) FROM leads WHERE temperature = 'hot'")->fetchColumn(); } catch (Throwable $e) {}
+try { $converted_leads = (int)$pdo->query("SELECT COUNT(*) FROM leads WHERE status_id = 10 OR status_id IN (SELECT id FROM lead_statuses WHERE status_key = 'converted')")->fetchColumn(); } catch (Throwable $e) {}
+try { $total_deal_value = (float)$pdo->query("SELECT COALESCE(SUM(lead_value), 0) FROM leads")->fetchColumn(); } catch (Throwable $e) {}
 
 // Fetch Leads Data
-$sql = "
-    SELECT l.*, ls.status_name, ls.color_code, lsrc.source_name,
-           srv.name AS service_name, u.name AS staff_name,
-           (SELECT CONCAT(r.reminder_date, ' ', r.reminder_time) FROM lead_reminders r WHERE r.lead_id = l.id AND r.status = 'pending' ORDER BY r.reminder_date ASC LIMIT 1) AS next_flw_datetime
-    FROM leads l
-    LEFT JOIN lead_statuses ls ON l.status_id = ls.id
-    LEFT JOIN lead_sources lsrc ON l.source_id = lsrc.id
-    LEFT JOIN services srv ON l.interested_service_id = srv.id
-    LEFT JOIN employees e ON l.assigned_employee_id = e.id
-    LEFT JOIN users u ON e.user_id = u.id
-    {$where_sql}
-    ORDER BY l.id DESC
-";
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
-$leads = $stmt->fetchAll();
+$leads = [];
+try {
+    $sql = "
+        SELECT l.*, ls.status_name, ls.color_code, lsrc.source_name,
+               srv.name AS service_name, u.name AS staff_name,
+               (SELECT CONCAT(r.reminder_date, ' ', r.reminder_time) FROM lead_reminders r WHERE r.lead_id = l.id AND r.status = 'pending' ORDER BY r.reminder_date ASC LIMIT 1) AS next_flw_datetime
+        FROM leads l
+        LEFT JOIN lead_statuses ls ON l.status_id = ls.id
+        LEFT JOIN lead_sources lsrc ON l.source_id = lsrc.id
+        LEFT JOIN services srv ON l.service_id = srv.id
+        LEFT JOIN employees e ON l.assigned_employee_id = e.id
+        LEFT JOIN users u ON e.user_id = u.id
+        {$where_sql}
+        ORDER BY l.id DESC
+    ";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $leads = $stmt->fetchAll();
+} catch (Throwable $e) {
+    error_log("CRM Leads Fetch Error: " . $e->getMessage());
+}
 ?>
 
 <!-- TOP ACTION HEADER -->
