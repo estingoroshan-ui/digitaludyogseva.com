@@ -425,6 +425,15 @@ if ($action === 'create' || $action === 'edit') {
             $categories_list = $pdo->query("SELECT id, name FROM service_categories ORDER BY id ASC")->fetchAll();
         } catch (Throwable $e2) {}
     }
+
+    // Pre-map required documents by service_id for instant local addition
+    $service_docs_map = [];
+    try {
+        $docs_rows = $pdo->query("SELECT service_id, document_name FROM service_required_documents ORDER BY sort_order ASC")->fetchAll();
+        foreach ($docs_rows as $dr) {
+            $service_docs_map[$dr['service_id']][] = $dr['document_name'];
+        }
+    } catch (Throwable $e) {}
     ?>
 
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
@@ -727,7 +736,8 @@ if ($action === 'create' || $action === 'edit') {
                                  data-gst="<?php echo $srv['is_gst_applicable'] ? $srv['gst_rate'] : 0; ?>"
                                  data-time="<?php echo htmlspecialchars($srv['expected_completion_time'] ?: '3-5 Working Days'); ?>"
                                  data-icon="<?php echo htmlspecialchars($srv['icon'] ?: 'bi-briefcase'); ?>"
-                                 data-cat-id="<?php echo $srv['category_id']; ?>">
+                                 data-cat-id="<?php echo $srv['category_id']; ?>"
+                                 data-docs="<?php echo htmlspecialchars(json_encode($service_docs_map[$srv['id']] ?? [])); ?>">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="d-flex align-items-center gap-3">
                                         <div class="bg-primary-subtle text-primary rounded-3 p-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; font-size: 1.3rem;">
@@ -834,31 +844,35 @@ if ($action === 'create' || $action === 'edit') {
         const prof = parseFloat(elem.getAttribute('data-prof')) || 0;
         const other = parseFloat(elem.getAttribute('data-other')) || 0;
         const gst = parseFloat(elem.getAttribute('data-gst')) || 18;
-        const timeStr = elem.getAttribute('data-time');
+        const timeStr = elem.getAttribute('data-time') || '3-5 Working Days';
 
-        // Fetch required documents dynamically from server
-        fetch('<?php echo BASE_URL; ?>admin/service_master.php?ajax=get_service&id=' + srvId)
-            .then(res => res.json())
-            .then(data => {
-                const docs = (data.status && data.docs) ? data.docs : [];
-                renderItemRow({
-                    service_id: srvId,
-                    service_code: srvCode,
-                    service_name: srvName,
-                    description: srvDesc,
-                    govt_fee: govt,
-                    prof_fee: prof,
-                    other_charges: other,
-                    gst_rate: gst,
-                    quantity: 1,
-                    expected_time: timeStr,
-                    docs: docs
-                });
-            });
+        let docs = [];
+        try {
+            docs = JSON.parse(elem.getAttribute('data-docs') || '[]');
+        } catch(e) {
+            docs = [];
+        }
 
-        // Close modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('serviceSelectorModal'));
-        if (modal) modal.hide();
+        renderItemRow({
+            service_id: srvId,
+            service_code: srvCode,
+            service_name: srvName,
+            description: srvDesc,
+            govt_fee: govt,
+            prof_fee: prof,
+            other_charges: other,
+            gst_rate: gst,
+            quantity: 1,
+            expected_time: timeStr,
+            docs: docs
+        });
+
+        // Close modal cleanly
+        const modalElem = document.getElementById('serviceSelectorModal');
+        if (modalElem) {
+            const modal = bootstrap.Modal.getInstance(modalElem) || bootstrap.Modal.getOrCreateInstance(modalElem);
+            if (modal) modal.hide();
+        }
     }
 
     // Render single row in items table

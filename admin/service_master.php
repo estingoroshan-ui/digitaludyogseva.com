@@ -1,4 +1,29 @@
 <?php
+require_once __DIR__ . '/../config/app.php';
+require_once __DIR__ . '/../includes/auth.php';
+
+// Handle AJAX get_service before HTML header output
+if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_service') {
+    header('Content-Type: application/json');
+    global $pdo;
+    $srv_id = (int)($_GET['id'] ?? 0);
+    $srv = null;
+    $docs = [];
+    if ($srv_id > 0) {
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM services WHERE id = ?");
+            $stmt->execute([$srv_id]);
+            $srv = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $d_stmt = $pdo->prepare("SELECT document_name FROM service_required_documents WHERE service_id = ? ORDER BY sort_order ASC");
+            $d_stmt->execute([$srv_id]);
+            $docs = $d_stmt->fetchAll(PDO::FETCH_COLUMN);
+        } catch (Throwable $e) {}
+    }
+    echo json_encode(['status' => (bool)$srv, 'service' => $srv, 'docs' => $docs]);
+    exit;
+}
+
 $page_title = "Services & Documents Master";
 $active_menu = "services_master";
 require_once __DIR__ . '/includes/admin_header.php';
