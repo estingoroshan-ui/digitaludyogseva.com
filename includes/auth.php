@@ -640,12 +640,177 @@ function ensure_loan_case_tables_exist($pdo) {
     }
 }
 
+function ensure_phase6_estimate_services_tables_exist($pdo) {
+    static $checked_phase6 = false;
+    if ($checked_phase6 || !$pdo) return;
+    $checked_phase6 = true;
+
+    try {
+        $pdo->query("SELECT service_code FROM services LIMIT 1");
+    } catch (Throwable $e) {
+        try {
+            $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
+            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `service_code` VARCHAR(50) NULL");
+            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `other_charges` DECIMAL(10,2) DEFAULT 0.00");
+            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `is_gst_applicable` TINYINT(1) DEFAULT 1");
+            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `is_discount_allowed` TINYINT(1) DEFAULT 1");
+            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `expected_completion_time` VARCHAR(100) DEFAULT '3-5 Working Days'");
+            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `min_time` INT DEFAULT 1");
+            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `max_time` INT DEFAULT 7");
+            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `time_unit` ENUM('Hours', 'Days', 'Working Days') DEFAULT 'Working Days'");
+            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `important_notes` TEXT NULL");
+            @$pdo->exec("ALTER TABLE `services` ADD COLUMN `display_order` INT DEFAULT 0");
+            $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
+        } catch (Throwable $e2) {}
+    }
+
+    try {
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS `service_required_documents` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `service_id` INT NOT NULL,
+              `document_name` VARCHAR(255) NOT NULL,
+              `description` TEXT NULL,
+              `is_mandatory` TINYINT(1) DEFAULT 1,
+              `sort_order` INT DEFAULT 0,
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+              KEY `service_id` (`service_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+        ");
+
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS `estimates` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `estimate_number` VARCHAR(50) NOT NULL UNIQUE,
+              `customer_id` INT NOT NULL,
+              `lead_id` INT NULL,
+              `estimate_date` DATE NOT NULL,
+              `valid_until` DATE NOT NULL,
+              `status` ENUM('draft', 'sent', 'accepted', 'rejected', 'expired', 'converted') DEFAULT 'draft',
+              `currency` VARCHAR(10) DEFAULT 'INR',
+              `total_govt_fee` DECIMAL(10,2) DEFAULT 0.00,
+              `total_prof_fee` DECIMAL(10,2) DEFAULT 0.00,
+              `total_other_charges` DECIMAL(10,2) DEFAULT 0.00,
+              `subtotal` DECIMAL(10,2) DEFAULT 0.00,
+              `discount_type` ENUM('fixed', 'percentage') DEFAULT 'fixed',
+              `discount_rate` DECIMAL(10,2) DEFAULT 0.00,
+              `discount_amount` DECIMAL(10,2) DEFAULT 0.00,
+              `tax_amount` DECIMAL(10,2) DEFAULT 0.00,
+              `grand_total` DECIMAL(10,2) DEFAULT 0.00,
+              `advance_required` DECIMAL(10,2) DEFAULT 0.00,
+              `balance_due` DECIMAL(10,2) DEFAULT 0.00,
+              `client_notes` TEXT NULL,
+              `terms_conditions` TEXT NULL,
+              `created_by` INT NULL,
+              `converted_order_id` INT NULL,
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+              `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+              KEY `customer_id` (`customer_id`),
+              KEY `status` (`status`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+        ");
+
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS `estimate_items` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `estimate_id` INT NOT NULL,
+              `service_id` INT NULL,
+              `service_name` VARCHAR(255) NOT NULL,
+              `service_code` VARCHAR(50) NULL,
+              `description` TEXT NULL,
+              `govt_fee` DECIMAL(10,2) DEFAULT 0.00,
+              `prof_fee` DECIMAL(10,2) DEFAULT 0.00,
+              `other_charges` DECIMAL(10,2) DEFAULT 0.00,
+              `gst_rate` DECIMAL(5,2) DEFAULT 18.00,
+              `gst_amount` DECIMAL(10,2) DEFAULT 0.00,
+              `quantity` INT DEFAULT 1,
+              `total_price` DECIMAL(10,2) DEFAULT 0.00,
+              `expected_time` VARCHAR(100) NULL,
+              `required_docs_snapshot` LONGTEXT NULL,
+              `sort_order` INT DEFAULT 0,
+              KEY `estimate_id` (`estimate_id`),
+              KEY `service_id` (`service_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+        ");
+
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS `service_orders` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `order_number` VARCHAR(50) NOT NULL UNIQUE,
+              `estimate_id` INT NULL,
+              `customer_id` INT NOT NULL,
+              `order_date` DATE NOT NULL,
+              `status` ENUM('pending', 'in_progress', 'under_review', 'completed', 'cancelled') DEFAULT 'pending',
+              `payment_status` ENUM('unpaid', 'partially_paid', 'paid') DEFAULT 'unpaid',
+              `total_govt_fee` DECIMAL(10,2) DEFAULT 0.00,
+              `total_prof_fee` DECIMAL(10,2) DEFAULT 0.00,
+              `total_other_charges` DECIMAL(10,2) DEFAULT 0.00,
+              `subtotal` DECIMAL(10,2) DEFAULT 0.00,
+              `discount_amount` DECIMAL(10,2) DEFAULT 0.00,
+              `tax_amount` DECIMAL(10,2) DEFAULT 0.00,
+              `grand_total` DECIMAL(10,2) DEFAULT 0.00,
+              `advance_paid` DECIMAL(10,2) DEFAULT 0.00,
+              `balance_due` DECIMAL(10,2) DEFAULT 0.00,
+              `notes` TEXT NULL,
+              `created_by` INT NULL,
+              `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+              `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+              KEY `estimate_id` (`estimate_id`),
+              KEY `customer_id` (`customer_id`),
+              KEY `status` (`status`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+        ");
+
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS `service_order_items` (
+              `id` INT AUTO_INCREMENT PRIMARY KEY,
+              `order_id` INT NOT NULL,
+              `service_id` INT NULL,
+              `service_name` VARCHAR(255) NOT NULL,
+              `service_code` VARCHAR(50) NULL,
+              `description` TEXT NULL,
+              `govt_fee` DECIMAL(10,2) DEFAULT 0.00,
+              `prof_fee` DECIMAL(10,2) DEFAULT 0.00,
+              `other_charges` DECIMAL(10,2) DEFAULT 0.00,
+              `gst_rate` DECIMAL(5,2) DEFAULT 18.00,
+              `gst_amount` DECIMAL(10,2) DEFAULT 0.00,
+              `quantity` INT DEFAULT 1,
+              `total_price` DECIMAL(10,2) DEFAULT 0.00,
+              `expected_time` VARCHAR(100) NULL,
+              `required_docs_snapshot` LONGTEXT NULL,
+              `status` ENUM('pending', 'in_progress', 'completed', 'cancelled') DEFAULT 'pending',
+              `sort_order` INT DEFAULT 0,
+              KEY `order_id` (`order_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+        ");
+
+        // Ensure permissions exist
+        @$pdo->exec("INSERT IGNORE INTO `permissions` (`permission_key`, `module`, `description`) VALUES
+            ('services_view', 'services', 'View Services & Documents catalog'),
+            ('services_create', 'services', 'Create new services and document items'),
+            ('services_edit', 'services', 'Edit service details, prices, and checklist'),
+            ('services_delete', 'services', 'Delete services from catalog'),
+            ('orders_view', 'orders', 'View converted service orders'),
+            ('orders_manage', 'orders', 'Manage and update service orders')");
+
+        // Check if preloading is needed
+        $srv_cnt = (int)$pdo->query("SELECT COUNT(*) FROM services WHERE service_code IS NOT NULL")->fetchColumn();
+        if ($srv_cnt < 20 && file_exists(__DIR__ . '/../scripts/seed_services_and_documents.php')) {
+            require_once __DIR__ . '/../scripts/seed_services_and_documents.php';
+            seed_services_master($pdo);
+        }
+    } catch (Throwable $e) {
+        error_log("Phase 6 Migration Error: " . $e->getMessage());
+    }
+}
+
 function ensure_phase1_tables_exist($pdo) {
     ensure_phase2_customer_tables_exist($pdo);
     ensure_phase3_lead_tables_exist($pdo);
     ensure_phase4_hr_tables_exist($pdo);
     ensure_phase5_project_tables_exist($pdo);
     ensure_loan_case_tables_exist($pdo);
+    ensure_phase6_estimate_services_tables_exist($pdo);
     static $checked = false;
     if ($checked || !$pdo) return;
     $checked = true;

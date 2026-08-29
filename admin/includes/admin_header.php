@@ -20,7 +20,8 @@ $active_menu = $active_menu ?? '';
 // Collapsible dropdown active checks
 $is_hr_active = ($active_menu === 'staff' || strpos($uri, 'staff') !== false);
 $is_mail_active = (strpos($uri, 'mailflow') !== false);
-$is_sales_active = ($active_menu === 'payments' || strpos($uri, 'payments') !== false || strpos($uri, 'proposals') !== false || strpos($uri, 'estimates') !== false);
+$is_sales_active = ($active_menu === 'payments' || $active_menu === 'estimates' || strpos($uri, 'payments') !== false || strpos($uri, 'proposals') !== false || strpos($uri, 'estimates') !== false || strpos($uri, 'service_orders') !== false);
+$is_services_master_active = ($active_menu === 'services_master' || strpos($uri, 'service_master') !== false || strpos($uri, 'service_categories') !== false);
 $is_comm_active = ($active_menu === 'commissions' || strpos($uri, 'commissions') !== false || strpos($uri, 'franchises') !== false);
 ?>
 <!DOCTYPE html>
@@ -122,19 +123,32 @@ $is_comm_active = ($active_menu === 'commissions' || strpos($uri, 'commissions')
                 </a>
                 <div class="collapse sidebar-submenu-list <?php echo $is_sales_active ? 'show' : ''; ?>" id="menuSales">
                     <a href="<?php echo BASE_URL; ?>admin/payments.php" class="sidebar-submenu-link <?php echo ($active_menu === 'payments') ? 'active' : ''; ?>"><i class="bi bi-file-earmark-spreadsheet me-2"></i> Invoices</a>
-                    <a href="<?php echo BASE_URL; ?>admin/crm_leads.php?view=estimates" class="sidebar-submenu-link"><i class="bi bi-file-earmark-text me-2"></i> Estimates</a>
+                    <a href="<?php echo BASE_URL; ?>admin/estimates.php" class="sidebar-submenu-link <?php echo ($active_menu === 'estimates' || strpos($uri, 'estimates') !== false) ? 'active' : ''; ?>"><i class="bi bi-file-earmark-text me-2"></i> Estimates</a>
+                    <a href="<?php echo BASE_URL; ?>admin/service_orders.php" class="sidebar-submenu-link <?php echo (strpos($uri, 'service_orders') !== false) ? 'active' : ''; ?>"><i class="bi bi-box-seam me-2"></i> Service Orders</a>
                     <a href="<?php echo BASE_URL; ?>admin/crm_leads.php?view=proposals" class="sidebar-submenu-link"><i class="bi bi-file-earmark-check me-2"></i> Proposals</a>
                     <a href="<?php echo BASE_URL; ?>admin/payments.php" class="sidebar-submenu-link"><i class="bi bi-credit-card me-2"></i> Payments</a>
                     <a href="<?php echo BASE_URL; ?>admin/payments.php?tab=credit" class="sidebar-submenu-link"><i class="bi bi-receipt me-2"></i> Credit Notes</a>
                 </div>
             </div>
 
-            <!-- 9. Subscriptions -->
+            <!-- 9. Services & Documents (Collapsible) -->
+            <div class="sidebar-group-item">
+                <a class="sidebar-item-link <?php echo !$is_services_master_active ? 'collapsed' : 'active'; ?>" data-bs-toggle="collapse" href="#menuServicesMaster" role="button" aria-expanded="<?php echo $is_services_master_active ? 'true' : 'false'; ?>">
+                    <span><i class="bi bi-collection-fill item-icon"></i> Services & Documents</span>
+                    <i class="bi bi-chevron-left chevron-icon"></i>
+                </a>
+                <div class="collapse sidebar-submenu-list <?php echo $is_services_master_active ? 'show' : ''; ?>" id="menuServicesMaster">
+                    <a href="<?php echo BASE_URL; ?>admin/service_master.php" class="sidebar-submenu-link <?php echo (strpos($uri, 'service_master') !== false) ? 'active' : ''; ?>"><i class="bi bi-card-checklist me-2"></i> All Services & Docs</a>
+                    <a href="<?php echo BASE_URL; ?>admin/service_categories.php" class="sidebar-submenu-link <?php echo (strpos($uri, 'service_categories') !== false) ? 'active' : ''; ?>"><i class="bi bi-tags me-2"></i> Categories Master</a>
+                </div>
+            </div>
+
+            <!-- 10. Subscriptions -->
             <a href="<?php echo BASE_URL; ?>admin/services.php" class="sidebar-item-link <?php echo ($active_menu === 'services' && strpos($uri, 'service_workflow_builder') === false) ? 'active' : ''; ?>">
                 <span><i class="bi bi-arrow-repeat item-icon"></i> Subscriptions</span>
             </a>
 
-            <!-- 10. Expenses -->
+            <!-- 11. Expenses -->
             <a href="<?php echo BASE_URL; ?>admin/commissions.php?tab=expenses" class="sidebar-item-link">
                 <span><i class="bi bi-file-earmark-text item-icon"></i> Expenses</span>
             </a>
@@ -187,7 +201,7 @@ $is_comm_active = ($active_menu === 'commissions' || strpos($uri, 'commissions')
             </a>
 
             <!-- 17. Estimate Request -->
-            <a href="<?php echo BASE_URL; ?>admin/crm_leads.php?view=estimates" class="sidebar-item-link">
+            <a href="<?php echo BASE_URL; ?>admin/estimates.php" class="sidebar-item-link <?php echo ($active_menu === 'estimates' || strpos($uri, 'estimates') !== false) ? 'active' : ''; ?>">
                 <span><i class="bi bi-file-earmark-text item-icon"></i> Estimate Request</span>
             </a>
 
@@ -226,7 +240,7 @@ $is_comm_active = ($active_menu === 'commissions' || strpos($uri, 'commissions')
                             <li><a class="dropdown-item rounded-2 py-2 small" href="<?php echo BASE_URL; ?>admin/crm_leads.php?view=proposals"><i class="bi bi-file-earmark-check me-2 text-info"></i> Create Proposal</a></li>
                         <?php endif; ?>
                         <?php if (check_permission('estimates_create')): ?>
-                            <li><a class="dropdown-item rounded-2 py-2 small" href="<?php echo BASE_URL; ?>admin/crm_leads.php?view=estimates"><i class="bi bi-file-earmark-text me-2 text-warning"></i> Create Estimate</a></li>
+                            <li><a class="dropdown-item rounded-2 py-2 small" href="<?php echo BASE_URL; ?>admin/estimates.php?action=create"><i class="bi bi-file-earmark-text me-2 text-warning"></i> Create Estimate</a></li>
                         <?php endif; ?>
                         <?php if (check_permission('invoices_create')): ?>
                             <li><a class="dropdown-item rounded-2 py-2 small" href="<?php echo BASE_URL; ?>admin/payments.php"><i class="bi bi-receipt me-2 text-danger"></i> Create Invoice</a></li>

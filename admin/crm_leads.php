@@ -1,4 +1,9 @@
 <?php
+require_once __DIR__ . '/../config/app.php';
+if (isset($_GET['view']) && $_GET['view'] === 'estimates') {
+    header("Location: " . BASE_URL . "admin/estimates.php");
+    exit;
+}
 $page_title = "Leads CRM & Sales Workspace";
 $active_menu = "leads";
 require_once __DIR__ . '/includes/admin_header.php';
