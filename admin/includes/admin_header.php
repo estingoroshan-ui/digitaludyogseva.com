@@ -4,6 +4,9 @@ require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/csrf.php';
 require_once __DIR__ . '/../../classes/NotificationService.php';
 
+global $pdo;
+ensure_phase1_tables_exist($pdo);
+
 require_login(['admin', 'staff']);
 $current_user = get_current_user_data();
 
@@ -152,6 +155,7 @@ $is_comm_active = ($active_menu === 'commissions' || strpos($uri, 'commissions')
                     <a href="<?php echo BASE_URL; ?>admin/projects.php" class="sidebar-submenu-link <?php echo ($active_menu === 'projects') ? 'active' : ''; ?>"><i class="bi bi-folder2-open me-2"></i> All Loan Cases</a>
                     <a href="<?php echo BASE_URL; ?>admin/loan_types.php" class="sidebar-submenu-link <?php echo ($active_menu === 'loan_types') ? 'active' : ''; ?>"><i class="bi bi-tags me-2"></i> Loan Types Master</a>
                     <a href="<?php echo BASE_URL; ?>admin/lenders.php" class="sidebar-submenu-link <?php echo ($active_menu === 'lenders') ? 'active' : ''; ?>"><i class="bi bi-bank me-2"></i> Bank / NBFC Master</a>
+                    <a href="<?php echo BASE_URL; ?>admin/system_sync.php" class="sidebar-submenu-link"><i class="bi bi-arrow-repeat me-2"></i> System Health & Sync</a>
                 </div>
             </div>
 
