@@ -350,7 +350,7 @@ $total_cats = count($parent_categories);
         <p class="text-muted small mb-0">Configure services, statutory fees, professional charges, turnaround times & document requirements.</p>
     </div>
     <div class="d-flex gap-2">
-        <a href="<?php echo BASE_URL; ?>admin/service_categories.php" class="btn btn-outline-secondary rounded-pill px-3 fw-bold">
+        <a href="service_categories.php" class="btn btn-outline-secondary rounded-pill px-3 fw-bold">
             <i class="bi bi-tags me-1"></i> Manage Categories
         </a>
         <button class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#serviceModal" onclick="resetServiceForm()">

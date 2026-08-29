@@ -254,3 +254,15 @@ body {
   justify-content: center;
   font-size: 1.5rem;
 }
+
+/* Fix Bootstrap Modal Stacking Context & Black Backdrop Overlay */
+.modal-backdrop {
+  z-index: 1050 !important;
+  opacity: 0.5 !important;
+}
+.modal {
+  z-index: 1060 !important;
+}
+.modal-dialog {
+  z-index: 1065 !important;
+}

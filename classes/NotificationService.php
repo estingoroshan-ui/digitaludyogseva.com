@@ -24,7 +24,7 @@ class NotificationService {
         }
     }
 
-    public static function notify_roles($role_keys = [], $title, $message, $link = '') {
+    public static function notify_roles($role_keys, $title, $message, $link = '') {
         global $pdo;
         if (!$pdo || empty($role_keys)) return false;
 

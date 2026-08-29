@@ -404,7 +404,7 @@ if ($action === 'create' || $action === 'edit') {
             <h4 class="font-heading fw-bold mb-1"><?php echo $action === 'edit' ? 'Edit Estimate: ' . htmlspecialchars($form_est_number) : 'Generate Professional Estimate'; ?></h4>
             <p class="text-muted small mb-0">Add services, configure fees, load required documents & calculate real-time totals.</p>
         </div>
-        <a href="<?php echo BASE_URL; ?>admin/estimates.php" class="btn btn-outline-secondary rounded-pill px-3 fw-bold">
+        <a href="estimates.php" class="btn btn-outline-secondary rounded-pill px-3 fw-bold">
             <i class="bi bi-arrow-left me-1"></i> Back to List
         </a>
     </div>
@@ -442,13 +442,13 @@ if ($action === 'create' || $action === 'edit') {
                         <option value="">-- Choose Existing Customer --</option>
                         <?php foreach ($customers as $c): ?>
                             <option value="<?php echo $c['id']; ?>" 
-                                    data-mobile="<?php echo htmlspecialchars($c['mobile']); ?>"
-                                    data-email="<?php echo htmlspecialchars($c['email']); ?>"
-                                    data-gstin="<?php echo htmlspecialchars($c['gstin']); ?>"
+                                    data-mobile="<?php echo htmlspecialchars($c['mobile'] ?? ''); ?>"
+                                    data-email="<?php echo htmlspecialchars($c['email'] ?? ''); ?>"
+                                    data-gstin="<?php echo htmlspecialchars($c['gstin'] ?? ''); ?>"
                                     data-state="<?php echo htmlspecialchars($c['state'] ?? ''); ?>"
                                     data-company="<?php echo htmlspecialchars($c['company_name'] ?? ''); ?>"
                                     <?php echo $form_cust_id == $c['id'] ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($c['name']); ?> <?php echo !empty($c['company_name']) ? '(' . htmlspecialchars($c['company_name']) . ')' : ''; ?> - <?php echo htmlspecialchars($c['mobile']); ?>
+                                <?php echo htmlspecialchars($c['name'] ?? ''); ?> <?php echo !empty($c['company_name']) ? '(' . htmlspecialchars($c['company_name']) . ')' : ''; ?> - <?php echo htmlspecialchars($c['mobile'] ?? ''); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -645,7 +645,7 @@ if ($action === 'create' || $action === 'edit') {
 
         <!-- SAVE / CANCEL BUTTONS -->
         <div class="card border-0 shadow-sm rounded-4 p-3 bg-white d-flex flex-row justify-content-between align-items-center">
-            <a href="<?php echo BASE_URL; ?>admin/estimates.php" class="btn btn-light rounded-pill px-4">Cancel</a>
+            <a href="estimates.php" class="btn btn-light rounded-pill px-4">Cancel</a>
             <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow">
                 <i class="bi bi-check2-circle me-1"></i> Save Estimate & Generate Quotation
             </button>
@@ -700,10 +700,10 @@ if ($action === 'create' || $action === 'edit') {
                                         </div>
                                         <div>
                                             <div class="d-flex align-items-center gap-2">
-                                                <strong class="text-dark"><?php echo htmlspecialchars($srv['name']); ?></strong>
-                                                <span class="badge bg-light text-secondary border"><?php echo htmlspecialchars($srv['service_code']); ?></span>
+                                                <strong class="text-dark"><?php echo htmlspecialchars($srv['name'] ?? ''); ?></strong>
+                                                <span class="badge bg-light text-secondary border"><?php echo htmlspecialchars($srv['service_code'] ?? ''); ?></span>
                                             </div>
-                                            <small class="text-muted d-block"><?php echo htmlspecialchars($srv['category_name']); ?> | TAT: <?php echo htmlspecialchars($srv['expected_completion_time']); ?></small>
+                                            <small class="text-muted d-block"><?php echo htmlspecialchars($srv['category_name'] ?? ''); ?> | TAT: <?php echo htmlspecialchars($srv['expected_completion_time'] ?? ''); ?></small>
                                         </div>
                                     </div>
                                     <div class="text-end">
@@ -1055,10 +1055,10 @@ if ($action === 'create' || $action === 'edit') {
             <p class="text-muted small mb-0">Create multi-service estimates, share on WhatsApp, print branded PDFs & convert to Service Orders.</p>
         </div>
         <div class="d-flex gap-2">
-            <a href="<?php echo BASE_URL; ?>admin/service_orders.php" class="btn btn-outline-secondary rounded-pill px-3 fw-bold">
+            <a href="service_orders.php" class="btn btn-outline-secondary rounded-pill px-3 fw-bold">
                 <i class="bi bi-box-seam me-1"></i> Service Orders
             </a>
-            <a href="<?php echo BASE_URL; ?>admin/estimates.php?action=create" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
+            <a href="estimates.php?action=create" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
                 <i class="bi bi-plus-lg me-1"></i> Create Estimate
             </a>
         </div>
