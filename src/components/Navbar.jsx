@@ -71,6 +71,7 @@ export const Navbar = () => {
             <ul className="nav-links">
               <li>
                 <button 
+                  type="button"
                   onClick={() => setActiveView('website')} 
                   className={`nav-link ${activeView === 'website' ? 'active' : ''}`}
                 >
@@ -79,6 +80,7 @@ export const Navbar = () => {
               </li>
               <li>
                 <button 
+                  type="button"
                   onClick={() => setActiveView('services')} 
                   className={`nav-link ${activeView === 'services' ? 'active' : ''}`}
                 >
@@ -87,6 +89,7 @@ export const Navbar = () => {
               </li>
               <li>
                 <button 
+                  type="button"
                   onClick={() => setActiveView('loans')} 
                   className={`nav-link ${activeView === 'loans' ? 'active' : ''}`}
                 >
@@ -95,6 +98,7 @@ export const Navbar = () => {
               </li>
               <li>
                 <button 
+                  type="button"
                   onClick={() => setActiveView('track')} 
                   className={`nav-link ${activeView === 'track' ? 'active' : ''}`}
                 >
@@ -103,6 +107,7 @@ export const Navbar = () => {
               </li>
               <li>
                 <button 
+                  type="button"
                   onClick={() => setActiveView('franchise')} 
                   className={`nav-link ${activeView === 'franchise' ? 'active' : ''}`}
                 >
