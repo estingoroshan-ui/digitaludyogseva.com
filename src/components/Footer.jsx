@@ -21,9 +21,22 @@ export const Footer = () => {
               </div>
             </div>
 
-            <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '20px', lineHeight: '1.6' }}>
+            <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '16px', lineHeight: '1.6' }}>
               Empowering Indian entrepreneurs, MSMEs, and startups with digital business compliance, MCA filings, trademark protection, and subsidized bank loan approvals.
             </p>
+
+            <div style={{ marginBottom: '20px', padding: '10px 14px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.1)', fontSize: '0.85rem' }}>
+              <span style={{ color: '#94a3b8' }}>Operated &amp; </span>
+              <strong style={{ color: '#fff' }}>Managed By </strong>
+              <a 
+                href="https://digitalvyaparseva.com/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                style={{ color: '#ffa726', fontWeight: '800', textDecoration: 'underline' }}
+              >
+                Digital Vyapar Seva ↗
+              </a>
+            </div>
 
             <div className="flex items-center gap-3">
               <span className="badge badge-emerald">
@@ -91,11 +104,24 @@ export const Footer = () => {
 
         {/* Bottom bar */}
         <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} Digital Udyog Seva (DUS). All Rights Reserved.</p>
+          <div>
+            <p>© {new Date().getFullYear()} Digital Udyog Seva (DUS). All Rights Reserved.</p>
+            <p style={{ fontSize: '0.82rem', color: '#94a3b8', marginTop: '4px' }}>
+              Platform Designed &amp; <span style={{ color: '#fff', fontWeight: '600' }}>Managed By </span>
+              <a 
+                href="https://digitalvyaparseva.com/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                style={{ color: '#ffa726', fontWeight: '800', textDecoration: 'none' }}
+              >
+                Digital Vyapar Seva ↗
+              </a>
+            </p>
+          </div>
           <div className="flex items-center gap-4">
             <span style={{ color: '#64748b' }}>Privacy Policy</span>
             <span style={{ color: '#64748b' }}>•</span>
-            <span style={{ color: '#64748b' }}>Terms & Conditions</span>
+            <span style={{ color: '#64748b' }}>Terms &amp; Conditions</span>
             <span style={{ color: '#64748b' }}>•</span>
             <span style={{ color: '#64748b' }}>Refund Policy</span>
           </div>

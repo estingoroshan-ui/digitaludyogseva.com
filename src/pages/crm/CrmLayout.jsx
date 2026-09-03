@@ -39,7 +39,9 @@ export const CrmLayout = () => {
           </div>
           <div className="brand-text">
             <h2 style={{ fontSize: '1.1rem', color: '#fff', margin: 0 }}>DUS CRM</h2>
-            <span style={{ fontSize: '0.68rem', color: '#ffa726' }}>Enterprise Suite</span>
+            <div style={{ fontSize: '0.68rem', color: '#ffa726', fontWeight: '600' }}>
+              Managed by <a href="https://digitalvyaparseva.com/" target="_blank" rel="noopener noreferrer" style={{ color: '#fff', textDecoration: 'underline' }}>Digital Vyapar Seva</a>
+            </div>
           </div>
         </div>
 

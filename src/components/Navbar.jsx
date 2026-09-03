@@ -26,9 +26,17 @@ export const Navbar = () => {
               <ShieldCheck size={14} color="#ff6f00" />
               <span>Govt of India Startup & MSME Registered Portal</span>
             </span>
-            <span className="flex items-center gap-2">
-              <PhoneCall size={14} />
-              <span>Toll-Free Support: <strong>+91 800-889-4422</strong></span>
+            <span style={{ color: 'rgba(255,255,255,0.2)' }}>|</span>
+            <span className="flex items-center gap-1" style={{ fontSize: '0.8rem' }}>
+              <span style={{ color: '#94a3b8' }}>Managed by: </span>
+              <a 
+                href="https://digitalvyaparseva.com/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                style={{ color: '#ffa726', fontWeight: '700', textDecoration: 'none' }}
+              >
+                Digital Vyapar Seva ↗
+              </a>
             </span>
           </div>
 
