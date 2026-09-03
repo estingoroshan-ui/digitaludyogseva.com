@@ -5,11 +5,14 @@ import { CrmLeadsKanban } from './CrmLeadsKanban';
 import { CrmCustomers } from './CrmCustomers';
 import { CrmProjects } from './CrmProjects';
 import { CrmEstimates } from './CrmEstimates';
+import { CrmLoanCases } from './CrmLoanCases';
 
 // Modals
 import { LeadDetailModal } from './LeadDetailModal';
 import { Customer360Modal } from './Customer360Modal';
 import { ProjectDetailModal } from './ProjectDetailModal';
+import { LoanCaseDetailModal } from './LoanCaseDetailModal';
+import { NewLoanCaseModal } from './NewLoanCaseModal';
 
 import { 
   Building2, 
@@ -27,7 +30,7 @@ import {
 } from 'lucide-react';
 
 export const CrmLayout = () => {
-  const { crmSection, setCrmSection, setActiveView, leads, customers, projects } = useApp();
+  const { crmSection, setCrmSection, setActiveView, leads, customers, projects, loanCases } = useApp();
 
   return (
     <div className="crm-layout">
@@ -91,7 +94,7 @@ export const CrmLayout = () => {
             className={`crm-nav-item ${crmSection === 'loans' ? 'active' : ''}`}
           >
             <Banknote size={18} />
-            <span className="nav-text">Loan Cases Hub</span>
+            <span className="nav-text">Loan Cases Hub ({loanCases.length})</span>
           </div>
         </nav>
 
@@ -144,63 +147,7 @@ export const CrmLayout = () => {
           {crmSection === 'customers' && <CrmCustomers />}
           {crmSection === 'projects' && <CrmProjects />}
           {crmSection === 'estimates' && <CrmEstimates />}
-          {crmSection === 'loans' && (
-            <div>
-              <div className="flex justify-between items-center mb-6">
-                <div>
-                  <h2 style={{ fontSize: '1.6rem', color: '#0b1727' }}>Government & Bank Loan Underwriting</h2>
-                  <p style={{ color: '#64748b', fontSize: '0.88rem' }}>
-                    Active PMEGP, Mudra, and Commercial loans being coordinated with SBI, PNB, and Bank of Baroda.
-                  </p>
-                </div>
-              </div>
-
-              <div className="table-wrapper">
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>Application ID</th>
-                      <th>Applicant / Unit</th>
-                      <th>Scheme</th>
-                      <th>Loan Amount</th>
-                      <th>Target Bank</th>
-                      <th>Stage</th>
-                      <th>Underwriter</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><span style={{ fontFamily: 'var(--font-mono)', fontWeight: '700' }}>LN-2026-081</span></td>
-                      <td><strong>Pooja Fashion Hub</strong></td>
-                      <td>PMEGP Scheme (35% Subsidy)</td>
-                      <td style={{ fontWeight: '800', fontFamily: 'var(--font-mono)' }}>₹25,00,000</td>
-                      <td>State Bank of India (Surat)</td>
-                      <td><span className="badge badge-emerald">Sanction Letter Issued</span></td>
-                      <td>Anil Tyagi</td>
-                    </tr>
-                    <tr>
-                      <td><span style={{ fontFamily: 'var(--font-mono)', fontWeight: '700' }}>LN-2026-092</span></td>
-                      <td><strong>Sharma Agro Foods</strong></td>
-                      <td>Mudra Tarun Scheme</td>
-                      <td style={{ fontWeight: '800', fontFamily: 'var(--font-mono)' }}>₹10,00,000</td>
-                      <td>Punjab National Bank</td>
-                      <td><span className="badge badge-blue">KVIC Forwarded</span></td>
-                      <td>Neha Sharma</td>
-                    </tr>
-                    <tr>
-                      <td><span style={{ fontFamily: 'var(--font-mono)', fontWeight: '700' }}>LN-2026-104</span></td>
-                      <td><strong>Apex BioSolutions</strong></td>
-                      <td>CGTMSE Collateral-Free</td>
-                      <td style={{ fontWeight: '800', fontFamily: 'var(--font-mono)' }}>₹45,00,000</td>
-                      <td>Bank of Baroda</td>
-                      <td><span className="badge badge-amber">CMA Data In Preparation</span></td>
-                      <td>Rahul Mehta</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
+          {crmSection === 'loans' && <CrmLoanCases />}
         </main>
       </div>
 
@@ -208,6 +155,8 @@ export const CrmLayout = () => {
       <LeadDetailModal />
       <Customer360Modal />
       <ProjectDetailModal />
+      <LoanCaseDetailModal />
+      <NewLoanCaseModal />
     </div>
   );
 };

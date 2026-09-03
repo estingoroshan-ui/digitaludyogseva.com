@@ -7,7 +7,10 @@ import {
   initialLeads,
   initialCustomers,
   initialProjects,
-  initialEstimates
+  initialEstimates,
+  initialLoanCases,
+  loanStagesMaster,
+  lendersMaster
 } from '../data/mockData';
 
 const AppContext = createContext();
@@ -23,11 +26,14 @@ export const AppProvider = ({ children }) => {
   const [projects, setProjects] = useState(initialProjects);
   const [estimates, setEstimates] = useState(initialEstimates);
   const [applications, setApplications] = useState(sampleApplications);
+  const [loanCases, setLoanCases] = useState(initialLoanCases);
 
   // Active Detail Drawer/Modal selections
   const [selectedLeadForDetail, setSelectedLeadForDetail] = useState(null);
   const [selectedCustomerFor360, setSelectedCustomerFor360] = useState(null);
   const [selectedProjectForDetail, setSelectedProjectForDetail] = useState(null);
+  const [selectedLoanForDetail, setSelectedLoanForDetail] = useState(null);
+  const [isNewLoanModalOpen, setIsNewLoanModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -381,6 +387,143 @@ export const AppProvider = ({ children }) => {
     return est;
   };
 
+  // -----------------------------------------------------------
+  // GOVERNMENT LOAN CASE ACTIONS
+  // -----------------------------------------------------------
+  const addLoanCase = (caseData) => {
+    const newCase = {
+      id: `LN-2026-${Math.floor(100 + Math.random() * 900)}`,
+      applicationDate: new Date().toISOString().split('T')[0],
+      stage: 'Inquiry',
+      priority: 'High',
+      cibilScore: caseData.cibilScore || 740,
+      cibilStatus: (caseData.cibilScore || 740) >= 750 ? 'Excellent' : 'Good',
+      existingLoans: Number(caseData.existingLoans) || 0,
+      existingEmi: Number(caseData.existingEmi) || 0,
+      underwriter: 'Anil Tyagi (Senior Credit Lead)',
+      bankDetails: {
+        lenderName: caseData.preferredBank || 'State Bank of India (SBI)',
+        branch: caseData.preferredBranch || 'Main Branch',
+        branchManager: 'Not Assigned',
+        creditOfficer: 'Pending Desk Review',
+        portalLoginId: 'In Process',
+        janSamarthId: `JS-${Math.floor(1000 + Math.random() * 9000)}`,
+        loginDate: null,
+        sanctionDate: null,
+        sanctionedAmount: 0,
+        roi: '8.75%',
+        tenureMonths: 60,
+        processingFee: (Number(caseData.requiredAmount) || 1000000) * 0.005,
+        disbursedAmount: 0,
+        disbursementDate: null,
+        utrNo: null
+      },
+      subsidy: {
+        eligible: (caseData.scheme || '').includes('PMEGP'),
+        schemeName: (caseData.scheme || '').includes('PMEGP') ? 'PMEGP Capital Subsidy' : 'Standard Scheme',
+        category: caseData.subsidyCategory || 'General Category',
+        subsidyPercent: (caseData.scheme || '').includes('PMEGP') ? 25 : 0,
+        subsidyAmount: (caseData.scheme || '').includes('PMEGP') ? (Number(caseData.requiredAmount) || 1000000) * 0.25 : 0,
+        kvicClaimNo: 'Pending Portal Submission',
+        claimStatus: 'Application Created'
+      },
+      documents: [
+        { name: 'Applicant PAN & Aadhaar Card', status: 'Verified', mandatory: true },
+        { name: 'Udyam Registration Certificate', status: 'Verified', mandatory: true },
+        { name: 'Bank Statement (Last 12 Months)', status: 'Verified', mandatory: true },
+        { name: '3-Year CA Audited ITR & Balance Sheets', status: 'In Review', mandatory: true },
+        { name: 'Detailed Project Report (DPR)', status: 'In Preparation', mandatory: true },
+        { name: 'Machinery / Stock Quotations', status: 'Pending Upload', mandatory: false }
+      ],
+      timeline: [
+        { 
+          date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }), 
+          title: 'Case File Created', 
+          desc: `Government loan inquiry logged for ${caseData.scheme || 'MSME Loan'}.` 
+        }
+      ],
+      ...caseData
+    };
+
+    setLoanCases(prev => [newCase, ...prev]);
+    showToast(`Loan Application #${newCase.id} created successfully!`);
+    confetti({ particleCount: 60, spread: 60, origin: { y: 0.7 } });
+    return newCase;
+  };
+
+  const updateLoanCaseStage = (caseId, newStage, remarks = '') => {
+    setLoanCases(prev => prev.map(c => {
+      if (c.id === caseId) {
+        const updated = {
+          ...c,
+          stage: newStage,
+          timeline: [
+            {
+              date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+              title: `Stage Updated to ${newStage}`,
+              desc: remarks || `Status updated in pipeline by Credit Team.`
+            },
+            ...c.timeline
+          ]
+        };
+
+        if (newStage === 'Sanctioned' && !updated.bankDetails.sanctionDate) {
+          updated.bankDetails.sanctionDate = new Date().toISOString().split('T')[0];
+          updated.bankDetails.sanctionedAmount = updated.requiredAmount;
+          confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        }
+        if (newStage === 'Disbursed' && !updated.bankDetails.disbursementDate) {
+          updated.bankDetails.disbursementDate = new Date().toISOString().split('T')[0];
+          updated.bankDetails.disbursedAmount = updated.bankDetails.sanctionedAmount || updated.requiredAmount;
+          updated.bankDetails.utrNo = `RTGS${Date.now().toString().slice(-8)}`;
+          confetti({ particleCount: 120, spread: 80, origin: { y: 0.5 } });
+        }
+
+        if (selectedLoanForDetail && selectedLoanForDetail.id === caseId) {
+          setSelectedLoanForDetail(updated);
+        }
+        return updated;
+      }
+      return c;
+    }));
+
+    showToast(`Loan Case #${caseId} advanced to ${newStage}!`);
+  };
+
+  const updateLoanBankDetails = (caseId, bankData) => {
+    setLoanCases(prev => prev.map(c => {
+      if (c.id === caseId) {
+        const updated = {
+          ...c,
+          bankDetails: { ...c.bankDetails, ...bankData }
+        };
+        if (selectedLoanForDetail && selectedLoanForDetail.id === caseId) {
+          setSelectedLoanForDetail(updated);
+        }
+        return updated;
+      }
+      return c;
+    }));
+    showToast(`Bank & underwriting details updated for #${caseId}!`);
+  };
+
+  const updateLoanSubsidy = (caseId, subsidyData) => {
+    setLoanCases(prev => prev.map(c => {
+      if (c.id === caseId) {
+        const updated = {
+          ...c,
+          subsidy: { ...c.subsidy, ...subsidyData }
+        };
+        if (selectedLoanForDetail && selectedLoanForDetail.id === caseId) {
+          setSelectedLoanForDetail(updated);
+        }
+        return updated;
+      }
+      return c;
+    }));
+    showToast(`Subsidy status updated for #${caseId}!`);
+  };
+
   // Tracking Action
   const trackApplication = (appId) => {
     const cleanId = appId.trim().toUpperCase();
@@ -415,6 +558,17 @@ export const AppProvider = ({ children }) => {
         setSelectedProjectForDetail,
         estimates,
         addEstimate,
+        loanCases,
+        addLoanCase,
+        updateLoanCaseStage,
+        updateLoanBankDetails,
+        updateLoanSubsidy,
+        selectedLoanForDetail,
+        setSelectedLoanForDetail,
+        isNewLoanModalOpen,
+        setIsNewLoanModalOpen,
+        loanStagesMaster,
+        lendersMaster,
         applications,
         trackApplication,
         popularServices,
@@ -433,3 +587,4 @@ export const AppProvider = ({ children }) => {
 };
 
 export const useApp = () => useContext(AppContext);
+
