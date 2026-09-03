@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { Search, Plus, Building2, Phone, Mail, MapPin, CheckCircle2, Shield } from 'lucide-react';
 
 export const CrmCustomers = () => {
-  const { customers } = useApp();
+  const { customers, setSelectedCustomerFor360 } = useApp();
   const [search, setSearch] = useState('');
 
   const filtered = customers.filter(c => 
@@ -47,6 +47,7 @@ export const CrmCustomers = () => {
               <th>KYC Status</th>
               <th>Active Services</th>
               <th>Total Billed</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -87,6 +88,15 @@ export const CrmCustomers = () => {
                 </td>
                 <td style={{ fontWeight: '800', fontFamily: 'var(--font-mono)', color: '#0b1727' }}>
                   {client.totalBilled}
+                </td>
+                <td>
+                  <button
+                    onClick={() => setSelectedCustomerFor360(client)}
+                    className="btn btn-sm btn-blue"
+                    style={{ fontSize: '0.78rem', padding: '6px 10px', whiteSpace: 'nowrap' }}
+                  >
+                    Customer 360°
+                  </button>
                 </td>
               </tr>
             ))}

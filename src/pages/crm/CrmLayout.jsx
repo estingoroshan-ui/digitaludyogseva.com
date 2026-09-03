@@ -3,12 +3,20 @@ import { useApp } from '../../context/AppContext';
 import { CrmDashboard } from './CrmDashboard';
 import { CrmLeadsKanban } from './CrmLeadsKanban';
 import { CrmCustomers } from './CrmCustomers';
+import { CrmProjects } from './CrmProjects';
 import { CrmEstimates } from './CrmEstimates';
+
+// Modals
+import { LeadDetailModal } from './LeadDetailModal';
+import { Customer360Modal } from './Customer360Modal';
+import { ProjectDetailModal } from './ProjectDetailModal';
+
 import { 
   Building2, 
   LayoutDashboard, 
   Kanban, 
   Users, 
+  Briefcase,
   FileText, 
   Banknote, 
   ArrowLeft, 
@@ -19,7 +27,7 @@ import {
 } from 'lucide-react';
 
 export const CrmLayout = () => {
-  const { crmSection, setCrmSection, setActiveView, leads } = useApp();
+  const { crmSection, setCrmSection, setActiveView, leads, customers, projects } = useApp();
 
   return (
     <div className="crm-layout">
@@ -49,7 +57,7 @@ export const CrmLayout = () => {
             className={`crm-nav-item ${crmSection === 'leads' ? 'active' : ''}`}
           >
             <Kanban size={18} />
-            <span className="nav-text">Leads Pipeline ({leads.length})</span>
+            <span className="nav-text">LEAD Pipeline ({leads.length})</span>
           </div>
 
           <div 
@@ -57,7 +65,15 @@ export const CrmLayout = () => {
             className={`crm-nav-item ${crmSection === 'customers' ? 'active' : ''}`}
           >
             <Users size={18} />
-            <span className="nav-text">Customer Vault</span>
+            <span className="nav-text">CUSTOMER 360° ({customers.length})</span>
+          </div>
+
+          <div 
+            onClick={() => setCrmSection('projects')}
+            className={`crm-nav-item ${crmSection === 'projects' ? 'active' : ''}`}
+          >
+            <Briefcase size={18} />
+            <span className="nav-text">PROJECT Cases ({projects.length})</span>
           </div>
 
           <div 
@@ -124,6 +140,7 @@ export const CrmLayout = () => {
           {crmSection === 'dashboard' && <CrmDashboard />}
           {crmSection === 'leads' && <CrmLeadsKanban />}
           {crmSection === 'customers' && <CrmCustomers />}
+          {crmSection === 'projects' && <CrmProjects />}
           {crmSection === 'estimates' && <CrmEstimates />}
           {crmSection === 'loans' && (
             <div>
@@ -184,6 +201,11 @@ export const CrmLayout = () => {
           )}
         </main>
       </div>
+
+      {/* Global CRM Modals */}
+      <LeadDetailModal />
+      <Customer360Modal />
+      <ProjectDetailModal />
     </div>
   );
 };

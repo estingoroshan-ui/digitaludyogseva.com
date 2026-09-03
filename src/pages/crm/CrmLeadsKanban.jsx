@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 
 export const CrmLeadsKanban = () => {
-  const { leads, updateLeadStage, addLead } = useApp();
+  const { leads, updateLeadStage, addLead, setSelectedLeadForDetail } = useApp();
   const [search, setSearch] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
 
@@ -169,6 +169,15 @@ export const CrmLeadsKanban = () => {
                         ))}
                       </select>
                     </div>
+
+                    <button
+                      onClick={() => setSelectedLeadForDetail(lead)}
+                      className="btn btn-sm btn-outline w-full"
+                      style={{ fontSize: '0.78rem', padding: '5px 8px', marginTop: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', borderColor: '#ff8f00', color: '#e65100', background: '#fff7ed' }}
+                    >
+                      <span>8-Step Lifecycle Dossier</span>
+                      <ArrowRight size={12} />
+                    </button>
                   </div>
                 ))}
 
