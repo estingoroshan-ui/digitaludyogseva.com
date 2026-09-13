@@ -16,7 +16,13 @@ import {
   assignmentRulesMaster,
   aiTemplatesMaster,
   externalConsultantsMaster,
-  initial360Leads
+  initial360Leads,
+  businessHubCabinsMaster,
+  initialFranchisesMaster,
+  machineryCatalogMaster,
+  tradingInquiriesMaster,
+  cabinBillsMaster,
+  cabinStaffMaster
 } from '../data/mockData';
 
 const AppContext = createContext();
@@ -44,6 +50,19 @@ export const AppProvider = ({ children }) => {
   const [estimates, setEstimates] = useState(initialEstimates);
   const [applications, setApplications] = useState(sampleApplications);
   const [loanCases, setLoanCases] = useState(initialLoanCases);
+
+  // Business Hub Cabins, Franchises & Trading State
+  const [cabins, setCabins] = useState(businessHubCabinsMaster);
+  const [franchises, setFranchises] = useState(initialFranchisesMaster);
+  const [machineryCatalog, setMachineryCatalog] = useState(machineryCatalogMaster);
+  const [tradingInquiries, setTradingInquiries] = useState(tradingInquiriesMaster);
+  const [cabinBills, setCabinBills] = useState(cabinBillsMaster);
+  const [cabinStaff, setCabinStaff] = useState(cabinStaffMaster);
+
+  // Cabin & Franchise Modals
+  const [selectedCabin, setSelectedCabin] = useState(null);
+  const [isCabinInvoiceModalOpen, setIsCabinInvoiceModalOpen] = useState(false);
+  const [isNewFranchiseModalOpen, setIsNewFranchiseModalOpen] = useState(false);
 
   // Active Detail Drawer/Modal selections
   const [selectedLeadForDetail, setSelectedLeadForDetail] = useState(null);
@@ -1119,6 +1138,108 @@ export const AppProvider = ({ children }) => {
     return sampleApplications[cleanId] || null;
   };
 
+  // -----------------------------------------------------------
+  // BUSINESS HUB CABINS & MULTI-DESK ACTIONS
+  // -----------------------------------------------------------
+
+  // Dispatch / Transfer case to another cabin
+  const dispatchCaseToCabin = (caseId, targetCabinId, note) => {
+    setCabins(prev => prev.map(c => {
+      if (c.id === targetCabinId) {
+        return { ...c, activeCases: c.activeCases + 1 };
+      }
+      return c;
+    }));
+
+    const targetCabin = cabins.find(c => c.id === targetCabinId);
+    showToast(`Case #${caseId} successfully forwarded to ${targetCabin ? targetCabin.cabinNumber + ' - ' + targetCabin.name : targetCabinId}! Note: ${note || 'Transferred for next phase processing.'}`);
+    try { confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } }); } catch(e) {}
+  };
+
+  // Generate department-specific Cabin Invoice / Estimate
+  const createCabinBill = (billData) => {
+    const nextNum = Math.floor(100 + Math.random() * 900);
+    const id = `INV-CAB-2026-${nextNum}`;
+    const newBill = {
+      id,
+      date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+      status: billData.paymentMode ? 'Paid' : 'Unpaid',
+      ...billData
+    };
+    setCabinBills(prev => [newBill, ...prev]);
+
+    // Update revenue of the respective cabin
+    if (billData.cabinId) {
+      setCabins(prev => prev.map(c => {
+        if (c.id === billData.cabinId) {
+          const currentRev = parseInt((c.monthRevenue || '0').replace(/[^0-9]/g, ''), 10) || 0;
+          const updatedRev = currentRev + (billData.total || billData.amount || 0);
+          return { ...c, monthRevenue: `₹${updatedRev.toLocaleString('en-IN')}` };
+        }
+        return c;
+      }));
+    }
+
+    showToast(`Invoice #${id} generated for ${billData.cabinName || 'Department Cabin'}! Amount: ₹${billData.total || billData.amount}`);
+    return newBill;
+  };
+
+  // Onboard new Franchise (Kendra Partner)
+  const addFranchise = (newFranchise) => {
+    const nextNum = Math.floor(100 + Math.random() * 900);
+    const code = `DUS-KD-${newFranchise.district ? newFranchise.district.substring(0, 3).toUpperCase() : 'IND'}${nextNum}`;
+    const id = `FR-${nextNum}`;
+    const fullFranchise = {
+      id,
+      code,
+      activeLeads: 0,
+      sanctionedVolume: '₹0',
+      commissionRate: newFranchise.commissionRate || '40%',
+      walletBalance: 0,
+      totalEarned: 0,
+      status: 'Active Verified',
+      joinedDate: 'Today',
+      ...newFranchise
+    };
+    setFranchises(prev => [fullFranchise, ...prev]);
+    showToast(`Congratulations! Kendra Franchise [${code}] onboarded for ${newFranchise.district}!`);
+    try { confetti({ particleCount: 70, spread: 80, origin: { y: 0.7 } }); } catch(e) {}
+    return fullFranchise;
+  };
+
+  // Approve Franchise Commission Payout
+  const approveFranchisePayout = (franchiseId, amount) => {
+    setFranchises(prev => prev.map(f => {
+      if (f.id === franchiseId) {
+        const newBalance = Math.max(0, (f.walletBalance || 0) - amount);
+        return { ...f, walletBalance: newBalance };
+      }
+      return f;
+    }));
+    showToast(`Franchise payout of ₹${amount.toLocaleString('en-IN')} approved and transferred to bank account!`);
+  };
+
+  // Add Machinery / Equipment Order & Proforma Quote
+  const createMachineryOrder = (orderData) => {
+    showToast(`Proforma Invoice & Bank Quotation generated for "${orderData.machineryName}" for customer ${orderData.customerName}!`);
+    try { confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 } }); } catch(e) {}
+  };
+
+  // Add Raw Material / Finished Goods inquiry
+  const addTradingInquiry = (inquiryData) => {
+    const nextNum = Math.floor(800 + Math.random() * 199);
+    const id = `TRD-${nextNum}`;
+    const newInquiry = {
+      id,
+      cabinRef: 'Cabin #06 (Trading Desk)',
+      status: 'In Sourcing Review',
+      date: 'Today',
+      ...inquiryData
+    };
+    setTradingInquiries(prev => [newInquiry, ...prev]);
+    showToast(`Trading deal inquiry #${id} logged at Cabin #06 (Raw Material & Trading Desk)!`);
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -1194,7 +1315,35 @@ export const AppProvider = ({ children }) => {
         searchQuery,
         setSearchQuery,
         toasts,
-        showToast
+        showToast,
+
+        // Business Hub Cabins & Desks
+        cabins,
+        setCabins,
+        selectedCabin,
+        setSelectedCabin,
+        dispatchCaseToCabin,
+        isCabinInvoiceModalOpen,
+        setIsCabinInvoiceModalOpen,
+        cabinBills,
+        createCabinBill,
+        cabinStaff,
+
+        // Franchise (Kendra) Partner Network
+        franchises,
+        setFranchises,
+        addFranchise,
+        approveFranchisePayout,
+        isNewFranchiseModalOpen,
+        setIsNewFranchiseModalOpen,
+
+        // Plant, Machinery & Trading Hub
+        machineryCatalog,
+        setMachineryCatalog,
+        tradingInquiries,
+        setTradingInquiries,
+        createMachineryOrder,
+        addTradingInquiry
       }}
     >
       {children}

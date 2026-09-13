@@ -9,6 +9,13 @@ import { CrmLoanCases } from './CrmLoanCases';
 import { Lead360AdminSettings } from './lead360/Lead360AdminSettings';
 import { Lead360ExternalPortal } from './lead360/Lead360ExternalPortal';
 
+// New Business Hub & Ecosystem Modules
+import { BusinessHubCabins } from './cabins/BusinessHubCabins';
+import { FranchiseManager } from './franchise/FranchiseManager';
+import { MachineryTradingHub } from './trading/MachineryTradingHub';
+import { AiSubsidyEligibilityEngine } from './subsidy/AiSubsidyEligibilityEngine';
+import { CrmHrmDesk } from './hrm/CrmHrmDesk';
+
 // Modals
 import { Lead360Modal } from './lead360/Lead360Modal';
 import { Customer360Modal } from './Customer360Modal';
@@ -31,7 +38,12 @@ import {
   UserCheck,
   Sparkles,
   Sliders,
-  Award
+  Award,
+  DoorOpen,
+  Settings,
+  Package,
+  Calculator,
+  Receipt
 } from 'lucide-react';
 
 export const CrmLayout = () => {
@@ -43,6 +55,8 @@ export const CrmLayout = () => {
     customers, 
     projects, 
     loanCases,
+    cabins,
+    franchises,
     activeRole,
     setActiveRole,
     setSelectedLeadForDetail,
@@ -52,46 +66,118 @@ export const CrmLayout = () => {
   return (
     <div className="crm-layout">
       {/* Sidebar */}
-      <aside className="crm-sidebar">
+      <aside className="crm-sidebar" style={{ overflowY: 'auto' }}>
         <div className="crm-sidebar-header">
           <div className="brand-mark" style={{ width: '36px', height: '36px', background: 'linear-gradient(135deg, #ff6f00, #ea580c)' }}>
             <Building2 size={18} />
           </div>
           <div className="brand-text">
-            <h2 style={{ fontSize: '1.1rem', color: '#fff', margin: 0 }}>DUS CRM</h2>
+            <h2 style={{ fontSize: '1.1rem', color: '#fff', margin: 0 }}>DUS Master CRM</h2>
             <div style={{ fontSize: '0.68rem', color: '#ffa726', fontWeight: '600' }}>
-              Managed by <a href="https://digitalvyaparseva.com/" target="_blank" rel="noopener noreferrer" style={{ color: '#fff', textDecoration: 'underline' }}>Digital Vyapar Seva</a>
+              Business Hub Ecosystem
             </div>
           </div>
         </div>
 
         <nav className="crm-nav">
-          {/* PRIMARY FLAGSHIP LEAD MODULE */}
+          {/* SECTION 1: BUSINESS HUB BUILDING & DESKS */}
+          <div style={{ padding: '6px 12px 2px', fontSize: '0.68rem', textTransform: 'uppercase', color: '#64748b', fontWeight: '800', letterSpacing: '0.05em' }}>
+            Business Hub Building
+          </div>
+
           <div 
-            onClick={() => setCrmSection('leads')}
-            className={`crm-nav-item ${crmSection === 'leads' ? 'active' : ''}`}
-            style={{ borderLeft: crmSection === 'leads' ? '3px solid #ff6f00' : 'none' }}
+            onClick={() => setCrmSection('cabins')}
+            className={`crm-nav-item ${crmSection === 'cabins' ? 'active' : ''}`}
+            style={{ borderLeft: crmSection === 'cabins' ? '3px solid #ff6f00' : 'none' }}
           >
-            <Sparkles size={18} color="#ff6f00" />
+            <DoorOpen size={18} color="#ff6f00" />
             <span className="nav-text" style={{ fontWeight: '700' }}>
-              LEAD 360° AUTOPILOT ({leads.length})
+              7 Business Cabins
             </span>
           </div>
 
           <div 
-            onClick={() => setCrmSection('admin_settings')}
-            className={`crm-nav-item ${crmSection === 'admin_settings' ? 'active' : ''}`}
+            onClick={() => setCrmSection('franchises')}
+            className={`crm-nav-item ${crmSection === 'franchises' ? 'active' : ''}`}
           >
-            <Sliders size={18} />
-            <span className="nav-text">Lead Admin Controls</span>
+            <Award size={18} color="#fbbf24" />
+            <span className="nav-text">Kendra Franchises ({franchises.length})</span>
           </div>
 
           <div 
-            onClick={() => setCrmSection('external_portal')}
-            className={`crm-nav-item ${crmSection === 'external_portal' ? 'active' : ''}`}
+            onClick={() => setCrmSection('trading')}
+            className={`crm-nav-item ${crmSection === 'trading' ? 'active' : ''}`}
           >
-            <Award size={18} />
-            <span className="nav-text">CA / CS Outsource Desk</span>
+            <Settings size={18} color="#14b8a6" />
+            <span className="nav-text">Machinery &amp; B2B Trading</span>
+          </div>
+
+          <div 
+            onClick={() => setCrmSection('subsidy_ai')}
+            className={`crm-nav-item ${crmSection === 'subsidy_ai' ? 'active' : ''}`}
+          >
+            <Calculator size={18} color="#818cf8" />
+            <span className="nav-text" style={{ fontWeight: '700' }}>AI Subsidy Calculator</span>
+          </div>
+
+          <div 
+            onClick={() => setCrmSection('hrm')}
+            className={`crm-nav-item ${crmSection === 'hrm' ? 'active' : ''}`}
+          >
+            <Users size={18} color="#ec4899" />
+            <span className="nav-text">HRM &amp; Cabin Staff</span>
+          </div>
+
+          {/* SECTION 2: PIPELINES & CASE HUB */}
+          <div style={{ padding: '12px 12px 2px', fontSize: '0.68rem', textTransform: 'uppercase', color: '#64748b', fontWeight: '800', letterSpacing: '0.05em' }}>
+            Pipelines &amp; Operations
+          </div>
+
+          <div 
+            onClick={() => setCrmSection('leads')}
+            className={`crm-nav-item ${crmSection === 'leads' ? 'active' : ''}`}
+          >
+            <Sparkles size={18} color="#ff8f00" />
+            <span className="nav-text">
+              LEAD 360° Autopilot ({leads.length})
+            </span>
+          </div>
+
+          <div 
+            onClick={() => setCrmSection('loans')}
+            className={`crm-nav-item ${crmSection === 'loans' ? 'active' : ''}`}
+          >
+            <Banknote size={18} color="#4ade80" />
+            <span className="nav-text">Loan Cases Hub ({loanCases.length})</span>
+          </div>
+
+          <div 
+            onClick={() => setCrmSection('projects')}
+            className={`crm-nav-item ${crmSection === 'projects' ? 'active' : ''}`}
+          >
+            <Briefcase size={18} color="#60a5fa" />
+            <span className="nav-text">PROJECT Cases ({projects.length})</span>
+          </div>
+
+          <div 
+            onClick={() => setCrmSection('customers')}
+            className={`crm-nav-item ${crmSection === 'customers' ? 'active' : ''}`}
+          >
+            <Users size={18} color="#c084fc" />
+            <span className="nav-text">CUSTOMER 360° ({customers.length})</span>
+          </div>
+
+          <div 
+            onClick={() => setCrmSection('estimates')}
+            className={`crm-nav-item ${crmSection === 'estimates' ? 'active' : ''}`}
+          >
+            <FileText size={18} />
+            <span className="nav-text">Estimates &amp; Billing</span>
+          </div>
+
+          {/* SECTION 3: MANAGEMENT */}
+          <div style={{ padding: '12px 12px 2px', fontSize: '0.68rem', textTransform: 'uppercase', color: '#64748b', fontWeight: '800', letterSpacing: '0.05em' }}>
+            Management
           </div>
 
           <div 
@@ -103,35 +189,19 @@ export const CrmLayout = () => {
           </div>
 
           <div 
-            onClick={() => setCrmSection('customers')}
-            className={`crm-nav-item ${crmSection === 'customers' ? 'active' : ''}`}
+            onClick={() => setCrmSection('external_portal')}
+            className={`crm-nav-item ${crmSection === 'external_portal' ? 'active' : ''}`}
           >
-            <Users size={18} />
-            <span className="nav-text">CUSTOMER 360° ({customers.length})</span>
+            <Award size={18} />
+            <span className="nav-text">CA / CS Outsource Desk</span>
           </div>
 
           <div 
-            onClick={() => setCrmSection('projects')}
-            className={`crm-nav-item ${crmSection === 'projects' ? 'active' : ''}`}
+            onClick={() => setCrmSection('admin_settings')}
+            className={`crm-nav-item ${crmSection === 'admin_settings' ? 'active' : ''}`}
           >
-            <Briefcase size={18} />
-            <span className="nav-text">PROJECT Cases ({projects.length})</span>
-          </div>
-
-          <div 
-            onClick={() => setCrmSection('estimates')}
-            className={`crm-nav-item ${crmSection === 'estimates' ? 'active' : ''}`}
-          >
-            <FileText size={18} />
-            <span className="nav-text">Estimates & Billing</span>
-          </div>
-
-          <div 
-            onClick={() => setCrmSection('loans')}
-            className={`crm-nav-item ${crmSection === 'loans' ? 'active' : ''}`}
-          >
-            <Banknote size={18} />
-            <span className="nav-text">Loan Cases Hub ({loanCases.length})</span>
+            <Sliders size={18} />
+            <span className="nav-text">Lead Admin Controls</span>
           </div>
         </nav>
 
@@ -154,10 +224,10 @@ export const CrmLayout = () => {
         <header className="crm-topbar">
           <div className="flex items-center gap-3">
             <span className="badge badge-saffron" style={{ fontSize: '0.75rem' }}>
-              Digital Udyog Seva • Lead 360° Autopilot
+              Digital Udyog Seva • Unified Business Hub
             </span>
             <span style={{ color: '#94a3b8', fontSize: '0.82rem' }}>
-              17+ Sources • 17 Stages • AI Response • Voice-to-CRM
+              7 Cabins • Kendra Franchises • Machinery Hub • AI Subsidy • Full Admin Control
             </span>
           </div>
 
@@ -180,31 +250,33 @@ export const CrmLayout = () => {
                   cursor: 'pointer'
                 }}
               >
-                <option value="Admin">Admin Superuser</option>
+                <option value="Admin">Admin Superuser (Full Control)</option>
                 <option value="Senior Manager">Senior Manager</option>
                 <option value="Sales RM">Sales RM</option>
-                <option value="Telecaller">Telecaller</option>
+                <option value="Telecaller">Cabin Telecaller</option>
                 <option value="External Consultant">External Consultant (CA/CS)</option>
               </select>
             </div>
 
             <button 
-              onClick={() => {
-                setCrmSection('leads');
-                const testLead = leads[0];
-                if (testLead) setSelectedLeadForDetail(testLead);
-              }}
+              onClick={() => setCrmSection('cabins')}
               className="btn btn-sm btn-primary"
               style={{ background: 'linear-gradient(135deg, #ff6f00, #ea580c)' }}
             >
-              <Sparkles size={14} />
-              <span>Launch 360° Dossier</span>
+              <DoorOpen size={14} />
+              <span>Business Hub Cabins</span>
             </button>
           </div>
         </header>
 
         {/* Section Router */}
         <main className="crm-content">
+          {crmSection === 'cabins' && <BusinessHubCabins />}
+          {crmSection === 'franchises' && <FranchiseManager />}
+          {crmSection === 'trading' && <MachineryTradingHub />}
+          {crmSection === 'subsidy_ai' && <AiSubsidyEligibilityEngine />}
+          {crmSection === 'hrm' && <CrmHrmDesk />}
+
           {crmSection === 'leads' && <CrmLeadsKanban />}
           {crmSection === 'admin_settings' && <Lead360AdminSettings />}
           {crmSection === 'external_portal' && <Lead360ExternalPortal />}
