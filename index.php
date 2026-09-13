@@ -18,9 +18,11 @@ $distIndex = $distPath . '/index.html';
 if (file_exists($distIndex)) {
     $html = file_get_contents($distIndex);
 
-    // Make sure asset paths resolve correctly to /dist/assets/
-    $html = str_replace('src="/assets/', 'src="/dist/assets/', $html);
-    $html = str_replace('href="/assets/', 'href="/dist/assets/', $html);
+    // Make sure asset paths resolve correctly to /dist/assets/ on root domain or subfolders
+    $baseUri = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
+    $assetPrefix = ($baseUri === '' ? '' : $baseUri) . '/dist/assets/';
+    $html = str_replace('src="/assets/', 'src="' . $assetPrefix, $html);
+    $html = str_replace('href="/assets/', 'href="' . $assetPrefix, $html);
 
     header('Content-Type: text/html; charset=UTF-8');
     header('X-Powered-By: Digital Udyog Seva Enterprise React');

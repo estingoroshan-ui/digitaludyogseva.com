@@ -4,6 +4,7 @@ import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { Toast } from './components/Toast';
 import { ServiceDetailModal } from './components/ServiceDetailModal';
+import { BottomNav } from './components/BottomNav';
 
 // Pages
 import { HomePage } from './pages/HomePage';
@@ -28,10 +29,10 @@ export const App = () => {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div className="app-viewport-wrapper" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
 
-      <main style={{ flex: 1 }}>
+      <main className="app-main-content" style={{ flex: 1 }}>
         {activeView === 'website' && <HomePage />}
         {activeView === 'services' && <ServicesPage />}
         {activeView === 'loans' && <LoansPage />}
@@ -40,6 +41,7 @@ export const App = () => {
       </main>
 
       <Footer />
+      <BottomNav />
       <ServiceDetailModal />
       <Toast />
     </div>
