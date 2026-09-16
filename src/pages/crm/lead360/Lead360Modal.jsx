@@ -11,6 +11,7 @@ import { Lead360VoiceRecorder } from './Lead360VoiceRecorder';
 import { Lead360CallManager } from './Lead360CallManager';
 import { Lead360AiAssistant } from './Lead360AiAssistant';
 import { Lead360EstimateProposal } from './Lead360EstimateProposal';
+import { LeadEligibilityEngine } from './LeadEligibilityEngine';
 
 export const Lead360Modal = () => {
   const { 
@@ -133,18 +134,19 @@ export const Lead360Modal = () => {
 
   const tabs = [
     { id: 'overview', label: '1. Overview' },
-    { id: 'notes', label: `2. Notes (${lead.notes?.length || 0})` },
-    { id: 'calls', label: `3. Calls (${lead.calls?.length || 0})` },
-    { id: 'voice_notes', label: `4. Voice-to-CRM (${lead.voiceNotes?.length || 0})` },
-    { id: 'ai_assistant', label: '5. AI Assistant & Summary' },
-    { id: 'estimates_proposals', label: `6. Quotes & Proposals (${(lead.proposals?.length || 0) + (lead.estimates?.length || 0)})` },
-    { id: 'followups', label: `7. Follow-ups (${lead.followUps?.length || 0})` },
-    { id: 'tasks', label: `8. Tasks (${lead.tasks?.length || 0})` },
-    { id: 'documents', label: `9. Documents Vault (${lead.documents?.length || 0})` },
-    { id: 'payments', label: `10. Payments (${lead.payments?.length || 0})` },
-    { id: 'external_work', label: `11. External CA/CS (${lead.externalTasks?.length || 0})` },
-    { id: 'timeline', label: `12. Activity Timeline (${lead.activities?.length || 0})` },
-    { id: 'audit_logs', label: `13. Audit Trail (${lead.auditLogs?.length || 0})` }
+    { id: 'eligibility_scorecard', label: `2. ⭐ Eligibility & Bank Brief (${lead.eligibilityScore ? `${lead.eligibilityScore}%` : 'Check'})` },
+    { id: 'notes', label: `3. Notes (${lead.notes?.length || 0})` },
+    { id: 'calls', label: `4. Calls (${lead.calls?.length || 0})` },
+    { id: 'voice_notes', label: `5. Voice-to-CRM (${lead.voiceNotes?.length || 0})` },
+    { id: 'ai_assistant', label: '6. AI Assistant & Summary' },
+    { id: 'estimates_proposals', label: `7. Quotes & Proposals (${(lead.proposals?.length || 0) + (lead.estimates?.length || 0)})` },
+    { id: 'followups', label: `8. Follow-ups (${lead.followUps?.length || 0})` },
+    { id: 'tasks', label: `9. Tasks (${lead.tasks?.length || 0})` },
+    { id: 'documents', label: `10. Documents Vault (${lead.documents?.length || 0})` },
+    { id: 'payments', label: `11. Payments (${lead.payments?.length || 0})` },
+    { id: 'external_work', label: `12. External CA/CS (${lead.externalTasks?.length || 0})` },
+    { id: 'timeline', label: `13. Activity Timeline (${lead.activities?.length || 0})` },
+    { id: 'audit_logs', label: `14. Audit Trail (${lead.auditLogs?.length || 0})` }
   ];
 
   return (
@@ -332,7 +334,18 @@ export const Lead360Modal = () => {
             </div>
           )}
 
-          {/* TAB 2: NOTES */}
+          {/* TAB 2: ELIGIBILITY & BANK BRIEF SCORECARD */}
+          {activeTab === 'eligibility_scorecard' && (
+            <LeadEligibilityEngine 
+              lead={lead} 
+              onSaveToLead={(savedData) => {
+                Object.assign(lead, savedData);
+                showToast(`Eligibility scorecard & Bank Profile saved for Lead ${lead.id}!`);
+              }} 
+            />
+          )}
+
+          {/* TAB 3: NOTES */}
           {activeTab === 'notes' && (
             <div>
               <div className="flex justify-between items-center mb-4">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { CrmDashboard } from './CrmDashboard';
 import { CrmLeadsKanban } from './CrmLeadsKanban';
@@ -15,6 +15,7 @@ import { FranchiseManager } from './franchise/FranchiseManager';
 import { MachineryTradingHub } from './trading/MachineryTradingHub';
 import { AiSubsidyEligibilityEngine } from './subsidy/AiSubsidyEligibilityEngine';
 import { CrmHrmDesk } from './hrm/CrmHrmDesk';
+import { ClientBillingManager } from './bookkeeping/ClientBillingManager';
 
 // Modals
 import { Lead360Modal } from './lead360/Lead360Modal';
@@ -43,7 +44,8 @@ import {
   Settings,
   Package,
   Calculator,
-  Receipt
+  Receipt,
+  BookOpen
 } from 'lucide-react';
 
 export const CrmLayout = () => {
@@ -175,6 +177,17 @@ export const CrmLayout = () => {
             <span className="nav-text">Estimates &amp; Billing</span>
           </div>
 
+          <div 
+            onClick={() => setCrmSection('client_bookkeeping')}
+            className={`crm-nav-item ${crmSection === 'client_bookkeeping' ? 'active' : ''}`}
+            style={{ borderLeft: crmSection === 'client_bookkeeping' ? '3px solid #ff6f00' : 'none' }}
+          >
+            <BookOpen size={18} color="#f59e0b" />
+            <span className="nav-text" style={{ fontWeight: crmSection === 'client_bookkeeping' ? '800' : '500' }}>
+              Client Bill Books Desk
+            </span>
+          </div>
+
           {/* SECTION 3: MANAGEMENT */}
           <div style={{ padding: '12px 12px 2px', fontSize: '0.68rem', textTransform: 'uppercase', color: '#64748b', fontWeight: '800', letterSpacing: '0.05em' }}>
             Management
@@ -258,6 +271,120 @@ export const CrmLayout = () => {
               </select>
             </div>
 
+            {/* Notification Center Bell */}
+            <div style={{ position: 'relative' }}>
+              <button
+                type="button"
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="btn btn-sm btn-outline"
+                style={{
+                  position: 'relative',
+                  padding: '6px 10px',
+                  background: '#f8fafc',
+                  borderColor: '#cbd5e1',
+                  color: '#0b1727'
+                }}
+                title="Inbound Lead Alerts & Automations"
+              >
+                <Bell size={16} color="#ff6f00" />
+                <span 
+                  style={{
+                    position: 'absolute',
+                    top: '-5px',
+                    right: '-5px',
+                    background: '#ef4444',
+                    color: '#fff',
+                    fontSize: '0.65rem',
+                    fontWeight: '800',
+                    width: '18px',
+                    height: '18px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  {leads.length > 9 ? '9+' : leads.length}
+                </span>
+              </button>
+
+              {/* Notification Dropdown Popover */}
+              {showNotifications && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '40px',
+                    right: 0,
+                    width: '360px',
+                    background: '#fff',
+                    borderRadius: '12px',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+                    border: '1px solid #e2e8f0',
+                    zIndex: 1000,
+                    overflow: 'hidden'
+                  }}
+                >
+                  <div style={{ background: '#0b1727', color: '#fff', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div className="flex items-center gap-2">
+                      <Sparkles size={16} color="#ff6f00" />
+                      <strong style={{ fontSize: '0.88rem' }}>Live Lead Automation Center</strong>
+                    </div>
+                    <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Auto WhatsApp Ready</span>
+                  </div>
+
+                  <div style={{ maxHeight: '340px', overflowY: 'auto' }}>
+                    {leads.slice(0, 4).map(ld => (
+                      <div
+                        key={ld.id}
+                        style={{
+                          padding: '12px 14px',
+                          borderBottom: '1px solid #f1f5f9',
+                          cursor: 'pointer',
+                          transition: 'background 0.15s'
+                        }}
+                        onClick={() => {
+                          setSelectedLeadForDetail(ld);
+                          setShowNotifications(false);
+                        }}
+                      >
+                        <div className="flex justify-between items-start mb-1">
+                          <strong style={{ fontSize: '0.88rem', color: '#0b1727' }}>{ld.name}</strong>
+                          <span className="badge badge-saffron" style={{ fontSize: '0.65rem' }}>
+                            {ld.leadSource?.channel || ld.source || 'Web Inbound'}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                          {ld.service} • {ld.district || 'Rajasthan'}
+                        </div>
+                        <div className="flex items-center justify-between mt-2" style={{ fontSize: '0.72rem' }}>
+                          <span style={{ color: '#15803d', fontWeight: '700' }}>
+                            {ld.eligibilityScore ? `✓ ${ld.eligibilityScore}% Score` : '⭐ Check Eligibility'}
+                          </span>
+                          <span style={{ color: '#2563eb', fontWeight: '600' }}>
+                            Open Dossier →
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ padding: '10px 14px', background: '#f8fafc', borderTop: '1px solid #e2e8f0', textAlign: 'center' }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCrmSection('leads');
+                        setShowNotifications(false);
+                      }}
+                      className="btn btn-sm btn-outline w-full"
+                      style={{ fontSize: '0.78rem', borderColor: '#cbd5e1' }}
+                    >
+                      View All {leads.length} Leads in Pipeline
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <button 
               onClick={() => setCrmSection('cabins')}
               className="btn btn-sm btn-primary"
@@ -284,6 +411,7 @@ export const CrmLayout = () => {
           {crmSection === 'customers' && <CrmCustomers />}
           {crmSection === 'projects' && <CrmProjects />}
           {crmSection === 'estimates' && <CrmEstimates />}
+          {crmSection === 'client_bookkeeping' && <ClientBillingManager />}
           {crmSection === 'loans' && <CrmLoanCases />}
         </main>
       </div>

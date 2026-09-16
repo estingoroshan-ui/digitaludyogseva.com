@@ -3,7 +3,8 @@ import { useApp } from '../../../context/AppContext';
 import { 
   Plus, Search, Filter, Phone, Mail, Calendar, User, IndianRupee, 
   CheckCircle2, ArrowRight, Clock, Table as TableIcon, Kanban as KanbanIcon, 
-  Flame, Send, Sparkles, ExternalLink, MessageSquare, Mic, Play, RefreshCw
+  Flame, Send, Sparkles, ExternalLink, MessageSquare, Mic, Play, RefreshCw,
+  Bell, ShieldCheck, Award, Smartphone, Globe, Bot, Volume2
 } from 'lucide-react';
 
 export const Lead360ListKanban = () => {
@@ -75,37 +76,148 @@ export const Lead360ListKanban = () => {
     setSelectedLeadForDetail(created);
   };
 
+  const playNotificationChime = () => {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.12); // A5
+      gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.55);
+    } catch (e) {}
+  };
+
+  const handleSimulateInboundLead = (sourceType) => {
+    playNotificationChime();
+    let sampleData;
+    if (sourceType === 'rajasthan_mlupy') {
+      sampleData = {
+        name: 'Sunita Meena',
+        phone: '+91 94140 33891',
+        email: 'sunita.meena@kotaenterprise.in',
+        service: 'Rajasthan MLUPY (8% Interest Subsidy)',
+        value: 1500000,
+        source: 'Facebook & Instagram Ads',
+        district: 'Kota',
+        state: 'Rajasthan',
+        businessName: 'Kota Doria Handicrafts & Garments Unit',
+        notes: 'Inbound lead from Meta Campaign. Client belongs to ST Special Category. Eligible for 8% MLUPY Interest Subsidy & Mudra.'
+      };
+    } else if (sourceType === 'pmegp_central') {
+      sampleData = {
+        name: 'Rahul Sharma',
+        phone: '+91 98290 55412',
+        email: 'rahul.sharma@jaipuragro.in',
+        service: 'PMEGP Govt Loan (35% Subsidy)',
+        value: 2500000,
+        source: 'Website Inbound Form',
+        district: 'Jaipur',
+        state: 'Rajasthan',
+        businessName: 'Jaipur Organic Flour & Spice Mill',
+        notes: 'Website form submission. Rural manufacturing unit with 35% KVIC Capital Subsidy eligibility. Machinery quotation required.'
+      };
+    } else if (sourceType === 'kendra_partner') {
+      sampleData = {
+        name: 'Mohan Lal Bishnoi',
+        phone: '+91 97840 88231',
+        email: 'mohan.bishnoi@jodhpur.in',
+        service: 'Mudra Loan (Tarun Scheme ₹10L)',
+        value: 1000000,
+        source: 'Franchise Kendra Partner',
+        district: 'Jodhpur',
+        state: 'Rajasthan',
+        businessName: 'Marwar Solar & Electricals',
+        notes: 'Walk-in referral from Jodhpur District Kendra. Needs working capital loan without property mortgage.'
+      };
+    } else {
+      sampleData = {
+        name: 'Vikram Singh Shekhawat',
+        phone: '+91 91160 44109',
+        email: 'vikram@shekhawatdairy.com',
+        service: 'PMFME Food Processing (35% Subsidy)',
+        value: 2000000,
+        source: 'Mobile App / Chatbot Inbound',
+        district: 'Sikar',
+        state: 'Rajasthan',
+        businessName: 'Shekhawati Dairy Products & Ghee Processing',
+        notes: 'Customer inquired via DUS Mobile App Chatbot and downloaded app. Instant auto-WhatsApp and push notification dispatched.'
+      };
+    }
+
+    const created = addLead(sampleData);
+    showToast(`🔔 NEW INBOUND LEAD: ${sampleData.name} (${sampleData.district}) - Auto-WhatsApp & App Link Dispatched!`);
+    setSelectedLeadForDetail(created);
+  };
+
   return (
     <div>
       {/* Autopilot Principle Live Simulation Bar */}
-      <div style={{ background: 'linear-gradient(90deg, #fff7ed, #ecfdf5)', border: '1px solid #fed7aa', borderRadius: '12px', padding: '14px 20px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+      <div style={{ background: 'linear-gradient(90deg, #fff7ed, #ecfdf5)', border: '1px solid #fed7aa', borderRadius: '14px', padding: '16px 20px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
         <div className="flex items-center gap-3">
-          <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#ff6f00', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Sparkles size={18} />
+          <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #ff6f00, #ea580c)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(255,111,0,0.3)' }}>
+            <Sparkles size={20} />
           </div>
           <div>
-            <strong style={{ color: '#0b1727', fontSize: '0.95rem' }}>360° Autopilot Principle Active</strong>
-            <div style={{ color: '#64748b', fontSize: '0.8rem' }}>
-              Inbound Lead → Auto Attribution → AI Response → Voice-to-CRM → Quotes → Eligibility → 1-Click Convert
+            <div className="flex items-center gap-2">
+              <strong style={{ color: '#0b1727', fontSize: '1rem' }}>Omnichannel Inbound Lead Automation &amp; Sound Alerts</strong>
+              <span className="badge badge-emerald" style={{ fontSize: '0.68rem' }}>Live Listener Active</span>
+            </div>
+            <div style={{ color: '#64748b', fontSize: '0.8rem', marginTop: '2px' }}>
+              Multi-Source Ingestion → Instant Audio Chime → Auto WhatsApp &amp; App Download Link → 7-Pillar Credit Underwriting → 1-Page Bank Brief
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Live Simulator Triggers */}
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             type="button"
-            onClick={() => {
-              const testLead = leads[0];
-              if (testLead) {
-                setSelectedLeadForDetail(testLead);
-                showToast(`Opened 360° Dossier for ${testLead.name}! Test any tab or voice memo.`);
-              }
-            }}
-            className="btn btn-sm btn-primary"
-            style={{ fontSize: '0.8rem', padding: '6px 14px', background: '#0b1727' }}
+            onClick={() => handleSimulateInboundLead('pmegp_central')}
+            className="btn btn-sm btn-outline"
+            style={{ fontSize: '0.78rem', background: '#fff', borderColor: '#fed7aa', color: '#ea580c', display: 'flex', alignItems: 'center', gap: '5px' }}
+            title="Simulate Inbound Web Form: Rahul Sharma (PMEGP 25L, Jaipur)"
           >
-            <Play size={13} fill="#fff" />
-            <span>Test Autopilot on Lead #LD-101</span>
+            <Globe size={13} />
+            <span>+ Web Form (PMEGP 25L)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSimulateInboundLead('rajasthan_mlupy')}
+            className="btn btn-sm btn-outline"
+            style={{ fontSize: '0.78rem', background: '#fff', borderColor: '#93c5fd', color: '#1e40af', display: 'flex', alignItems: 'center', gap: '5px' }}
+            title="Simulate Meta Ads: Sunita Meena (Rajasthan MLUPY 8% Subsidy)"
+          >
+            <Smartphone size={13} />
+            <span>+ Meta Ad (MLUPY 15L)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSimulateInboundLead('kendra_partner')}
+            className="btn btn-sm btn-outline"
+            style={{ fontSize: '0.78rem', background: '#fff', borderColor: '#fde047', color: '#854d0e', display: 'flex', alignItems: 'center', gap: '5px' }}
+            title="Simulate Kendra Walk-in: Mohan Lal (Jodhpur Franchise)"
+          >
+            <Award size={13} />
+            <span>+ Kendra (Mudra 10L)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSimulateInboundLead('app_bot')}
+            className="btn btn-sm btn-primary"
+            style={{ fontSize: '0.78rem', background: '#0b1727', display: 'flex', alignItems: 'center', gap: '5px' }}
+            title="Simulate App Chatbot Inquiry: Vikram Singh (PMFME 20L)"
+          >
+            <Bot size={13} />
+            <span>+ App Bot (PMFME 20L)</span>
           </button>
         </div>
       </div>
@@ -364,6 +476,28 @@ export const Lead360ListKanban = () => {
                         >
                           <MessageSquare size={13} />
                         </a>
+
+                        {/* 1-Click Eligibility & Bank Brief */}
+                        <button
+                          type="button"
+                          onClick={() => setSelectedLeadForDetail(lead)}
+                          className="btn btn-sm btn-outline"
+                          style={{
+                            padding: '6px 10px',
+                            fontSize: '0.78rem',
+                            whiteSpace: 'nowrap',
+                            color: lead.eligibilityScore ? '#15803d' : '#ff6f00',
+                            borderColor: lead.eligibilityScore ? '#86efac' : '#fed7aa',
+                            background: lead.eligibilityScore ? '#f0fdf4' : '#fffaf0',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                          title="Check 7-Pillar Loan Eligibility & Bank Brief"
+                        >
+                          <ShieldCheck size={13} />
+                          <span>{lead.eligibilityScore ? `${lead.eligibilityScore}% Score` : 'Eligibility'}</span>
+                        </button>
 
                         {/* Open 360° Dossier */}
                         <button

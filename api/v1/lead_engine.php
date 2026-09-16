@@ -121,6 +121,33 @@ try {
         exit;
     }
 
+    // 10. POST: Save 7-Pillar Credit & Loan Eligibility
+    if ($action === 'save_eligibility' && $method === 'POST') {
+        $input = json_decode(file_get_contents('php://input'), true) ?: $_POST;
+        $lead_id = (int)($input['lead_id'] ?? 0);
+        $res = Lead360Engine::save_eligibility_evaluation($lead_id, $input, 1);
+        echo json_encode($res);
+        exit;
+    }
+
+    // 11. POST: Trigger AI Autonomous Voice Call
+    if ($action === 'ai_call' && $method === 'POST') {
+        $input = json_decode(file_get_contents('php://input'), true) ?: $_POST;
+        $lead_id = (int)($input['lead_id'] ?? 0);
+        $res = Lead360Engine::trigger_ai_autonomous_call($lead_id, 1);
+        echo json_encode($res);
+        exit;
+    }
+
+    // 12. POST: Dispatch WhatsApp Welcome & App Download Bot Link
+    if ($action === 'dispatch_whatsapp' && $method === 'POST') {
+        $input = json_decode(file_get_contents('php://input'), true) ?: $_POST;
+        $lead_id = (int)($input['lead_id'] ?? 0);
+        $res = Lead360Engine::dispatch_omnichannel_whatsapp_app($lead_id, 1);
+        echo json_encode($res);
+        exit;
+    }
+
     echo json_encode(["status" => false, "message" => "Unknown action: {$action}"]);
 
 } catch (Exception $e) {

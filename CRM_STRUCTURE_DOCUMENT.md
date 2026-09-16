@@ -76,26 +76,37 @@ Physical walk-ins and cases are managed across 7 dedicated department desks, eac
 
 ---
 
-### Module 4: AI Subsidy & Eligibility Engine
-- **Automated Parameter Matching:** Evaluates applicants based on:
-  - Beneficiary Category (General, OBC, SC/ST, Women, Ex-Servicemen, Specially Abled)
-  - Business Location (Rural vs. Urban)
-  - Industry Sector (Manufacturing, Service, Agro-Processing)
-  - Project Size (₹5 Lakhs to ₹50 Lakhs)
-- **Instant Financial Breakdown:**
-  - Eligible Subsidy Percentage (15% to 35%)
-  - Estimated Government Grant Amount (in ₹)
-  - Mandatory Owner Margin Contribution (5% or 10%)
-  - Eligible Bank Term Loan & Working Capital Amount
-  - Best Scheme Recommendation (PMEGP vs. PMFME vs. Mudra Tarun)
+### Module 4: 7-Pillar Credit Underwriting & AI Subsidy Engine
+- **Automated Parameter Matching & 7-Pillars:**
+  1. *Demographics & Education:* Age, 8th/10th/Graduate/Technical ITI qualification, dependent family members.
+  2. *Business & Market Viability:* Manufacturing, Service, Agro-Processing; B2B Wholesale, Retail, E-Commerce, Government Tenders; Location advantage (highway/commercial connectivity).
+  3. *Financial Standing & Net Worth:* Applicant monthly income, family annual income, property assets, liquid FD/LIC/MF securities, active debts and liabilities.
+  4. *CIBIL & Bureau Health:* Real-time credit score meter (500–900), DPD (Days Past Due - 30/60/90 days), and Loan Settlement / Written-off detection with penalty scoring.
+  5. *Sanction Probability Score (%):* Dynamic 0–100% approval chance gauge categorizing applicants into Prime (High Approval), Moderate (Conditional), or High Risk.
+  6. *Rajasthan & Central Government Scheme Matching:*
+     - **Rajasthan MLUPY:** Up to 8% interest subsidy for loans up to ₹25 Lakhs (effective net interest 2.5%).
+     - **PMEGP (Central KVIC):** 15% to 35% capital grant (up to ₹17.5 Lakhs grant) with 5% or 10% promoter equity.
+     - **PMFME (MoFPI):** 35% credit-linked grant (max ₹10 Lakhs) for food processing units.
+     - **Mudra (PMMY):** Shishu, Kishore, and Tarun (up to ₹20 Lakhs) with zero processing fee.
+     - **CGTMSE:** Collateral-free MSME bank guarantee up to ₹5 Crores without property mortgage.
+  7. *1-Page Executive Bank Brief Profile:* Formatted printable / shareable dossier for Bank Branch Managers (SBI, PNB, BOB) with Means of Finance, DSCR, promoter strengths, and risk mitigants.
+- **Chargeable Paid Feasibility Model:**
+  - Integrated between Lead capture and Customer conversion.
+  - Paid Audit Fee (₹999) unlock mechanism with official watermark-free certificate.
+  - Actionable AI Recommendations for CIBIL repair, co-applicant addition, and margin optimization.
+  - 1-Click Consultant In-Person / Video Appointment booking with Cabin #01, #03, and #04.
 
 ---
 
-### Module 5: LEAD 360° Autopilot Pipeline
-- **Lead Capture Channels:** Website inquiry forms, Kendra franchise referrals, offline walk-ins, Meta/Google ad integrations, phone inquiries.
+### Module 5: LEAD 360° Omnichannel Autopilot & Alert System
+- **Lead Capture Channels:** Website inquiry forms, Kendra franchise referrals, offline walk-ins, Meta/Google ads, Mobile App Chatbot, phone inquiries.
+- **Real-Time Sound & Topbar Notification Center:**
+  - Instant Web Audio API chime on new inbound lead arrival.
+  - Topbar Notification Bell with live count badge and 1-click lead drawer action.
+  - Automated WhatsApp & SMS welcome dispatch with App download link and instant Chatbot Q&A.
 - **Kanban & List Dual View:** Intuitive stage progression:
-  1. *New Lead* ➔ 2. *Consulting / Feasibility* ➔ 3. *Documentation Required* ➔ 4. *Bank Login* ➔ 5. *Sanctioned / Converted* ➔ 6. *Lost / Closed*.
-- **Omnichannel Communication:** Pre-configured 1-click WhatsApp messaging, call logging, note creation, and full audit timeline.
+  1. *New Lead* ➔ 2. *Eligibility & Scorecard* ➔ 3. *Consulting / Feasibility* ➔ 4. *Documentation Required* ➔ 5. *Bank Login* ➔ 6. *Sanctioned / Converted* ➔ 7. *Lost / Closed*.
+- **Omnichannel Communication & Dossier Vault:** Pre-configured 1-click WhatsApp messaging, call logging, voice memo recording (Voice-to-CRM playback), internal notes, and full audit timeline.
 
 ---
 
@@ -112,9 +123,23 @@ Physical walk-ins and cases are managed across 7 dedicated department desks, eac
 
 ---
 
-### Module 8: Customer 360° & Master Billing
-- **Customer 360° Dossier:** Unified client history displaying all associated leads, active loan cases, completed company setups, past invoices, uploaded identity proofs, and audit logs in a single window.
-- **Estimates & Invoicing Engine:** Pre-loaded government & statutory service master (GST, Udyam, FSSAI, Trade License, Trademark, Company Registration). Generates itemized estimates, tax invoices, calculates 18% GST, and manages payment statuses.
+### Module 8: Customer 360° Master Ecosystem & Enterprise Accounting Hub
+- **Unified Customer 360° Master Dossier (9 Enterprise Capabilities):**
+  1. *Complete Dual Profile:* Separate tracking of Personal Residential Address and Registered Commercial / Factory Address, with Director/Signatory KYC links.
+  2. *Assigned Relationship Manager (RM) Profile:* Dedicated officer allocation (Name, Direct Phone, Official Email, Cabin Desk, Assignment Date, Assignor User) with 1-click Reassignment modal.
+  3. *Statement of Account (खाता / लेजर):* Chronological running financial ledger with Debits, Credits, Running Balance, and 1-Click PDF / Print export.
+  4. *Multi-Tier Billing & Adjustments:* Tax Invoices, Credit Notes (concessions/adjustments), Debit Notes (statutory fee extensions), and Advance Payment Receipts (with UTR/Netbanking tracking).
+  5. *Out-of-Pocket Expense Tracking:* Client-specific expense logging (MCA Government Challans, Electronic Stamp Duty, Notary & Affidavits, Field Travel) with reimbursement status.
+  6. *Recurring Retainers & Subscriptions (बार-बार किए जाने वाले कार्य):* Automated monthly/annual retainer billing schedules (e.g. Monthly GST Filing, Annual RoC Compliance) with auto-alerts.
+  7. *Folder-Wise Document Vault:* Centralized encrypted repository organized into 5 structured MSME/corporate folders:
+     - 📁 *KYC & Registrations* (Aadhaar, PAN, GST, Udyam, MOA/AOA)
+     - 📁 *Financials & Tax* (ITR Returns, 3-Yr Balance Sheets, Bank Statements)
+     - 📁 *Project & DPR* (Detailed Project Reports, Machinery Quotations)
+     - 📁 *Banking & Sanctions* (Sanction Letters, 3-Yr TDR Deposit, CGTMSE)
+     - 📁 *Invoices & Receipts* (Bills, Receipts, Statements)
+  8. *Internal Notes & Voice-to-CRM Memos:* Written discussion notes paired with playable encrypted voice audio recordings.
+  9. *Security, Access Audit & Activity Log ("किसने कब लॉगिन करके क्या देखा, क्या एडिट किया"):* Immutable access log tracking User, Role, Action, IP Address, and Timestamp.
+- **Universal Multi-Parameter Filtering & Export:** Instant filtering by RM, KYC Status, City, and Service, plus 1-click export to CSV/Excel and print roster.
 
 ---
 
@@ -169,7 +194,58 @@ Physical walk-ins and cases are managed across 7 dedicated department desks, eac
 
 ---
 
-## 6. Technical Specifications & Database Schema
+## 6. Client Bookkeeping, Bill Books & Outsourced Invoicing Desk (आउटसोर्स बिलिंग व सेल-परचेज़)
+
+Many MSME clients outsource their day-to-day accounts and billing to DUS. DUS staff & accountants can manage multiple client firms from a centralized command desk:
+
+- **Multi-Company Management:**
+  - Support for multiple client businesses (`Sharma Agro Solutions`, `Karni Steel`, `Mewar Organics`, etc.).
+  - 1-click `+ Add Company` modal: Legal Name, Trade Name, GSTIN, PAN, Address, Bank details, Bill prefix series (e.g. `SAS/2026/`), and starting serial counter.
+- **Client's Parties Directory (कस्टमर के ग्राहक व सप्लायर):**
+  - Maintain client's own buyers (ग्राहक) and suppliers (वेंडर).
+  - Quick-add party directly inside invoice creator without switching windows.
+- **Sales & Purchase Registers:**
+  - Generate GST Tax Invoices (B2B), Quotations / Estimates, and Delivery Challans.
+  - Line items with HSN codes, quantity, units, rates, and automated CGST/SGST/IGST calculation.
+  - Track inward supplier bills and 100% eligible Input Tax Credit (ITC).
+- **Bill Outer / Dispatch Consignment Slip (बाहरी बिल / पार्सल पर्ची):**
+  - Dedicated 1-click Bill Outer modal with Transporter Name, Vehicle/Lorry No, Bilty/LR No, Package Count, Weight, and QR Code.
+  - Downloadable and printable for transport drivers and parcel packaging.
+- **Print & Auto-Save to Document Vault:**
+  - Whenever an invoice is generated or printed, it is automatically archived into the client's `Invoices & Receipts` folder in their Document Vault.
+- **WhatsApp Photo Card Export:**
+  - Generates high-contrast, clean invoice photo cards for 1-click WhatsApp transmission to clients and buyers.
+
+---
+
+## 7. Project & MSME Consultancy Execution Engine (10-Stage Lifecycle, In-House vs Outsource & Subsidy Tracking)
+
+Engineered for the complex, multi-stakeholder operational realities of Digital Udyog Seva:
+
+- **1. Three Core Project Streams:**
+  - **🏛️ Govt Scheme Loans & MSME Consultancy:** Flagship end-to-end consulting for PMEGP (up to 35% capital subsidy), Rajasthan MLUPY (up to 8% interest subsidy), PMFME, Mudra Tarun, and AHD.
+  - **⚡ Fast Compliance & Regulatory Licenses:** Labour Contractor License, PWD Class-AA License, FSSAI Central License, RSPCB Pollution CTE/CTO, Trust/NGO & Company Incorporation, GST Retainers.
+  - **📊 Financial Engineering & Technical Modeling:** 5-Year CMA Data, Techno-Economic Viability (TEV) DPR formulation, and Bank Appraisal Reports.
+
+- **2. The 10-Stage Operational Lifecycle Pipeline:**
+  1. *Lead & Product Consult:* Viability assessment and scheme orientation.
+  2. *Eligibility Check, Audit Fee & Legal Agreement:* 7-pillar eligibility scoring, fee collection, and mandatory **Signed Legal Contract** to protect against disputes.
+  3. *Support Desk Document Collection & Fee Invoicing:* Online upload link dispatch, fee receipt, and KYC gathering.
+  4. *Operations QA Handover & Loop:* Operations scrutiny. If incomplete, **"Bounce back to Support"** with missing documents checklist. When complete, approved for submission.
+  5. *Department Portal Submission:* Submitted on official government portals (KVIC, KVIB, DIC, District Collector Committee, FoSCoS, PWD, RSPCB).
+  6. *Department Query & Objection Management:* Dedicated query desk to log objections, upload query notices, draft portal replies, submit resubmissions, and notify clients via WhatsApp.
+  7. *DLFC / Task Force Committee Interview:* Track interview schedule, committee remarks, or direct bank forwarding where interview is exempted.
+  8. *Bank Branch Liaison & Revision Desk:* Coordinate with Branch Managers; track property valuation, legal search reports, CMA data revisions, and bank query letters.
+  9. *Bank Loan Sanction & Disbursal:* Upload sanction letter, record sanction amount, and monitor first tranche disbursal.
+  10. *Subsidy Claim Tracker & Target Countdown:* Active days countdown timer (e.g. 30/45-day window following disbursal), Nodal portal claim submission, and TDR reserve lock tracking.
+
+- **3. In-House vs Outsourced Routing (आंतरिक बनाम बाहरी पार्टी):**
+  - Instant toggle between **🏢 In-House DUS Cabin Desks** and **🤝 Outsourced External Partners** (CA firms, Advocate associates, Environmental engineers).
+  - Outsource Partner tracking: Vendor firm name, Contact person, Mobile, Agreed Payout (₹), Payment status, Handover & Delivery due dates, and Final Deliverable file upload.
+
+---
+
+## 8. Technical Specifications & Database Schema
 
 - **Frontend Technology:** React 18 SPA, Lucide UI Icons, Modern Pure CSS Design Tokens, Fully Responsive Mobile & Desktop Layout.
 - **Backend Architecture:** Modular PHP REST API endpoints (`/api/v1/leads.php`, `/api/v1/lead_engine.php`, `/api/v1/services.php`).
@@ -179,7 +255,11 @@ Physical walk-ins and cases are managed across 7 dedicated department desks, eac
   - **Cabins & Franchise:** `cabins`, `cabin_bills`, `cabin_transfers`, `franchises`, `franchise_commissions`
   - **Trading & Machinery:** `machinery_catalog`, `machinery_inquiries`, `b2b_products`
   - **Customers & Billing:** `customers`, `customer_contacts`, `estimates`, `estimate_items`, `invoices`, `services_master`
-  - **Staff & Projects:** `staff`, `departments`, `attendance`, `projects`, `project_tasks`, `project_milestones`
+  - **Outsourced Bookkeeping:** `client_companies`, `client_bill_books`, `client_parties`, `client_sales_invoices`, `client_purchases`
+  - **Project Lifecycle Engine:** `projects`, `project_department_queries`, `project_bank_liaisons`, `project_subsidy_claims`, `project_outsource_assignments`
+  - **Staff & HRM:** `staff`, `departments`, `attendance`, `project_tasks`, `project_milestones`
 
 ---
 *Digital Udyog Seva (DUS) Master CRM – Engineered for Scalable MSME Consulting & Financial Operations.*
+
+

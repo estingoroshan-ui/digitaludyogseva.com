@@ -751,215 +751,701 @@ export const initialProjects = [
     customerName: 'Sharma Agro Solutions Pvt Ltd',
     contactPerson: 'Sunil Kumar Sharma',
     phone: '+91 94120 55890',
+    service: 'PMEGP Govt Loan (₹45 Lakhs) & Food Processing Unit',
+    serviceCategory: 'Govt Banking & Subsidies',
+    serviceStream: 'Govt_Scheme_Loan', // 'Govt_Scheme_Loan' | 'Fast_Compliance' | 'DPR_Financial'
     
-    // 1. Service
-    service: 'Private Limited Company Incorporation (SPICe+)',
-    serviceCategory: 'MCA Corporate Services',
+    // Execution Mode (In-House vs Outsourced)
+    executionMode: 'In_House',
+    assignedDesk: 'Cabin #04 (Govt Subsidy & Banking Liaison)',
+    assignedPerson: {
+      name: 'Sunil Manchanda',
+      role: 'Senior Banking Liaison Officer',
+      phone: '+91 98290 88219',
+      email: 'sunil.manchanda@digitaludyogseva.com'
+    },
     
-    // 2. Requirement
+    // 10-Stage Lifecycle Pipeline
+    lifecycleStage: 'Bank_Branch_Liaison',
+    currentStatus: 'Bank Branch Scrutiny',
+    currentProcess: 'File forwarded by DIC to SBI Sitapura; Branch Manager inspection scheduled',
+    currentLocation: 'SBI Industrial Area Branch, Sitapura, Jaipur',
+
+    // Legal Agreement (Client Agreement to prevent disputes)
+    legalAgreement: {
+      signed: true,
+      agreementNo: 'DUS-AGR-2026-081',
+      signedDate: '2026-08-20',
+      feePackage: '₹18,500 Consultation + 1.5% Post-Sanction Success Fee',
+      initialFeeCollected: 18500,
+      agreementDoc: 'Signed_Legal_Consultancy_Agreement.pdf'
+    },
+
+    // Support vs Operations QA Handover Desk
+    qaHandover: {
+      status: 'Approved_For_Submission',
+      collectedBy: 'Pooja Sharma (Support Desk)',
+      verifiedBy: 'Virendra Singh (Operations Head)',
+      bouncedHistory: [
+        { date: '2026-08-22', reason: 'Machinery quotation lacked GST breakdown; updated quotation collected by Support on 23-Aug.' }
+      ]
+    },
+
+    // Department Portal Submission & Objections / Queries
+    departmentDetails: {
+      departmentName: 'District Industries Centre (DIC) Jaipur Urban / KVIC',
+      portalName: 'KVIC PMEGP Portal (kviconline.gov.in)',
+      applicationNo: 'PMEGP-RJ-2026-88190',
+      submissionDate: '2026-08-25',
+      portalStatus: 'DLFC Approved • Forwarded to Bank',
+      queries: [
+        {
+          id: 'QRY-01',
+          raisedBy: 'DIC GM Scrutiny Desk',
+          date: '2026-08-28',
+          objectionText: 'Provide revised land possession certificate and electricity feasibility letter from JVVNL for Sitapura Unit.',
+          replyText: 'Submitted JVVNL commercial connection receipt #JV-88192 and RIICO plot lease registered deed.',
+          replyDate: '2026-08-29',
+          status: 'Resolved & Accepted',
+          clientNotified: true
+        }
+      ],
+      dlfcInterview: {
+        scheduled: true,
+        interviewDate: '2026-09-01',
+        committeeRemarks: 'Recommended 100% by District Task Force. Forwarded to State Bank of India.',
+        status: 'Passed'
+      }
+    },
+
+    // Bank Branch Liaison & Scrutiny
+    bankLiaison: {
+      bankName: 'State Bank of India (SBI)',
+      branchName: 'Sitapura Industrial Area Branch, Jaipur',
+      branchManager: 'Mr. Arvind Saxena (Chief Manager)',
+      branchPhone: '+91 94140 18892',
+      fileReceivedDate: '2026-09-03',
+      scrutinyStatus: 'Technical Valuation & Search Report In-Progress',
+      cmaRevisionRequired: true,
+      cmaRevisionNotes: 'Manager requested DSCR sensitivity analysis at 10.5% interest rate. Revised CMA uploaded.',
+      bankQueryLetter: 'Bank requested secondary guarantor IT returns for last 2 assessment years.',
+      sanctionStatus: 'Under Appraisal',
+      sanctionAmount: 4500000,
+      sanctionLetterDoc: null
+    },
+
+    // Subsidy Claim Tracking & Target Countdown
+    subsidyClaim: {
+      schemeName: 'PMEGP 35% Capital Subsidy',
+      subsidyAmountExpected: 1575000,
+      targetDaysToClaim: 30,
+      claimWindowDeadline: '2026-10-15',
+      daysRemaining: 28,
+      claimPortal: 'KVIC Subsidy Disbursement Portal',
+      claimStatus: 'Awaiting 1st Loan Disbursal',
+      tdrAccountNo: 'Pending Loan Disbursal',
+      fastActionRequired: false
+    },
+
     requirement: {
       businessObjective: 'Establish an agri-tech automated grain sorting and packing plant in Sitapura, Jaipur.',
       authorizedCapital: '₹10,00,000 (10 Lakhs)',
       paidUpCapital: '₹1,00,000 (1 Lakh)',
       directorsCount: 2,
       shareholdingSplit: 'Sunil Sharma (60%), Rekha Sharma (40%)',
-      specialNotes: 'Require corporate current account with HDFC and simultaneous MSME Udyam registration.'
+      specialNotes: 'Require corporate current account with SBI and simultaneous MSME Udyam registration.'
     },
 
-    // 3. Documents Checklist
     documents: [
-      { name: 'Director PAN Cards', required: true, status: 'Verified' },
-      { name: 'Director Aadhaar Cards (Phone Linked)', required: true, status: 'Verified' },
-      { name: 'Electricity Bill of Registered Office (< 2 Months)', required: true, status: 'Verified' },
-      { name: 'NOC from Property Owner', required: true, status: 'Verified' },
-      { name: 'Bank Account Cancelled Cheque', required: true, status: 'Verified' },
-      { name: 'DSC Form & Token Credentials', required: true, status: 'Verified' }
+      { name: 'Director PAN & Aadhaar Cards', required: true, status: 'Verified' },
+      { name: 'RIICO Sitapura Land Allotment Letter', required: true, status: 'Verified' },
+      { name: 'Automated Machinery Quotations (₹32L)', required: true, status: 'Verified' },
+      { name: '5-Year Detailed Project Report (DPR)', required: true, status: 'Verified' },
+      { name: 'Last 3-Years Audited Financials', required: true, status: 'Verified' }
     ],
 
-    // 4. Current Status
-    currentStatus: 'Govt Submission (In Review)', // Initiated | Document Review | Govt Submission | Processing | Approved | Completed
-    
-    // 5. Current Process
-    currentProcess: 'SPICe+ Part B & AGILE-PRO-S Resubmission Verification with RoC Officer',
-    
-    // 6. Current Location
-    currentLocation: 'RoC Desk Jaipur & CRC Manesar (MCA Backoffice)',
-
-    // 7. Assigned Person
-    assignedPerson: {
-      name: 'CA Rajesh Verma',
-      role: 'Principal Compliance Officer',
-      phone: '+91 98760 11990',
-      email: 'rajesh.verma@digitaludyogseva.com'
-    },
-
-    // 8. Tasks Checklist
     tasks: [
-      { id: 'T-01', task: 'Obtain & verify Director KYC details', done: true, dueDate: '2026-08-28', assignee: 'Neha Sharma' },
-      { id: 'T-02', task: 'Class 3 DSC generation & video verification', done: true, dueDate: '2026-08-29', assignee: 'CS Priya Nair' },
-      { id: 'T-03', task: 'Draft e-MOA and e-AOA with specialized agro clauses', done: true, dueDate: '2026-08-30', assignee: 'CS Priya Nair' },
-      { id: 'T-04', task: 'Submit SPICe+ Part B on MCA V3 Portal', done: true, dueDate: '2026-09-01', assignee: 'CA Rajesh Verma' },
-      { id: 'T-05', task: 'Download Certificate of Incorporation & PAN card', done: false, dueDate: '2026-09-05', assignee: 'CA Rajesh Verma' }
+      { id: 'T-01', task: 'Review DPR & CMA Ratios with Client', done: true, dueDate: '2026-08-24', assignee: 'Sunil Manchanda' },
+      { id: 'T-02', task: 'KVIC Online Portal Submission & Uploads', done: true, dueDate: '2026-08-25', assignee: 'Sunil Manchanda' },
+      { id: 'T-03', task: 'Submit DIC Query Reply on Portal', done: true, dueDate: '2026-08-29', assignee: 'Sunil Manchanda' },
+      { id: 'T-04', task: 'Attend DLFC Interview with Client', done: true, dueDate: '2026-09-01', assignee: 'Sunil Manchanda' },
+      { id: 'T-05', task: 'Follow up with SBI Branch Manager for Valuation', done: false, dueDate: '2026-09-08', assignee: 'Sunil Manchanda' }
     ],
 
-    // 9. Department
-    department: 'Corporate MCA & Legal Compliance',
-
-    // 10. Consultant
-    consultant: {
-      name: 'CS Priya Nair (FCS 8921)',
-      signoffDate: '2026-08-31',
-      reviewRemarks: 'All statutory declarations under Section 7(1) verified. Name conforms to Rule 8 of Companies (Incorporation) Rules.'
-    },
-
-    // 11. Timeline
     timeline: [
-      { stage: 'Case Initiated & Documents Received', targetDate: '28 Aug 2026', actualDate: '28 Aug 2026', done: true },
-      { stage: 'DSCs Approved & SPICe+ Part A Name Reserved', targetDate: '30 Aug 2026', actualDate: '30 Aug 2026', done: true },
-      { stage: 'SPICe+ Part B & AGILE-PRO-S Filed', targetDate: '01 Sep 2026', actualDate: '01 Sep 2026', done: true },
-      { stage: 'RoC Scrutiny & Approval', targetDate: '04 Sep 2026', actualDate: 'Expected Today', done: false },
-      { stage: 'Certificate of Incorporation Dispatch', targetDate: '06 Sep 2026', actualDate: 'Pending', done: false }
+      { stage: 'Eligibility & Legal Agreement Signed', targetDate: '20 Aug 2026', actualDate: '20 Aug 2026', done: true },
+      { stage: 'Support Doc Collection & Operations QA', targetDate: '23 Aug 2026', actualDate: '23 Aug 2026', done: true },
+      { stage: 'KVIC Portal Submission (App #88190)', targetDate: '25 Aug 2026', actualDate: '25 Aug 2026', done: true },
+      { stage: 'DIC Query Resolved & DLFC Approved', targetDate: '01 Sep 2026', actualDate: '01 Sep 2026', done: true },
+      { stage: 'SBI Branch Valuation & Sanction', targetDate: '12 Sep 2026', actualDate: 'In Progress', done: false },
+      { stage: 'PMEGP Subsidy Claim Filing', targetDate: '30 Sep 2026', actualDate: 'Pending', done: false }
     ],
 
-    // 12. Completion
     completion: {
       isCompleted: false,
       completionDate: null,
-      deliverables: ['Certificate of Incorporation', 'Company PAN & TAN', 'e-MOA & e-AOA', 'Director DIN Letters', 'HDFC Bank Welcome Kit'],
-      dispatchTrackingNo: 'Pending Generation'
+      deliverables: ['PMEGP Sanction Letter', 'Bank Disbursal Advice', 'KVIC Subsidy TDR Certificate'],
+      dispatchTrackingNo: 'Pending Sanction'
     }
   },
+
   {
     id: 'PRJ-2026-002',
     projectCode: 'DUS-PRJ-090',
     customerId: 'CUST-302',
-    customerName: 'Apex Robotics LLP',
-    contactPerson: 'Karan Malhotra',
-    phone: '+91 98110 44321',
-    service: 'Trademark Registration (™) & Brand Protection',
-    serviceCategory: 'Intellectual Property Rights',
-    
+    customerName: 'Rajasthan Solar Tech & Irrigation',
+    contactPerson: 'Mahendra Bishnoi',
+    phone: '+91 98295 11200',
+    service: 'Rajasthan MLUPY Scheme (₹50 Lakhs) with 8% Interest Subsidy',
+    serviceCategory: 'Govt Banking & Subsidies',
+    serviceStream: 'Govt_Scheme_Loan',
+
+    executionMode: 'In_House',
+    assignedDesk: 'Cabin #03 (Govt Subsidy Desk)',
+    assignedPerson: {
+      name: 'Vikramaditya Rathore',
+      role: 'Senior Project Consultant',
+      phone: '+91 97840 44192',
+      email: 'vikram.rathore@digitaludyogseva.com'
+    },
+
+    lifecycleStage: 'Subsidy_Claim',
+    currentStatus: 'Subsidy Claim Window Active',
+    currentProcess: 'Bank disbursed 1st tranche; Subsidy Claim portal filing deadline in 18 days',
+    currentLocation: 'PNB MI Road & Rajasthan Industries Nodal Subsidy Portal',
+
+    legalAgreement: {
+      signed: true,
+      agreementNo: 'DUS-AGR-2026-074',
+      signedDate: '2026-07-15',
+      feePackage: '₹25,000 Consultation + 2% Subsidy Success',
+      initialFeeCollected: 25000,
+      agreementDoc: 'Signed_MLUPY_Agreement.pdf'
+    },
+
+    qaHandover: {
+      status: 'Approved_For_Submission',
+      collectedBy: 'Neha Sharma (Support)',
+      verifiedBy: 'Virendra Singh (Operations Head)'
+    },
+
+    departmentDetails: {
+      departmentName: 'Department of Industries & Commerce, Govt of Rajasthan',
+      portalName: 'MLUPY SSO Portal (industries.rajasthan.gov.in)',
+      applicationNo: 'MLUPY-2026-99214',
+      submissionDate: '2026-07-22',
+      portalStatus: 'Sanction Approved by DIC Committee',
+      queries: []
+    },
+
+    bankLiaison: {
+      bankName: 'Punjab National Bank (PNB)',
+      branchName: 'M.I. Road Branch, Jaipur',
+      branchManager: 'Sanjay Chawla',
+      branchPhone: '+91 98290 77123',
+      fileReceivedDate: '2026-08-01',
+      scrutinyStatus: 'Loan Sanctioned & First Tranche Disbursed',
+      sanctionStatus: 'Sanctioned',
+      sanctionAmount: 5000000,
+      sanctionLetterDoc: 'PNB_Sanction_Letter_50Lakhs.pdf'
+    },
+
+    subsidyClaim: {
+      schemeName: 'Rajasthan MLUPY 8% Subvention Subsidy',
+      subsidyAmountExpected: 400000, // Annual 8% interest relief
+      targetDaysToClaim: 30,
+      claimWindowDeadline: '2026-09-24',
+      daysRemaining: 18,
+      claimPortal: 'Rajasthan Single Sign On (SSO) Industries Portal',
+      claimStatus: 'Claim Filed by Bank • Verification in Progress',
+      tdrAccountNo: 'PNB-TDR-8812901',
+      fastActionRequired: true
+    },
+
     requirement: {
-      businessObjective: 'Register brand name "Apex Robotics" and logo emblem across Class 9 (Drones, Hardware) and Class 42 (Software & AI navigation).',
-      authorizedCapital: 'N/A',
-      paidUpCapital: 'N/A',
+      businessObjective: 'Manufacturing solar agricultural pumps and drip irrigation control units in Bagru.',
+      authorizedCapital: '₹25,00,000',
+      paidUpCapital: '₹5,00,000',
       directorsCount: 2,
-      shareholdingSplit: 'Equal Partners',
-      specialNotes: 'DPIIT startup rebate claimed: 50% statutory fee waiver applied under MSME/Startup provisions.'
+      specialNotes: 'Subsidized at 8% per annum for 5 years under CM Small Industry Promotion Scheme (MLUPY).'
     },
 
     documents: [
-      { name: 'Logo High Resolution PNG & Vector', required: true, status: 'Verified' },
-      { name: 'Form 48 Power of Attorney', required: true, status: 'Verified' },
-      { name: 'User Affidavit showing usage since Jan 2026', required: true, status: 'Verified' },
-      { name: 'DPIIT Startup Certificate', required: true, status: 'Verified' }
+      { name: 'Udyam Registration & Industrial Electricity Bill', required: true, status: 'Verified' },
+      { name: 'Solar Pump Technical Testing Reports', required: true, status: 'Verified' },
+      { name: 'PNB Loan Sanction Letter', required: true, status: 'Verified' },
+      { name: 'Nodal Bank Subsidy Claim Form A', required: true, status: 'Verified' }
     ],
-
-    currentStatus: 'Completed (Dispatched)',
-    currentProcess: 'Form TM-A Dispatched & Application Number Generated on IP India Portal',
-    currentLocation: 'Trade Marks Registry (Chennai & Mumbai Virtual IP Desk)',
-
-    assignedPerson: {
-      name: 'Neha Sharma',
-      role: 'Senior IP Attorney & Trademark Agent',
-      phone: '+91 98765 22110',
-      email: 'neha.sharma@digitaludyogseva.com'
-    },
 
     tasks: [
-      { id: 'T-11', task: 'Conduct phonetic and visual search in Vienna code index', done: true, dueDate: '2026-08-10', assignee: 'Neha Sharma' },
-      { id: 'T-12', task: 'Prepare user affidavit and stamp duty', done: true, dueDate: '2026-08-11', assignee: 'Neha Sharma' },
-      { id: 'T-13', task: 'File Form TM-A with IP India portal', done: true, dueDate: '2026-08-12', assignee: 'Neha Sharma' },
-      { id: 'T-14', task: 'Issue official filing receipt and TM certificate kit to client', done: true, dueDate: '2026-08-13', assignee: 'Neha Sharma' }
+      { id: 'T-11', task: 'Download official MLUPY Sanction Order from DIC SSO', done: true, dueDate: '2026-08-15', assignee: 'Vikramaditya Rathore' },
+      { id: 'T-12', task: 'Coordinate with PNB Branch for TDR Certificate', done: true, dueDate: '2026-08-25', assignee: 'Vikramaditya Rathore' },
+      { id: 'T-13', task: 'Upload Claim Form A & Disbursal Proof on SSO Portal', done: true, dueDate: '2026-09-02', assignee: 'Vikramaditya Rathore' },
+      { id: 'T-14', task: 'Track DIC Nodal Officer subsidy verification (Due in 18 days)', done: false, dueDate: '2026-09-20', assignee: 'Vikramaditya Rathore' }
     ],
 
-    department: 'Intellectual Property (IP India Desk)',
-
-    consultant: {
-      name: 'Advocate Saurabh Joshi (IP Attorney)',
-      signoffDate: '2026-08-12',
-      reviewRemarks: 'Zero conflicting trademarks in Class 9 or 42. Distinctive design qualifying for prima facie registration.'
-    },
-
     timeline: [
-      { stage: 'Public Search Report Prepared', targetDate: '10 Aug 2026', actualDate: '10 Aug 2026', done: true },
-      { stage: 'Power of Attorney & Affidavit Executed', targetDate: '11 Aug 2026', actualDate: '11 Aug 2026', done: true },
-      { stage: 'Form TM-A Filed & Challan Paid', targetDate: '12 Aug 2026', actualDate: '12 Aug 2026', done: true },
-      { stage: 'TM Number & Acknowledgment Issued', targetDate: '13 Aug 2026', actualDate: '13 Aug 2026', done: true }
+      { stage: 'MLUPY Portal Application Filed', targetDate: '22 Jul 2026', actualDate: '22 Jul 2026', done: true },
+      { stage: 'PNB Loan Sanction (₹50 Lakhs)', targetDate: '10 Aug 2026', actualDate: '10 Aug 2026', done: true },
+      { stage: '1st Loan Disbursal Issued', targetDate: '25 Aug 2026', actualDate: '25 Aug 2026', done: true },
+      { stage: 'Subsidy Claim Portal Verification (18 Days Remaining)', targetDate: '24 Sep 2026', actualDate: 'In Progress', done: false }
     ],
 
     completion: {
-      isCompleted: true,
-      completionDate: '2026-08-13',
-      deliverables: ['Form TM-A Official Government Acknowledgment', 'Trademark Search Analysis Report', 'Official ™ Brand Usage Guidelines'],
-      dispatchTrackingNo: 'DUS-TM-2026-0481 (Delivered Online)'
+      isCompleted: false,
+      completionDate: null,
+      deliverables: ['MLUPY Sanction Order', 'PNB Loan Sanction Letter', '8% Interest Subsidy Certificate'],
+      dispatchTrackingNo: 'MLUPY-SSO-CLAIM-9921'
     }
   },
+
   {
     id: 'PRJ-2026-003',
     projectCode: 'DUS-PRJ-091',
     customerId: 'CUST-303',
-    customerName: 'Pooja Fashion Hub',
-    contactPerson: 'Pooja Devi',
-    phone: '+91 97180 33441',
-    service: 'PMEGP Govt Loan (₹25 Lakhs) & DPR Execution',
-    serviceCategory: 'Govt Banking & Subsidies',
-    
+    customerName: 'Karni Infrastructure & Earthmovers',
+    contactPerson: 'Bhawani Singh Rathore',
+    phone: '+91 98291 99120',
+    service: 'PWD Class-AA Contractor License & Labour Department Registration',
+    serviceCategory: 'Contractor & Govt Works Licensing',
+    serviceStream: 'Fast_Compliance',
+
+    // Execution Mode: Outsourced to External Legal Firm
+    executionMode: 'Outsourced',
+    outsourceDetails: {
+      vendorName: 'Shree Shyam Legal & Licensing Consultants',
+      contactPerson: 'Advocate Hemant Sharma',
+      phone: '+91 94140 55123',
+      agreedCost: 6500,
+      paidStatus: 'Paid (100%)',
+      handoverDate: '2026-08-28',
+      deliveryDueDate: '2026-09-12',
+      vendorStatus: 'Scrutiny Cleared at PWD Chief Engineer Office; Final Certificate Signing',
+      deliverableUploaded: true,
+      deliverableFile: 'PWD_Class_AA_Draft_License.pdf'
+    },
+
+    lifecycleStage: 'Dept_Portal',
+    currentStatus: 'Govt Department Processing',
+    currentProcess: 'Police verification and solvency scrutiny at PWD Secretariat',
+    currentLocation: 'PWD Head Office, Jacob Road, Civil Lines, Jaipur',
+
+    legalAgreement: {
+      signed: true,
+      agreementNo: 'DUS-AGR-2026-095',
+      signedDate: '2026-08-27',
+      feePackage: '₹14,500 All-inclusive govt fee & consulting',
+      initialFeeCollected: 14500,
+      agreementDoc: 'Signed_PWD_Licensing_Contract.pdf'
+    },
+
+    qaHandover: {
+      status: 'Approved_For_Submission',
+      collectedBy: 'Pooja Sharma (Support)',
+      verifiedBy: 'Virendra Singh (Operations Head)'
+    },
+
+    departmentDetails: {
+      departmentName: 'Public Works Department (PWD) Rajasthan',
+      portalName: 'PWD Contractor Enrolment Portal',
+      applicationNo: 'PWD-AA-2026-4412',
+      submissionDate: '2026-08-30',
+      portalStatus: 'Under Technical Committee Scrutiny',
+      queries: []
+    },
+
     requirement: {
-      businessObjective: 'Procure high-speed automated textile embroidery machinery to scale garment manufacturing capacity in Surat.',
-      authorizedCapital: 'N/A',
-      paidUpCapital: 'N/A',
-      directorsCount: 1,
-      shareholdingSplit: '100% Proprietor',
-      specialNotes: 'Eligible for 35% Capital Subsidy under Special Category (Woman Entrepreneur in Urban/Semi-Urban). Own contribution: 5% (₹1.25 Lakhs).'
+      businessObjective: 'Obtain Class-AA unlimited tender bidding license for government highway and civil works in Rajasthan.',
+      specialNotes: 'Solvency certificate of ₹50 Lakhs provided from Bank of Baroda.'
     },
 
     documents: [
-      { name: 'Machinery Quotations & Technical Specs', required: true, status: 'Verified' },
-      { name: 'Premises Lease Agreement & Utility Bill', required: true, status: 'Verified' },
-      { name: 'Promoter Aadhaar & Educational Proof (10th Pass)', required: true, status: 'Verified' },
-      { name: 'EDP Training Certificate / Exemption Declaration', required: true, status: 'Verified' },
-      { name: '6-Month Savings Bank Account Statement', required: true, status: 'Verified' }
+      { name: 'Banker Solvency Certificate (₹50L)', required: true, status: 'Verified' },
+      { name: 'Machinery Ownership Proof (JCB, Mixers)', required: true, status: 'Verified' },
+      { name: 'Past 3-Years Work Completion Certificates', required: true, status: 'Verified' },
+      { name: 'Police Verification Report (SP Office)', required: true, status: 'Verified' }
     ],
-
-    currentStatus: 'Completed (Sanctioned)',
-    currentProcess: 'Loan Sanction Letter Issued by State Bank of India, Ring Road Branch Surat',
-    currentLocation: 'SBI SME Hub Surat & KVIC District Task Force Desk',
-
-    assignedPerson: {
-      name: 'Anil Tyagi',
-      role: 'Chief Banking & DPR Specialist',
-      phone: '+91 98110 55432',
-      email: 'anil.tyagi@digitaludyogseva.com'
-    },
 
     tasks: [
-      { id: 'T-21', task: 'Formulate 5-year projected profit & loss and CMA balance sheet', done: true, dueDate: '2026-08-17', assignee: 'Anil Tyagi' },
-      { id: 'T-22', task: 'Submit online application on KVIC PMEGP portal', done: true, dueDate: '2026-08-19', assignee: 'Anil Tyagi' },
-      { id: 'T-23', task: 'Liaise with SBI Branch Manager for file appraisal', done: true, dueDate: '2026-08-25', assignee: 'Anil Tyagi' },
-      { id: 'T-24', task: 'Secure formal in-principle sanction letter for ₹25 Lakhs', done: true, dueDate: '2026-09-02', assignee: 'Anil Tyagi' }
+      { id: 'T-21', task: 'Handover file to Advocate Hemant Sharma (Outsource Partner)', done: true, dueDate: '2026-08-28', assignee: 'Virendra Singh' },
+      { id: 'T-22', task: 'Verify Solvency & Machinery physical inspection in PWD', done: true, dueDate: '2026-09-02', assignee: 'Advocate Hemant' },
+      { id: 'T-23', task: 'Collect signed PWD Class-AA book & certificate', done: false, dueDate: '2026-09-12', assignee: 'Advocate Hemant' }
     ],
 
-    department: 'Government Banking & Capital Subsidies',
+    timeline: [
+      { stage: 'Case Handed to Outsource Partner (Shree Shyam Legal)', targetDate: '28 Aug 2026', actualDate: '28 Aug 2026', done: true },
+      { stage: 'PWD Portal Submission (App #4412)', targetDate: '30 Aug 2026', actualDate: '30 Aug 2026', done: true },
+      { stage: 'Technical Committee Scrutiny', targetDate: '06 Sep 2026', actualDate: '06 Sep 2026', done: true },
+      { stage: 'Final Class-AA License Book Issuance', targetDate: '12 Sep 2026', actualDate: 'Pending', done: false }
+    ],
 
-    consultant: {
-      name: 'CA Sunil Aggarwal (Credit Consultant)',
-      signoffDate: '2026-08-18',
-      reviewRemarks: 'Debt Service Coverage Ratio (DSCR) is 1.84, which comfortably satisfies bank underwriting parameters.'
+    completion: {
+      isCompleted: false,
+      completionDate: null,
+      deliverables: ['PWD Class-AA Enrolment Book', 'Labour Department 50+ Worker License'],
+      dispatchTrackingNo: 'PWD-CO-2026-4412'
+    }
+  },
+
+  {
+    id: 'PRJ-2026-004',
+    projectCode: 'DUS-PRJ-092',
+    customerId: 'CUST-304',
+    customerName: 'Shri Balaji Marbles & Minerals',
+    contactPerson: 'Kishore Toshniwal',
+    phone: '+91 94140 88214',
+    service: 'Rajasthan Pollution Control Board (RSPCB) CTE & CTO Clearance',
+    serviceCategory: 'Environmental Clearances',
+    serviceStream: 'Fast_Compliance',
+
+    // Execution Mode: Outsourced
+    executionMode: 'Outsourced',
+    outsourceDetails: {
+      vendorName: 'Green Enviro Environmental Solutions',
+      contactPerson: 'Dr. Ashok Singhal (EIA Consultant)',
+      phone: '+91 98290 66311',
+      agreedCost: 8500,
+      paidStatus: 'Partial (₹4,000 Advance)',
+      handoverDate: '2026-09-01',
+      deliveryDueDate: '2026-09-15',
+      vendorStatus: 'Environmental Management Plan (EMP) drafted; Water/Air sample submitted to lab',
+      deliverableUploaded: false,
+      deliverableFile: null
     },
 
+    lifecycleStage: 'Dept_Portal',
+    currentStatus: 'Pollution Board Scrutiny',
+    currentProcess: 'Consent to Establish (CTE) application filed on RSPCB e-Clearance Portal',
+    currentLocation: 'RSPCB Regional Office, Kishangarh / Jaipur',
+
+    legalAgreement: {
+      signed: true,
+      agreementNo: 'DUS-AGR-2026-102',
+      signedDate: '2026-08-31',
+      feePackage: '₹19,000 Including lab testing & consulting',
+      initialFeeCollected: 19000,
+      agreementDoc: 'Signed_RSPCB_Agreement.pdf'
+    },
+
+    qaHandover: {
+      status: 'Approved_For_Submission',
+      collectedBy: 'Pooja Sharma (Support)',
+      verifiedBy: 'Virendra Singh (Operations Head)'
+    },
+
+    departmentDetails: {
+      departmentName: 'Rajasthan State Pollution Control Board (RSPCB)',
+      portalName: 'RSPCB e-Consent Portal',
+      applicationNo: 'RSPCB-CTE-2026-891',
+      submissionDate: '2026-09-03',
+      portalStatus: 'Under Scrutiny by Regional Officer Kishangarh',
+      queries: []
+    },
+
+    requirement: {
+      businessObjective: 'Consent to Establish (CTE Green Category) for marble cutting and granite slab finishing plant.'
+    },
+
+    documents: [
+      { name: 'Plant Layout & Machinery Acoustic Plan', required: true, status: 'Verified' },
+      { name: 'Water Slurry Recycling Tank Design', required: true, status: 'Verified' },
+      { name: 'RIICO Industrial Plot Allotment Letter', required: true, status: 'Verified' }
+    ],
+
+    tasks: [
+      { id: 'T-31', task: 'Assign project to Green Enviro Solutions', done: true, dueDate: '2026-09-01', assignee: 'Virendra Singh' },
+      { id: 'T-32', task: 'Draft Environmental Management Plan (EMP)', done: true, dueDate: '2026-09-03', assignee: 'Dr. Ashok Singhal' },
+      { id: 'T-33', task: 'File CTE Application on RSPCB Portal', done: true, dueDate: '2026-09-04', assignee: 'Dr. Ashok Singhal' },
+      { id: 'T-34', task: 'Secure CTE Consent Order & deliver to client', done: false, dueDate: '2026-09-15', assignee: 'Dr. Ashok Singhal' }
+    ],
+
     timeline: [
-      { stage: 'Project Feasibility & CMA Data Preparation', targetDate: '17 Aug 2026', actualDate: '17 Aug 2026', done: true },
-      { stage: 'KVIC Portal Submission (Application #2026/8912)', targetDate: '19 Aug 2026', actualDate: '19 Aug 2026', done: true },
-      { stage: 'Bank Field Verification & Officer Interview', targetDate: '25 Aug 2026', actualDate: '25 Aug 2026', done: true },
-      { stage: 'Sanction Letter Issued (₹25,00,000)', targetDate: '02 Sep 2026', actualDate: '02 Sep 2026', done: true }
+      { stage: 'Case Initiated & Transferred to Green Enviro', targetDate: '01 Sep 2026', actualDate: '01 Sep 2026', done: true },
+      { stage: 'CTE Application Filed (App #891)', targetDate: '04 Sep 2026', actualDate: '04 Sep 2026', done: true },
+      { stage: 'Pollution Board Inspection & CTE Consent', targetDate: '15 Sep 2026', actualDate: 'Pending', done: false }
+    ],
+
+    completion: {
+      isCompleted: false,
+      completionDate: null,
+      deliverables: ['RSPCB CTE Consent Order', 'Slurry Recycling Compliance Certificate'],
+      dispatchTrackingNo: 'RSPCB-KSG-CTE-891'
+    }
+  },
+
+  {
+    id: 'PRJ-2026-005',
+    projectCode: 'DUS-PRJ-093',
+    customerId: 'CUST-305',
+    customerName: 'Bikaner Sweet & Namkeen Udyog',
+    contactPerson: 'Mukesh Agarwal',
+    phone: '+91 94140 33410',
+    service: 'FSSAI Central Food Processing License & Water Testing Report',
+    serviceCategory: 'Food Safety & Standards',
+    serviceStream: 'Fast_Compliance',
+
+    executionMode: 'In_House',
+    assignedDesk: 'Cabin #02 (Legal & Statutory Registrations)',
+    assignedPerson: {
+      name: 'CS Priya Nair',
+      role: 'Head of Corporate Registrations',
+      phone: '+91 98760 11990',
+      email: 'priya.nair@digitaludyogseva.com'
+    },
+
+    // Bounced back to Support due to missing documents! (User explicit workflow)
+    lifecycleStage: 'Support_Collection',
+    currentStatus: 'Bounced to Support Desk (Missing Docs)',
+    currentProcess: 'Operations QA rejected: Commercial electricity bill & NABL water test report missing',
+    currentLocation: 'Support Desk (Pooja Sharma) • Client Follow-up Active',
+
+    legalAgreement: {
+      signed: true,
+      agreementNo: 'DUS-AGR-2026-108',
+      signedDate: '2026-09-02',
+      feePackage: '₹8,500 FSSAI License + Lab testing fee',
+      initialFeeCollected: 8500,
+      agreementDoc: 'Signed_FSSAI_Agreement.pdf'
+    },
+
+    qaHandover: {
+      status: 'Bounced_To_Support',
+      collectedBy: 'Pooja Sharma (Support)',
+      verifiedBy: 'Virendra Singh (Operations Head)',
+      bouncedHistory: [
+        { 
+          date: '2026-09-04', 
+          reason: 'Operations QA Check Failed: Electricity bill was residential instead of industrial; NABL water test certificate expired. Bounced to Support Desk for re-collection.' 
+        }
+      ]
+    },
+
+    departmentDetails: {
+      departmentName: 'Food Safety and Standards Authority of India (FSSAI)',
+      portalName: 'FoSCoS Portal (foscos.fssai.gov.in)',
+      applicationNo: 'Pending Document Completion',
+      submissionDate: null,
+      portalStatus: 'Drafted • Awaiting Documents',
+      queries: []
+    },
+
+    requirement: {
+      businessObjective: 'Obtain Central FSSAI Manufacturing License for 15+ MT/day namkeen and packaged sweets production.'
+    },
+
+    documents: [
+      { name: 'Plant Layout & Equipment Blueprint', required: true, status: 'Verified' },
+      { name: 'FSMS Food Safety Plan', required: true, status: 'Verified' },
+      { name: 'Industrial Electricity Bill (<2 months)', required: true, status: 'Pending / Rejected' },
+      { name: 'NABL Accredited Water Potability Report', required: true, status: 'Pending / Rejected' }
+    ],
+
+    tasks: [
+      { id: 'T-41', task: 'Collect KYC & signed agreement', done: true, dueDate: '2026-09-02', assignee: 'Pooja Sharma' },
+      { id: 'T-42', task: 'Operations QA Scrutiny (REJECTED & BOUNCED)', done: true, dueDate: '2026-09-04', assignee: 'Virendra Singh' },
+      { id: 'T-43', task: 'Call Mukesh Ji for fresh JVVNL bill & NABL report', done: false, dueDate: '2026-09-06', assignee: 'Pooja Sharma' },
+      { id: 'T-44', task: 'Submit FoSCoS portal application', done: false, dueDate: '2026-09-08', assignee: 'CS Priya Nair' }
+    ],
+
+    timeline: [
+      { stage: 'Case Booked & Initial Fee Collected', targetDate: '02 Sep 2026', actualDate: '02 Sep 2026', done: true },
+      { stage: 'Operations QA Scrutiny (Bounced to Support)', targetDate: '04 Sep 2026', actualDate: '04 Sep 2026', done: true },
+      { stage: 'Re-collection of Industrial Bill & Water Report', targetDate: '06 Sep 2026', actualDate: 'In Progress', done: false },
+      { stage: 'FoSCoS Portal Submission', targetDate: '08 Sep 2026', actualDate: 'Pending', done: false }
+    ],
+
+    completion: {
+      isCompleted: false,
+      completionDate: null,
+      deliverables: ['FSSAI Central License Certificate (5 Years)'],
+      dispatchTrackingNo: 'Pending'
+    }
+  },
+
+  {
+    id: 'PRJ-2026-006',
+    projectCode: 'DUS-PRJ-094',
+    customerId: 'CUST-306',
+    customerName: 'Marwar Organic Seeds & Bio-Fertilizers',
+    contactPerson: 'Devendra Singh Bhati',
+    phone: '+91 97840 55219',
+    service: 'Bank DPR & 5-Year CMA Data Compilation (₹1.20 Crore Expansion)',
+    serviceCategory: 'Financial Modeling & Project Reports',
+    serviceStream: 'DPR_Financial',
+
+    executionMode: 'In_House',
+    assignedDesk: 'Cabin #02 (Financial Engineering & CA Desk)',
+    assignedPerson: {
+      name: 'CA Rajesh Verma',
+      role: 'Senior Financial Analyst & Partner',
+      phone: '+91 98290 12345',
+      email: 'rajesh.verma@digitaludyogseva.com'
+    },
+
+    lifecycleStage: 'Bank_Branch_Liaison',
+    currentStatus: 'Completed & Delivered to Bank',
+    currentProcess: 'Comprehensive 42-page TEV DPR and audited CMA data handed over to Bank of Baroda SME Hub',
+    currentLocation: 'Bank of Baroda Regional Zonal Office, Jaipur',
+
+    legalAgreement: {
+      signed: true,
+      agreementNo: 'DUS-AGR-2026-112',
+      signedDate: '2026-08-25',
+      feePackage: '₹22,000 DPR & CMA Data formulation',
+      initialFeeCollected: 22000,
+      agreementDoc: 'Signed_DPR_Engagement.pdf'
+    },
+
+    qaHandover: {
+      status: 'Approved_For_Submission',
+      collectedBy: 'Neha Sharma (Support)',
+      verifiedBy: 'CA Rajesh Verma (Operations)'
+    },
+
+    departmentDetails: {
+      departmentName: 'Bank Appraisal Desk (Direct Submission)',
+      portalName: 'N/A (Direct Banking File)',
+      applicationNo: 'BOB-SME-2026-120',
+      submissionDate: '2026-08-30',
+      portalStatus: 'Under Credit Appraisal Committee',
+      queries: []
+    },
+
+    bankLiaison: {
+      bankName: 'Bank of Baroda (BOB)',
+      branchName: 'Nehru Place SME Branch, Jaipur',
+      branchManager: 'Mr. R. C. Mathur',
+      branchPhone: '+91 98291 00214',
+      fileReceivedDate: '2026-08-31',
+      scrutinyStatus: 'TEV Study Approved; Sanction Note prepared for Zonal Head',
+      sanctionStatus: 'Sanctioned',
+      sanctionAmount: 12000000,
+      sanctionLetterDoc: 'BOB_Sanction_Advice_1.2Cr.pdf'
+    },
+
+    subsidyClaim: {
+      schemeName: 'Agricultural Infrastructure Fund (AIF) 3% Interest Subvention',
+      subsidyAmountExpected: 360000,
+      targetDaysToClaim: 45,
+      claimWindowDeadline: '2026-10-20',
+      daysRemaining: 34,
+      claimPortal: 'Agri Infra Fund Portal (agriinfra.dac.gov.in)',
+      claimStatus: 'Awaiting Bank Loan Disbursal',
+      tdrAccountNo: 'BOB-TDR-AIF-991',
+      fastActionRequired: false
+    },
+
+    requirement: {
+      businessObjective: 'Setting up automated organic seed grading plant and bio-fertilizer production lab in Jodhpur rural.'
+    },
+
+    documents: [
+      { name: 'Detailed Technical Machinery Quotes (₹80L)', required: true, status: 'Verified' },
+      { name: 'Last 3-Years Audited Balance Sheets & ITRs', required: true, status: 'Verified' },
+      { name: 'Civil Construction Estimate by Approved Valuer', required: true, status: 'Verified' },
+      { name: '5-Year Projected CMA Data & Sensitivity Ratios', required: true, status: 'Verified' }
+    ],
+
+    tasks: [
+      { id: 'T-51', task: 'Formulate 5-year break-even & DSCR sensitivity model', done: true, dueDate: '2026-08-27', assignee: 'CA Rajesh Verma' },
+      { id: 'T-52', task: 'Compile 42-page Techno-Economic Viability (TEV) DPR', done: true, dueDate: '2026-08-29', assignee: 'CA Rajesh Verma' },
+      { id: 'T-53', task: 'Attend credit appraisal meeting with BOB Zonal Credit Head', done: true, dueDate: '2026-09-02', assignee: 'CA Rajesh Verma' },
+      { id: 'T-54', task: 'Secure formal bank in-principle sanction letter', done: true, dueDate: '2026-09-05', assignee: 'CA Rajesh Verma' }
+    ],
+
+    timeline: [
+      { stage: 'Financial Modeling & Ratio Analysis', targetDate: '27 Aug 2026', actualDate: '27 Aug 2026', done: true },
+      { stage: '42-Page Bound DPR Printed & Delivered', targetDate: '29 Aug 2026', actualDate: '29 Aug 2026', done: true },
+      { stage: 'Credit Committee Defense with Zonal Head', targetDate: '02 Sep 2026', actualDate: '02 Sep 2026', done: true },
+      { stage: 'BOB Sanction Advice Issued (₹1.20 Cr)', targetDate: '05 Sep 2026', actualDate: '05 Sep 2026', done: true }
     ],
 
     completion: {
       isCompleted: true,
-      completionDate: '2026-09-02',
-      deliverables: ['Official Bank Sanction Letter (₹25 Lakhs)', '5-Year CMA Project Report Bound Copy', 'KVIC Subsidy Lock Certificate'],
-      dispatchTrackingNo: 'SBI-SRT-SANC-081 (Handed in Person)'
+      completionDate: '2026-09-05',
+      deliverables: ['Bound 42-Page TEV Project Report', '5-Year Signed CMA Data Sheets', 'BOB ₹1.20 Cr Sanction Advice'],
+      dispatchTrackingNo: 'BOB-JAIPUR-SME-120'
+    }
+  },
+
+  {
+    id: 'PRJ-2026-007',
+    projectCode: 'DUS-PRJ-095',
+    customerId: 'CUST-307',
+    customerName: 'Jaipur Craft & Block Print Exports',
+    contactPerson: 'Suresh Kumawat',
+    phone: '+91 98290 33419',
+    service: 'GST Registration, LUT Filing & Monthly Return Compliance',
+    serviceCategory: 'Taxation & Regulatory Retainer',
+    serviceStream: 'Fast_Compliance',
+
+    executionMode: 'In_House',
+    assignedDesk: 'Cabin #02 (Taxation & Accounts Desk)',
+    assignedPerson: {
+      name: 'CA Rajesh Verma',
+      role: 'Partner - Taxation',
+      phone: '+91 98290 12345',
+      email: 'rajesh.verma@digitaludyogseva.com'
+    },
+
+    lifecycleStage: 'Bank_Sanctioned',
+    currentStatus: 'Completed (Certificate Dispatched)',
+    currentProcess: 'GST Registration Certificate (REG-06) issued & Letter of Undertaking (LUT) filed',
+    currentLocation: 'Client Email & DUS Customer Document Vault',
+
+    legalAgreement: {
+      signed: true,
+      agreementNo: 'DUS-AGR-2026-118',
+      signedDate: '2026-08-18',
+      feePackage: '₹4,500 One-time GST + LUT',
+      initialFeeCollected: 4500,
+      agreementDoc: 'Signed_GST_Engagement.pdf'
+    },
+
+    qaHandover: {
+      status: 'Approved_For_Submission',
+      collectedBy: 'Pooja Sharma (Support)',
+      verifiedBy: 'CA Rajesh Verma'
+    },
+
+    departmentDetails: {
+      departmentName: 'Goods and Services Tax (GST) Department',
+      portalName: 'GST Common Portal (gst.gov.in)',
+      applicationNo: 'ARN-AA08082600192',
+      submissionDate: '2026-08-20',
+      portalStatus: 'Approved • GSTIN 08AACFJ8821B1Z2 Active',
+      queries: []
+    },
+
+    requirement: {
+      businessObjective: 'Obtain export-ready GSTIN with LUT filing to export Sanganeri block print fabrics with 0% IGST under bond.'
+    },
+
+    documents: [
+      { name: 'Proprietor PAN & Aadhaar (Aadhaar OTP Verified)', required: true, status: 'Verified' },
+      { name: 'Sanganer Workshop Registered Rent Deed', required: true, status: 'Verified' },
+      { name: 'Electricity Bill of Workshop', required: true, status: 'Verified' },
+      { name: 'Cancelled Cheque of Current Account', required: true, status: 'Verified' }
+    ],
+
+    tasks: [
+      { id: 'T-61', task: 'File REG-01 Application with Aadhaar Biometric Authentication', done: true, dueDate: '2026-08-20', assignee: 'CA Rajesh Verma' },
+      { id: 'T-62', task: 'Download Form GST REG-06 Certificate', done: true, dueDate: '2026-08-23', assignee: 'CA Rajesh Verma' },
+      { id: 'T-63', task: 'File RFD-11 Letter of Undertaking (LUT) for zero-rated exports', done: true, dueDate: '2026-08-24', assignee: 'CA Rajesh Verma' },
+      { id: 'T-64', task: 'Auto-save Certificate in Client Document Vault', done: true, dueDate: '2026-08-25', assignee: 'CA Rajesh Verma' }
+    ],
+
+    timeline: [
+      { stage: 'REG-01 Filed with Aadhaar Auth', targetDate: '20 Aug 2026', actualDate: '20 Aug 2026', done: true },
+      { stage: 'REG-06 GSTIN Certificate Issued', targetDate: '23 Aug 2026', actualDate: '23 Aug 2026', done: true },
+      { stage: 'LUT RFD-11 Approved for Export', targetDate: '24 Aug 2026', actualDate: '24 Aug 2026', done: true }
+    ],
+
+    completion: {
+      isCompleted: true,
+      completionDate: '2026-08-25',
+      deliverables: ['GST Certificate (REG-06)', 'LUT Filing Acknowledgment RFD-11', 'Export GST Compliance Kit'],
+      dispatchTrackingNo: 'GSTIN-08AACFJ8821B1Z2 (Delivered to Vault)'
     }
   }
 ];
