@@ -65,6 +65,8 @@ export const CrmLayout = () => {
     showToast
   } = useApp();
 
+  const [showNotifications, setShowNotifications] = useState(false);
+
   return (
     <div className="crm-layout">
       {/* Sidebar */}
