@@ -478,7 +478,36 @@ export const CrmProjects = () => {
                 </div>
 
                 <div className="form-group mb-3">
-                  <label className="form-label">Service Title *</label>
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="form-label mb-0">Service Title *</label>
+                    <select
+                      style={{ fontSize: '0.72rem', padding: '2px 8px', borderRadius: '4px', border: '1px solid #cbd5e1' }}
+                      onChange={e => {
+                        if (e.target.value) {
+                          setNewService(e.target.value);
+                          if (e.target.value.includes('Loan') || e.target.value.includes('PMEGP') || e.target.value.includes('MLUPY')) {
+                            setNewStream('Govt_Scheme_Loan');
+                          } else if (e.target.value.includes('DPR') || e.target.value.includes('CMA')) {
+                            setNewStream('DPR_Financial');
+                          } else {
+                            setNewStream('Fast_Compliance');
+                          }
+                        }
+                      }}
+                    >
+                      <option value="">-- Quick Preset Services --</option>
+                      <option value="PMEGP Govt Loan (₹25 Lakhs) & DPR">PMEGP Govt Loan (₹25 Lakhs) & DPR</option>
+                      <option value="Rajasthan MLUPY Scheme (₹50 Lakhs) with 8% Interest Subsidy">Rajasthan MLUPY (8% Interest Subsidy)</option>
+                      <option value="PWD Class-AA Contractor License">PWD Class-AA Contractor License</option>
+                      <option value="Labour Department 50+ Worker License">Labour Contractor License</option>
+                      <option value="FSSAI Central Food Processing License">FSSAI Food License</option>
+                      <option value="Rajasthan Pollution Board (RSPCB) CTE Clearance">Pollution Board (RSPCB) CTE/CTO</option>
+                      <option value="Private Limited Company Incorporation">Private Limited Company Incorporation</option>
+                      <option value="Public Charitable Trust & NGO Registration">Trust & NGO Registration</option>
+                      <option value="GST Registration & Filing Package">GST Registration & Return Filing</option>
+                      <option value="MSME Udyam Registration & ZED Certification">Udyam MSME Registration</option>
+                    </select>
+                  </div>
                   <input type="text" required placeholder="e.g. PMEGP ₹35L Loan & Rice Mill DPR" className="form-control" value={newService} onChange={e => setNewService(e.target.value)} />
                 </div>
 

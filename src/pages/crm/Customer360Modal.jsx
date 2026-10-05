@@ -43,6 +43,17 @@ export const Customer360Modal = () => {
   const [selectedNewRm, setSelectedNewRm] = useState('CA Rajesh Verma');
   const [reassignReason, setReassignReason] = useState('');
 
+  // Proposals & Estimates State
+  const [estimatesList, setEstimatesList] = useState([
+    { id: 'EST-2026-042', date: '2026-09-02', service: 'PMEGP Subsidy DPR & Bank CMA Data', basePrice: 15000, discount: 1000, gst: 2520, total: 16520, status: 'Accepted', sentVia: 'WhatsApp' },
+    { id: 'EST-2026-055', date: '2026-09-12', service: 'Trademark Registration (Class 31 Agro)', basePrice: 6500, discount: 500, gst: 1080, total: 7080, status: 'Sent', sentVia: 'Email' }
+  ]);
+  const [showNewEstimateModal, setShowNewEstimateModal] = useState(false);
+  const [estService, setEstService] = useState('Trademark Registration (1 Class)');
+  const [estBasePrice, setEstBasePrice] = useState(6500);
+  const [estDiscount, setEstDiscount] = useState(500);
+  const [estSentVia, setEstSentVia] = useState('WhatsApp');
+
   if (!selectedCustomerFor360) return null;
   const cust = selectedCustomerFor360;
 
@@ -448,6 +459,7 @@ export const Customer360Modal = () => {
                 <div style={{ display: 'flex', gap: '8px' }}>
                   {[
                     { id: 'statement', label: '📄 Statement of Account (खाता)' },
+                    { id: 'estimates', label: `Estimates & Quotes (${estimatesList.length})` },
                     { id: 'invoices', label: `Invoices (${invoicesList.length})` },
                     { id: 'credit_debit', label: `Credit / Debit Notes (${creditDebitNotes.length})` },
                     { id: 'advance_receipts', label: `Advance Receipts (${advanceReceipts.length})` },
@@ -550,7 +562,103 @@ export const Customer360Modal = () => {
                 </div>
               )}
 
-              {/* SUB-VIEW 2: INVOICES */}
+              {/* SUB-VIEW 2: ESTIMATES & PROPOSALS */}
+              {billingSubTab === 'estimates' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div className="flex justify-between items-center mb-1">
+                    <div>
+                      <h4 style={{ margin: 0, fontSize: '1rem', color: '#0b1727' }}>
+                        Customer Proposals &amp; Quotations (प्रस्ताव व अनुमान)
+                      </h4>
+                      <small style={{ color: '#64748b' }}>Generate formal estimates with scope, deliverables, discount &amp; 18% GST</small>
+                    </div>
+                    <button 
+                      type="button"
+                      onClick={() => setShowNewEstimateModal(true)} 
+                      className="btn btn-sm btn-primary"
+                      style={{ background: 'linear-gradient(135deg, #ff6f00, #ea580c)', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      <Plus size={14} /> + Create Estimate / Quotation
+                    </button>
+                  </div>
+
+                  {estimatesList.map(est => (
+                    <div key={est.id} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <strong style={{ fontSize: '0.95rem', color: '#ff6f00', fontFamily: 'var(--font-mono)' }}>{est.id}</strong>
+                          <span className={`badge ${est.status === 'Accepted' ? 'badge-emerald' : 'badge-blue'}`}>{est.status}</span>
+                          <span className="badge badge-outline" style={{ fontSize: '0.68rem' }}>Sent via {est.sentVia}</span>
+                        </div>
+                        <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#0b1727' }}>{est.service}</div>
+                        <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
+                          Base: ₹{est.basePrice.toLocaleString('en-IN')} {est.discount ? `• Concession: ₹${est.discount}` : ''} • GST (18%): ₹{est.gst.toLocaleString('en-IN')} • Date: {est.date}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontSize: '1.2rem', fontWeight: '900', color: '#0b1727', fontFamily: 'var(--font-mono)' }}>
+                            ₹{est.total.toLocaleString('en-IN')}
+                          </div>
+                          <span style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '600' }}>Inclusive of GST</span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const waText = encodeURIComponent(`Namaste ${cust.name}, here is your official Estimate #${est.id} for ${est.service}. Total Amount: ₹${est.total.toLocaleString('en-IN')}. Please review and approve.`);
+                              window.open(`https://wa.me/91${cust.phone.replace(/[^0-9]/g, '').slice(-10)}?text=${waText}`, '_blank');
+                            }}
+                            className="btn btn-sm btn-outline"
+                            style={{ borderColor: '#059669', color: '#059669', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', padding: '5px 10px' }}
+                            title="Share on WhatsApp"
+                          >
+                            <MessageSquare size={13} /> WhatsApp
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => showToast(`Quotation #${est.id} downloaded as PDF!`)}
+                            className="btn btn-sm btn-outline"
+                            style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', padding: '5px 10px' }}
+                            title="Download PDF"
+                          >
+                            <Download size={13} /> PDF
+                          </button>
+
+                          {est.status !== 'Converted' && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                est.status = 'Converted';
+                                invoicesList.unshift({
+                                  id: `INV-2026-${Date.now().toString().slice(-3)}`,
+                                  date: new Date().toISOString().split('T')[0],
+                                  service: est.service,
+                                  amount: est.basePrice - est.discount,
+                                  gst: est.gst,
+                                  total: est.total,
+                                  status: 'Pending',
+                                  balance: est.total
+                                });
+                                showToast(`Estimate converted to Tax Invoice! Added to statement.`);
+                              }}
+                              className="btn btn-sm btn-primary"
+                              style={{ background: '#059669', fontSize: '0.75rem', padding: '5px 10px' }}
+                            >
+                              Convert to Invoice ➔
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* SUB-VIEW 3: INVOICES */}
               {billingSubTab === 'invoices' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {invoicesList.map(inv => (
@@ -1235,6 +1343,118 @@ export const Customer360Modal = () => {
                 className="btn btn-primary btn-sm"
               >
                 Save Reminder
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* NEW ESTIMATE / QUOTATION MODAL POPUP                     */}
+      {/* ======================================================== */}
+      {showNewEstimateModal && (
+        <div className="modal-overlay" style={{ zIndex: 1100 }} onClick={() => setShowNewEstimateModal(false)}>
+          <div className="modal-card" style={{ maxWidth: '480px' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h4 style={{ fontSize: '1.1rem', margin: 0 }}>Create Estimate / Proposal</h4>
+              <button onClick={() => setShowNewEstimateModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+            </div>
+            <div className="modal-body">
+              <div className="form-group mb-3">
+                <label className="form-label">Service / Project Scope *</label>
+                <input
+                  type="text"
+                  placeholder="e.g. ISO 9001 Certification & Quality Audit"
+                  className="form-control"
+                  value={estService}
+                  onChange={e => setEstService(e.target.value)}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+                <div>
+                  <label className="form-label">Base Fee (₹) *</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={estBasePrice}
+                    onChange={e => setEstBasePrice(Number(e.target.value))}
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Discount / Concession (₹)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={estDiscount}
+                    onChange={e => setEstDiscount(Number(e.target.value))}
+                  />
+                </div>
+              </div>
+
+              <div className="form-group mb-3">
+                <label className="form-label">Delivery &amp; Proposal Channel</label>
+                <select
+                  value={estSentVia}
+                  onChange={e => setEstSentVia(e.target.value)}
+                  className="form-control"
+                >
+                  <option value="WhatsApp">WhatsApp (Direct PDF Link)</option>
+                  <option value="Email">Official Corporate Email</option>
+                  <option value="In-Person">In-Person Handover at Cabin</option>
+                </select>
+              </div>
+
+              {/* Live Price Calculation Summary */}
+              {(() => {
+                const taxable = Math.max(0, estBasePrice - estDiscount);
+                const gst = Math.round(taxable * 0.18);
+                const total = taxable + gst;
+                return (
+                  <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '14px' }}>
+                    <div className="flex justify-between items-center mb-1" style={{ fontSize: '0.82rem', color: '#64748b' }}>
+                      <span>Taxable Subtotal:</span>
+                      <strong>₹{taxable.toLocaleString('en-IN')}</strong>
+                    </div>
+                    <div className="flex justify-between items-center mb-1" style={{ fontSize: '0.82rem', color: '#64748b' }}>
+                      <span>Applicable GST (18%):</span>
+                      <strong>₹{gst.toLocaleString('en-IN')}</strong>
+                    </div>
+                    <div className="flex justify-between items-center" style={{ fontSize: '1rem', fontWeight: '900', color: '#0b1727', borderTop: '1px solid #cbd5e1', paddingTop: '6px' }}>
+                      <span>Estimated Total:</span>
+                      <strong style={{ color: '#059669' }}>₹{total.toLocaleString('en-IN')}</strong>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+            <div className="modal-footer">
+              <button onClick={() => setShowNewEstimateModal(false)} className="btn btn-outline btn-sm">Cancel</button>
+              <button
+                onClick={() => {
+                  if (!estService) return;
+                  const taxable = Math.max(0, estBasePrice - estDiscount);
+                  const gst = Math.round(taxable * 0.18);
+                  const total = taxable + gst;
+                  const newEst = {
+                    id: `EST-2026-0${estimatesList.length + 56}`,
+                    date: new Date().toISOString().split('T')[0],
+                    service: estService,
+                    basePrice: estBasePrice,
+                    discount: estDiscount,
+                    gst,
+                    total,
+                    status: 'Sent',
+                    sentVia: estSentVia
+                  };
+                  setEstimatesList([newEst, ...estimatesList]);
+                  showToast(`Estimate #${newEst.id} generated and ready to dispatch via ${estSentVia}!`);
+                  setShowNewEstimateModal(false);
+                }}
+                className="btn btn-primary btn-sm"
+                style={{ background: 'linear-gradient(135deg, #ff6f00, #ea580c)' }}
+              >
+                Generate &amp; Dispatch Estimate 🚀
               </button>
             </div>
           </div>

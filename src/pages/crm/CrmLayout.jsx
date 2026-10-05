@@ -119,9 +119,10 @@ export const CrmLayout = () => {
           <div 
             onClick={() => setCrmSection('subsidy_ai')}
             className={`crm-nav-item ${crmSection === 'subsidy_ai' ? 'active' : ''}`}
+            style={{ borderLeft: crmSection === 'subsidy_ai' ? '3px solid #ff6f00' : 'none' }}
           >
-            <Calculator size={18} color="#818cf8" />
-            <span className="nav-text" style={{ fontWeight: '700' }}>AI Subsidy Calculator</span>
+            <ShieldCheck size={18} color="#818cf8" />
+            <span className="nav-text" style={{ fontWeight: '700' }}>7-Pillar Loan Eligibility</span>
           </div>
 
           <div 

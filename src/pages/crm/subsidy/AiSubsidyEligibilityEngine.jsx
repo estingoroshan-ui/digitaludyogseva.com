@@ -16,9 +16,13 @@ import {
   Layers,
   Award
 } from 'lucide-react';
+import { LeadEligibilityEngine } from '../lead360/LeadEligibilityEngine';
 
 export const AiSubsidyEligibilityEngine = () => {
   const { addLead, addLoanCase, showToast, setActiveView, setCrmSection } = useApp();
+
+  // Mode: 'seven_pillar' (default comprehensive 7-pillar engine) | 'quick_calculator'
+  const [activeMode, setActiveMode] = useState('seven_pillar');
 
   // Inputs
   const [projectCost, setProjectCost] = useState(2500000); // 25 Lakh default
@@ -76,7 +80,7 @@ export const AiSubsidyEligibilityEngine = () => {
       loanAmount: bankLoanAmount,
       subsidyEligible: subsidyAmount,
       promoterEquity: promoterOwnMoney,
-      targetBank: 'State Bank of India (SBI)',
+      schemeCategory: 'Direct MSME Subsidy (No Bank Add Required)',
       stage: 'Eligibility Approved',
       deskNotes: `Auto-qualified by AI Engine: ${subsidyPercentage}% Subsidy (₹${subsidyAmount.toLocaleString('en-IN')}) under ${location} ${socialCategory} category.`
     });
@@ -85,30 +89,73 @@ export const AiSubsidyEligibilityEngine = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-      {/* Banner */}
-      <div style={{
-        background: 'linear-gradient(135deg, #070e17 0%, #1e1b4b 50%, #4338ca 100%)',
-        borderRadius: 'var(--radius-xl)',
-        padding: '30px',
-        color: '#fff',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        boxShadow: 'var(--shadow-xl)'
-      }}>
-        <div className="flex items-center gap-3 mb-3">
-          <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'linear-gradient(135deg, #ff6f00, #ea580c)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-            <Sparkles size={24} />
-          </div>
-          <div>
-            <h1 style={{ fontSize: '1.6rem', color: '#fff', margin: 0, fontWeight: 800 }}>
-              AI Government Subsidy &amp; Bank Eligibility Engine
-            </h1>
-            <p style={{ color: '#c7d2fe', fontSize: '0.88rem', margin: 0, marginTop: '2px' }}>
-              Instant Subsidy Calculator for PMEGP (up to 35%), Mudra, Stand-Up India &amp; Automated Bank Document Checklist
-            </p>
-          </div>
-        </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Top Mode Selector Pills */}
+      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', background: '#f8fafc', padding: '8px 14px', borderRadius: '12px', border: '1px solid #e2e8f0', flexWrap: 'wrap' }}>
+        <button
+          type="button"
+          onClick={() => setActiveMode('seven_pillar')}
+          className="btn btn-sm"
+          style={{
+            background: activeMode === 'seven_pillar' ? 'linear-gradient(135deg, #ff6f00, #ea580c)' : 'transparent',
+            color: activeMode === 'seven_pillar' ? '#fff' : '#475569',
+            border: activeMode === 'seven_pillar' ? 'none' : '1px solid #cbd5e1',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontWeight: '700'
+          }}
+        >
+          <ShieldCheck size={16} />
+          <span>⭐ 7-Pillar Direct Loan Eligibility & Underwriting (No Bank Add Required)</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveMode('quick_calculator')}
+          className="btn btn-sm"
+          style={{
+            background: activeMode === 'quick_calculator' ? '#0b1727' : 'transparent',
+            color: activeMode === 'quick_calculator' ? '#fff' : '#475569',
+            border: activeMode === 'quick_calculator' ? 'none' : '1px solid #cbd5e1',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontWeight: '700'
+          }}
+        >
+          <Calculator size={16} />
+          <span>⚡ Quick PMEGP Subsidy Slider</span>
+        </button>
       </div>
+
+      {activeMode === 'seven_pillar' ? (
+        <LeadEligibilityEngine />
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* Banner */}
+          <div style={{
+            background: 'linear-gradient(135deg, #070e17 0%, #1e1b4b 50%, #4338ca 100%)',
+            borderRadius: 'var(--radius-xl)',
+            padding: '30px',
+            color: '#fff',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: 'var(--shadow-xl)'
+          }}>
+            <div className="flex items-center gap-3 mb-3">
+              <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'linear-gradient(135deg, #ff6f00, #ea580c)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                <Sparkles size={24} />
+              </div>
+              <div>
+                <h1 style={{ fontSize: '1.6rem', color: '#fff', margin: 0, fontWeight: 800 }}>
+                  AI Government Subsidy &amp; Loan Eligibility Engine
+                </h1>
+                <p style={{ color: '#c7d2fe', fontSize: '0.88rem', margin: 0, marginTop: '2px' }}>
+                  Instant Subsidy Calculator for PMEGP (up to 35%), Mudra, Stand-Up India &amp; Automated Document Checklist
+                </p>
+              </div>
+            </div>
+          </div>
 
       <div className="grid" style={{ gridTemplateColumns: '1.15fr 1fr', gap: '24px', alignItems: 'flex-start' }}>
         {/* Left: Input Form */}
@@ -361,6 +408,8 @@ export const AiSubsidyEligibilityEngine = () => {
           </div>
         </div>
       </div>
+        </div>
+      )}
     </div>
   );
 };

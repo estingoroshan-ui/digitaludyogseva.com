@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 
 export const LeadEligibilityEngine = ({ lead, onSaveToLead }) => {
-  const { showToast, cabins } = useApp();
+  const { showToast, cabins, addLead, setSelectedLeadForDetail } = useApp();
 
   // 1. Demographics & Personal
   const [applicantName, setApplicantName] = useState(lead?.name || '');
@@ -174,8 +174,33 @@ export const LeadEligibilityEngine = ({ lead, onSaveToLead }) => {
         auditFeeStatus,
         eligibilityStatus: approvalChance >= 70 ? 'Approved (Prime)' : approvalChance >= 50 ? 'Conditionally Qualified' : 'Needs Repair'
       });
+      showToast(`Eligibility Scorecard & Feasibility Profile saved for ${applicantName}!`);
+    } else if (addLead) {
+      const createdLead = addLead({
+        name: applicantName || 'Direct Applicant',
+        phone: phone || '+91 98765 00000',
+        email: `${(applicantName || 'applicant').toLowerCase().replace(/\s+/g, '')}@client.in`,
+        businessName: businessName || `${applicantName || 'Applicant'} Enterprises`,
+        service: 'PMEGP / MLUPY Loan Eligibility',
+        value: requestedProjectCost,
+        source: 'Direct Eligibility Desk (No Bank Add)',
+        district: address.split(',')[0]?.trim() || 'Jaipur',
+        state: 'Rajasthan',
+        eligibilityScore: approvalChance,
+        cibilScore,
+        netWorth,
+        bestScheme: `PMEGP (${pmegpSubsidyPercent}% Subsidy) + MLUPY (${mlupyInterestSubsidy}% Interest Subvention)`,
+        subsidyAmount: pmegpSubsidyAmount,
+        auditFeeStatus,
+        notes: `Direct Eligibility Dossier created. CIBIL: ${cibilScore}, DPD: ${dpdHistory}, Net Worth: ₹${netWorth.toLocaleString('en-IN')}, Sanction Probability: ${approvalChance}%. Direct appraisal (Bank addition skipped).`
+      });
+      showToast(`Client saved & registered in Lead Pipeline as #${createdLead?.leadCode || createdLead?.id}!`);
+      if (setSelectedLeadForDetail && createdLead) {
+        setSelectedLeadForDetail(createdLead);
+      }
+    } else {
+      showToast(`Eligibility Scorecard evaluated for ${applicantName}!`);
     }
-    showToast(`Eligibility Scorecard & Bank Profile saved for ${applicantName}!`);
   };
 
   const handlePrint = () => {
@@ -828,17 +853,17 @@ export const LeadEligibilityEngine = ({ lead, onSaveToLead }) => {
                   Digital Udyog Seva • Credit Appraisal Desk
                 </div>
                 <h2 style={{ fontSize: '1.35rem', fontWeight: '900', margin: '2px 0 0', color: '#0b1727' }}>
-                  CONFIDENTIAL EXECUTIVE BANK BRIEF DOSSIER
+                  CONFIDENTIAL EXECUTIVE PROJECT & LOAN ELIGIBILITY DOSSIER
                 </h2>
                 <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                  Reference Code: DUS-BB-{lead?.id || 'LD101'} | Date: {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                  Reference Code: DUS-EL-{lead?.id || 'DIR101'} | Date: {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                 </div>
               </div>
 
               <div style={{ textAlign: 'right', background: '#f8fafc', padding: '8px 14px', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
-                <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>Target Institution</div>
-                <strong style={{ fontSize: '0.95rem', color: '#0b1727' }}>State Bank of India (SBI) / PNB</strong>
-                <div style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '700' }}>Recommended for Sanction</div>
+                <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>Target Eligibility Scope</div>
+                <strong style={{ fontSize: '0.95rem', color: '#0b1727' }}>All Scheduled Lending Institutions</strong>
+                <div style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '700' }}>Direct Appraisal (No Bank Add Required)</div>
               </div>
             </div>
 
