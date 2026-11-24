@@ -1,5 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
+import { useRouter } from '../router/Router';
 import { 
   Home, 
   Layers, 
@@ -11,13 +12,14 @@ import {
 
 export const BottomNav = () => {
   const { activeView, setActiveView } = useApp();
+  const { navigate } = useRouter();
 
   const navItems = [
-    { id: 'website', label: 'Home', icon: Home },
-    { id: 'services', label: 'Services', icon: Layers },
-    { id: 'loans', label: 'Loans', icon: Banknote },
-    { id: 'track', label: 'Track', icon: Search },
-    { id: 'crm', label: 'CRM', icon: LayoutDashboard, isSpecial: true },
+    { id: 'website', path: '/', label: 'Home', icon: Home },
+    { id: 'services', path: '/services', label: 'Services', icon: Layers },
+    { id: 'loans', path: '/loans', label: 'Loans', icon: Banknote },
+    { id: 'track', path: '/track', label: 'Track', icon: Search },
+    { id: 'crm', path: '/admin/dashboard', label: 'CRM', icon: LayoutDashboard, isSpecial: true },
   ];
 
   return (
@@ -33,7 +35,7 @@ export const BottomNav = () => {
               type="button"
               onClick={() => {
                 setActiveView(item.id);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                navigate(item.path);
               }}
               className={`bottom-nav-item ${isActive ? 'active' : ''} ${item.isSpecial ? 'special-crm' : ''}`}
               aria-label={item.label}

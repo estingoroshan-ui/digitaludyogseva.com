@@ -8,7 +8,6 @@ DirectoryIndex index.php index.html
 # 2. Rewrite Engine & Front Controller for React SPA
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /
 
     # Route /assets/ to /dist/assets/ if needed
     RewriteCond %{DOCUMENT_ROOT}/dist/assets/$1 -f
@@ -20,11 +19,11 @@ DirectoryIndex index.php index.html
     RewriteRule ^ - [L]
 
     # Don't rewrite API endpoints
-    RewriteCond %{REQUEST_URI} ^/api/ [NC]
+    RewriteCond %{REQUEST_URI} /api/ [NC]
     RewriteRule ^ - [L]
 
     # Send all other requests to index.php for client-side React SPA routing
-    RewriteRule ^ index.php [L]
+    RewriteRule ^ index.php [L,QSA]
 </IfModule>
 
 # 3. Disable Directory Browsing for Security

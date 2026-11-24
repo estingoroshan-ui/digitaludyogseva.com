@@ -36,10 +36,10 @@ try {
     if ($action === 'list') {
         $stmt = $pdo->query("
             SELECT l.id, l.lead_code, l.name, l.mobile, l.email, l.company, l.business_name,
-                   COALESCE(l.lead_value, l.expected_value, 5000) AS value,
+                   COALESCE(l.lead_value, l.estimated_value, 5000) AS value,
                    COALESCE(ls.status_name, 'New Lead') AS stage,
                    ls.color_code AS stage_color,
-                   COALESCE(lsrc.source_name, l.lead_source, 'Website') AS source,
+                   COALESCE(lsrc.source_name, l.source_detail, 'Website') AS source,
                    s.name AS service,
                    u.name AS assigned_to,
                    l.temperature,

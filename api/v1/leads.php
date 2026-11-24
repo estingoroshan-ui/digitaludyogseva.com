@@ -18,9 +18,10 @@ try {
     if ($method === 'GET') {
         // Fetch all leads
         $stmt = $pdo->query("
-            SELECT l.id, l.name, l.phone, l.email, l.expected_value AS value, 
+            SELECT l.id, l.name, l.mobile AS phone, l.email, 
+                   COALESCE(l.lead_value, l.estimated_value, 0) AS value, 
                    COALESCE(ls.status_name, 'New Leads') AS stage,
-                   l.lead_source AS source,
+                   COALESCE(l.source_detail, 'Website') AS source,
                    l.created_at AS date
             FROM leads l
             LEFT JOIN lead_statuses ls ON l.status_id = ls.id
@@ -39,17 +40,18 @@ try {
             exit;
         }
 
+        $leadCode = 'LEAD-' . date('Ymd') . '-' . rand(1000, 9999);
         $stmt = $pdo->prepare("
-            INSERT INTO leads (name, phone, email, expected_value, lead_source, notes, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, NOW())
+            INSERT INTO leads (lead_code, name, mobile, email, lead_value, source_detail, status_id, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, 1, NOW(), NOW())
         ");
         $stmt->execute([
+            $leadCode,
             $input['name'],
             $input['phone'],
             $input['email'] ?? null,
             $input['value'] ?? 0,
-            $input['source'] ?? 'Website React Form',
-            $input['notes'] ?? 'Added via React Frontend'
+            $input['source'] ?? 'Website React Form'
         ]);
 
         $newId = $pdo->lastInsertId();

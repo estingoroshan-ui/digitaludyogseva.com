@@ -21,15 +21,22 @@ import {
   ExternalLink,
   ChevronRight
 } from 'lucide-react';
+import { useRouter } from '../router/Router';
 
 export const Navbar = () => {
   const { activeView, setActiveView } = useApp();
+  const { navigate, currentPath } = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigateTo = (view) => {
     setActiveView(view);
     setMobileMenuOpen(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (view === 'crm') navigate('/admin/dashboard');
+    else if (view === 'services') navigate('/services');
+    else if (view === 'loans') navigate('/loans');
+    else if (view === 'track') navigate('/track');
+    else if (view === 'franchise') navigate('/franchise');
+    else navigate('/');
   };
 
   return (

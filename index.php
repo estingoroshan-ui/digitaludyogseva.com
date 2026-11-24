@@ -7,7 +7,7 @@
 // If request is for an existing static file in /assets, /dist, /uploads or /api, let web server handle it
 $requestUri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 
-if (strpos($requestUri, '/api/') === 0) {
+if (strpos($requestUri, '/api/') !== false) {
     // Let API scripts execute
     return false;
 }
