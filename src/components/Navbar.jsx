@@ -56,7 +56,7 @@ export const Navbar = ({ onOpenApplyModal }) => {
   return (
     <header className="site-header" style={{ position: 'sticky', top: 0, zIndex: 900, background: '#FFFFFF', borderBottom: '1px solid #E2E8F0', boxShadow: '0 2px 10px rgba(0, 41, 112, 0.05)' }}>
       {/* Top Utility Bar */}
-      <div style={{ background: '#001B48', color: '#E2E8F0', fontSize: '0.78rem', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+      <div className="top-utility-bar" style={{ background: '#001B48', color: '#E2E8F0', fontSize: '0.78rem', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
         <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#38BDF8', fontWeight: '600' }}>

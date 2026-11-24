@@ -118,6 +118,7 @@ export const HeroBannerSlider = ({ onOpenConsultation }) => {
               >
                 {/* Left Gradient Overlay ensuring 100% readable text on any screen */}
                 <div 
+                  className="hero-slide-overlay"
                   style={{
                     position: 'absolute',
                     inset: 0,
@@ -158,26 +159,32 @@ export const HeroBannerSlider = ({ onOpenConsultation }) => {
                   </div>
 
                   {/* Main Title */}
-                  <h2 style={{
-                    fontSize: '2.15rem',
-                    fontWeight: '800',
-                    color: '#FFFFFF',
-                    lineHeight: '1.2',
-                    margin: '0 0 12px 0',
-                    letterSpacing: '-0.02em',
-                    textShadow: '0 2px 8px rgba(0,0,0,0.4)'
-                  }}>
+                  <h2 
+                    className="hero-slide-title"
+                    style={{
+                      fontSize: '2.15rem',
+                      fontWeight: '800',
+                      color: '#FFFFFF',
+                      lineHeight: '1.2',
+                      margin: '0 0 12px 0',
+                      letterSpacing: '-0.02em',
+                      textShadow: '0 2px 8px rgba(0,0,0,0.4)'
+                    }}
+                  >
                     {slide.title}
                   </h2>
 
                   {/* Subtitle */}
-                  <p style={{
-                    fontSize: '1.02rem',
-                    color: '#E0F2FE',
-                    lineHeight: '1.55',
-                    margin: '0 0 24px 0',
-                    fontWeight: '400'
-                  }}>
+                  <p 
+                    className="hero-slide-subtitle"
+                    style={{
+                      fontSize: '1.02rem',
+                      color: '#E0F2FE',
+                      lineHeight: '1.55',
+                      margin: '0 0 24px 0',
+                      fontWeight: '400'
+                    }}
+                  >
                     {slide.subtitle}
                   </p>
 
@@ -234,6 +241,7 @@ export const HeroBannerSlider = ({ onOpenConsultation }) => {
           {/* Left Arrow */}
           <button
             type="button"
+            className="hero-slider-arrow hero-slider-prev"
             onClick={prevSlide}
             style={{
               position: 'absolute',
@@ -261,6 +269,7 @@ export const HeroBannerSlider = ({ onOpenConsultation }) => {
           {/* Right Arrow */}
           <button
             type="button"
+            className="hero-slider-arrow hero-slider-next"
             onClick={nextSlide}
             style={{
               position: 'absolute',

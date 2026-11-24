@@ -37,24 +37,15 @@ export const BottomNav = ({ onOpenApplyModal }) => {
                   if (onOpenApplyModal) onOpenApplyModal();
                   else navigate('/eligibility');
                 }}
-                className="bottom-nav-item bottom-nav-apply-btn"
+                className="bottom-nav-item bottom-nav-apply-tab"
                 aria-label="Apply Now"
-                style={{
-                  background: 'linear-gradient(135deg, #002970, #00BAF2)',
-                  color: '#FFFFFF',
-                  borderRadius: '50%',
-                  width: '46px',
-                  height: '46px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 4px 12px rgba(0, 186, 242, 0.4)',
-                  border: '2px solid #FFFFFF',
-                  transform: 'translateY(-10px)',
-                  padding: 0
-                }}
               >
-                <Sparkles size={22} color="#FFFFFF" />
+                <div className="bottom-nav-icon-wrapper" style={{ color: '#00BAF2' }}>
+                  <Icon size={20} strokeWidth={2.4} color="#00BAF2" />
+                </div>
+                <span className="bottom-nav-label" style={{ color: '#002970', fontWeight: '800' }}>
+                  Apply
+                </span>
               </button>
             );
           }
