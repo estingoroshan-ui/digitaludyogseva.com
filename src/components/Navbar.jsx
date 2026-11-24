@@ -34,44 +34,6 @@ export const Navbar = () => {
 
   return (
     <header className="site-header">
-      {/* Top Strip - Clean desktop announcement (hidden on mobile) */}
-      <div className="top-bar">
-        <div className="container flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-2">
-              <ShieldCheck size={14} color="#ff6f00" />
-              <span>India's Trusted Business &amp; MSME Advisory Platform</span>
-            </span>
-            <span style={{ color: 'rgba(255,255,255,0.2)' }}>|</span>
-            <span className="flex items-center gap-1" style={{ fontSize: '0.8rem' }}>
-              <span style={{ color: '#94a3b8' }}>Managed by: </span>
-              <a 
-                href="https://digitalvyaparseva.com/" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                style={{ color: '#ffa726', fontWeight: '700', textDecoration: 'none' }}
-              >
-                Digital Vyapar Seva ↗
-              </a>
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <span className="badge badge-saffron" style={{ fontSize: '0.72rem', padding: '2px 8px' }}>
-              ISO 9001:2015 Certified
-            </span>
-            <button 
-              onClick={() => setActiveView('crm')}
-              className="btn btn-sm btn-outline-white"
-              style={{ background: 'rgba(255, 111, 0, 0.25)', border: '1px solid #ff8f00', color: '#ffa726' }}
-            >
-              <LayoutDashboard size={14} />
-              <span>Launch CRM Admin</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Main Navbar */}
       <div className="container">
         <div className="navbar-inner">
