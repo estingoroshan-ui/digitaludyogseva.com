@@ -1889,3 +1889,28 @@ button, input, select, textarea {
   .cta-banner { padding: 36px 18px; }
 }
 
+/* =========================================================================
+   PROMOTIONAL VISUAL 3-BANNER SLIDER (Bina Text Ke Auto Slider)
+   ========================================================================= */
+.visual-banner-slider-wrapper {
+  transition: transform 0.3s ease;
+}
+
+@media (max-width: 900px) {
+  .slider-pipeline-center {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .visual-slider-card {
+    height: 190px !important;
+    min-height: 190px !important;
+  }
+  .visual-banner-slider-wrapper {
+    padding: 0 10px !important;
+    margin-bottom: 24px !important;
+  }
+}
+
+

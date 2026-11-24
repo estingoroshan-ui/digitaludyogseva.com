@@ -44,18 +44,25 @@ export const Navbar = () => {
       {/* Main Navbar */}
       <div className="container">
         <div className="navbar-inner">
-          {/* Brand Logo */}
+          {/* Brand Logo with Official Circular Logo */}
           <a 
             href="#" 
             onClick={(e) => { e.preventDefault(); navigateTo('website'); }} 
             className="brand-logo"
+            style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}
           >
-            <div className="brand-mark">
-              <Building2 size={22} />
-            </div>
+            <img 
+              src="/assets/logo.webp" 
+              alt="Digital Udyog Seva Logo" 
+              style={{ width: '46px', height: '46px', objectFit: 'contain' }} 
+            />
             <div className="brand-text">
-              <h1>Digital Udyog Seva</h1>
-              <span className="brand-subtitle">Business Registration &amp; Loan Hub</span>
+              <h1 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#002970', margin: 0, letterSpacing: '-0.02em' }}>
+                Digital Udyog Seva
+              </h1>
+              <span className="brand-subtitle" style={{ fontSize: '0.74rem', fontWeight: '700', color: '#00BAF2', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                Government Scheme &amp; Business Hub
+              </span>
             </div>
           </a>
 
@@ -112,27 +119,73 @@ export const Navbar = () => {
 
           {/* Desktop Quick Actions */}
           <div className="desktop-actions flex items-center gap-3">
-            <button 
-              onClick={() => setActiveView('crm')}
-              className="btn btn-primary btn-sm"
-              title="Open CRM Portal"
+            <a 
+              href="tel:18008901234"
+              className="nav-helpline-pill"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '7px 16px',
+                borderRadius: '9999px',
+                border: '1px solid #E2E8F0',
+                background: '#F8FAFC',
+                color: '#002970',
+                fontSize: '0.84rem',
+                fontWeight: '700',
+                textDecoration: 'none',
+                transition: 'all 0.2s ease'
+              }}
+              title="Toll Free Business Helpline"
             >
-              <LayoutDashboard size={16} />
-              <span>CRM Portal</span>
-              <ArrowRight size={14} />
+              <PhoneCall size={15} color="#00BAF2" />
+              <span>1800-890-1234</span>
+            </a>
+            <button 
+              type="button"
+              onClick={() => navigateTo('track')}
+              className="btn btn-sm"
+              style={{
+                background: '#002970',
+                color: '#FFFFFF',
+                borderRadius: '8px',
+                fontWeight: '700',
+                padding: '7px 18px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                border: 'none',
+                boxShadow: '0 2px 8px rgba(0,41,112,0.2)'
+              }}
+              title="Track Application Status"
+            >
+              <Search size={14} />
+              <span>Track Application</span>
             </button>
           </div>
 
           {/* Mobile App Header Controls */}
-          <div className="mobile-header-controls">
-            <button 
-              onClick={() => setActiveView('crm')}
-              className="mobile-crm-badge"
-              title="Launch CRM Portal"
+          <div className="mobile-header-controls" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <a 
+              href="tel:18008901234"
+              className="mobile-phone-btn"
+              style={{
+                padding: '6px 12px',
+                borderRadius: '6px',
+                background: '#F1F5F9',
+                color: '#002970',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '0.78rem',
+                fontWeight: '700',
+                textDecoration: 'none'
+              }}
+              title="Call Helpline"
             >
-              <LayoutDashboard size={14} />
-              <span>CRM</span>
-            </button>
+              <PhoneCall size={14} color="#00BAF2" />
+              <span>1800</span>
+            </a>
 
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -149,15 +202,17 @@ export const Navbar = () => {
       {mobileMenuOpen && (
         <div className="mobile-drawer-backdrop" onClick={() => setMobileMenuOpen(false)}>
           <div className="mobile-drawer-sheet" onClick={(e) => e.stopPropagation()}>
-            {/* Drawer Header */}
+            {/* Drawer Header with Original Logo */}
             <div className="mobile-drawer-header">
-              <div className="brand-logo">
-                <div className="brand-mark" style={{ width: '36px', height: '36px' }}>
-                  <Building2 size={18} />
-                </div>
+              <div className="brand-logo" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <img 
+                  src="/assets/logo.webp" 
+                  alt="Digital Udyog Seva Logo" 
+                  style={{ width: '38px', height: '38px', objectFit: 'contain' }} 
+                />
                 <div className="brand-text">
-                  <h3 style={{ fontSize: '1.05rem', margin: 0 }}>Digital Udyog Seva</h3>
-                  <span style={{ fontSize: '0.68rem', color: '#ff6f00', fontWeight: '700' }}>Official Mobile App View</span>
+                  <h3 style={{ fontSize: '1.05rem', margin: 0, fontWeight: '800', color: '#002970' }}>Digital Udyog Seva</h3>
+                  <span style={{ fontSize: '0.68rem', color: '#00BAF2', fontWeight: '700' }}>Govt Scheme &amp; Business Advisory</span>
                 </div>
               </div>
               <button 
@@ -247,24 +302,6 @@ export const Navbar = () => {
                   </div>
                 </div>
                 <span className="drawer-badge badge-earn">Earn 40%</span>
-              </button>
-
-              <div className="drawer-divider" />
-
-              <button 
-                onClick={() => navigateTo('crm')}
-                className="mobile-menu-item crm-highlight-item"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="menu-icon-box" style={{ background: 'rgba(255, 111, 0, 0.2)', color: '#ffa726' }}>
-                    <LayoutDashboard size={18} />
-                  </div>
-                  <div>
-                    <div className="menu-text" style={{ color: '#ffa726' }}>CRM Admin Portal</div>
-                    <span className="menu-subtext">Leads, Cases, CA Billing</span>
-                  </div>
-                </div>
-                <ArrowRight size={16} color="#ffa726" />
               </button>
             </div>
 

@@ -12,12 +12,14 @@ export const Footer = () => {
           {/* Brand Col */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="brand-mark" style={{ width: '38px', height: '38px' }}>
-                <Building2 size={20} />
-              </div>
+              <img 
+                src="/assets/logo.webp" 
+                alt="Digital Udyog Seva Logo" 
+                style={{ width: '42px', height: '42px', objectFit: 'contain', background: '#FFFFFF', borderRadius: '50%', padding: '2px' }} 
+              />
               <div className="brand-text">
                 <h3 style={{ color: '#fff', fontSize: '1.25rem' }}>Digital Udyog Seva</h3>
-                <span style={{ color: '#ffa726', fontSize: '0.72rem' }}>Corporate & Financial Advisory</span>
+                <span style={{ color: '#00BAF2', fontSize: '0.72rem', fontWeight: '700' }}>Corporate &amp; Financial Advisory Hub</span>
               </div>
             </div>
 

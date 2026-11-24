@@ -207,11 +207,13 @@ export const AdminLayout = ({ children }) => {
           <div 
             onClick={() => navigate('/admin/dashboard')}
             className="paytm-logo"
-            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
           >
-            <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: '#002970', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.9rem' }}>
-              D
-            </div>
+            <img 
+              src="/assets/logo.webp" 
+              alt="Digital Udyog Seva Logo" 
+              style={{ width: '34px', height: '34px', objectFit: 'contain' }} 
+            />
             <div>
               <span style={{ fontSize: '1.25rem', fontWeight: '800', color: '#002970' }}>Digital Udyog </span>
               <span style={{ fontSize: '1.25rem', fontWeight: '800', color: '#00BAF2' }}>Seva</span>

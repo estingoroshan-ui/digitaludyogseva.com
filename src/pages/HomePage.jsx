@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { LoanCalculator } from '../components/LoanCalculator';
+import { VisualBannerSlider } from '../components/VisualBannerSlider';
 import { 
   Search, 
   ArrowRight, 
@@ -116,15 +117,15 @@ export const HomePage = () => {
             <div className="hero-content">
               <div className="badge badge-saffron" style={{ marginBottom: '18px' }}>
                 <Sparkles size={14} />
-                <span>India's #1 Digital Business & Loan Advisory Platform</span>
+                <span>India's #1 Digital Business &amp; Loan Advisory Platform</span>
               </div>
 
               <h2>
-                Start, Manage & <span className="highlight">Grow Your Business</span> — All in One Place.
+                Start, Manage &amp; <span className="highlight">Grow Your Business</span> — All in One Place.
               </h2>
 
               <p className="hero-subtitle">
-                Company incorporation, GST filing, ITR, MSME certificates, trademark protection, and government-subsidized business loans (PMEGP & Mudra) — managed end-to-end with real-time CRM tracking.
+                Company incorporation, GST filing, ITR, MSME certificates, trademark protection, and government-subsidized business loans (PMEGP &amp; Mudra) — managed end-to-end with real-time CRM tracking.
               </p>
 
               {/* Global Quick Search Box */}
@@ -180,7 +181,7 @@ export const HomePage = () => {
                 </div>
                 <div className="hero-trust-item">
                   <ShieldCheck size={16} color="#4ade80" />
-                  <span>Licensed CA & CS Assistance</span>
+                  <span>Licensed CA &amp; CS Assistance</span>
                 </div>
                 <div className="hero-trust-item">
                   <Clock size={16} color="#4ade80" />
@@ -191,35 +192,44 @@ export const HomePage = () => {
 
             {/* Right Card / Interactive Stats Panel */}
             <div>
-              <div className="hero-card">
+              <div className="hero-card" style={{
+                background: 'rgba(15, 23, 42, 0.75)',
+                backdropFilter: 'blur(16px)',
+                border: '1px solid rgba(0, 186, 242, 0.3)',
+                boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 186, 242, 0.15)'
+              }}>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 style={{ color: '#fff', fontSize: '1.25rem' }}>Ecosystem Performance</h3>
-                  <span className="badge badge-emerald">Live 2026</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 10px #4ade80' }} />
+                    <h3 style={{ color: '#fff', fontSize: '1.25rem', margin: 0 }}>Ecosystem Performance</h3>
+                  </div>
+                  <span className="badge badge-emerald" style={{ background: 'rgba(74, 222, 128, 0.15)', border: '1px solid rgba(74, 222, 128, 0.3)' }}>Live 2026</span>
                 </div>
 
                 <div className="hero-stat-grid">
-                  <div className="hero-stat-box">
-                    <div className="hero-stat-num">18,500+</div>
+                  <div className="hero-stat-box" style={{ background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                    <div className="hero-stat-num" style={{ color: '#00BAF2' }}>18,500+</div>
                     <div className="hero-stat-lbl">Businesses Incorporated</div>
                   </div>
-                  <div className="hero-stat-box">
-                    <div className="hero-stat-num">₹140 Cr+</div>
+                  <div className="hero-stat-box" style={{ background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                    <div className="hero-stat-num" style={{ color: '#4ade80' }}>₹140 Cr+</div>
                     <div className="hero-stat-lbl">Loan Sanctions Disbursed</div>
                   </div>
-                  <div className="hero-stat-box">
-                    <div className="hero-stat-num">4.9 ★</div>
+                  <div className="hero-stat-box" style={{ background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                    <div className="hero-stat-num" style={{ color: '#fbbf24' }}>4.9 ★</div>
                     <div className="hero-stat-lbl">Client Trust Rating</div>
                   </div>
-                  <div className="hero-stat-box">
-                    <div className="hero-stat-num">24-48 Hrs</div>
+                  <div className="hero-stat-box" style={{ background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                    <div className="hero-stat-num" style={{ color: '#f8fafc' }}>24-48 Hrs</div>
                     <div className="hero-stat-lbl">Avg Response Time</div>
                   </div>
                 </div>
 
                 {/* Quick Tracker Inside Hero */}
-                <div style={{ background: 'rgba(11,23,39,0.7)', borderRadius: '12px', padding: '18px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <div style={{ fontSize: '0.82rem', color: '#cbd5e1', marginBottom: '8px', fontWeight: '700' }}>
-                    Track Active Filing / Loan Application
+                <div style={{ background: 'rgba(11,23,39,0.85)', borderRadius: '14px', padding: '18px', border: '1px solid rgba(0, 186, 242, 0.25)' }}>
+                  <div style={{ fontSize: '0.82rem', color: '#cbd5e1', marginBottom: '8px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Search size={14} color="#00BAF2" />
+                    <span>Track Active Filing / Loan Application</span>
                   </div>
                   <div className="flex gap-2">
                     <input
@@ -233,12 +243,13 @@ export const HomePage = () => {
                     <button 
                       onClick={handleTrack}
                       className="btn btn-sm btn-primary"
+                      style={{ background: '#00BAF2', borderColor: '#00BAF2', color: '#001B48', fontWeight: '800' }}
                     >
                       Track
                     </button>
                   </div>
                   <div style={{ marginTop: '8px', fontSize: '0.75rem', color: '#94a3b8' }}>
-                    Quick sample: <a href="#" onClick={(e) => { e.preventDefault(); setTrackInput('DUS-2026-8942'); }} style={{ color: '#ffa726', textDecoration: 'underline' }}>DUS-2026-8942</a> or <a href="#" onClick={(e) => { e.preventDefault(); setTrackInput('DUS-2026-9114'); }} style={{ color: '#ffa726', textDecoration: 'underline' }}>DUS-2026-9114</a>
+                    Quick sample: <a href="#" onClick={(e) => { e.preventDefault(); setTrackInput('DUS-2026-8942'); }} style={{ color: '#00BAF2', textDecoration: 'underline' }}>DUS-2026-8942</a> or <a href="#" onClick={(e) => { e.preventDefault(); setTrackInput('DUS-2026-9114'); }} style={{ color: '#00BAF2', textDecoration: 'underline' }}>DUS-2026-9114</a>
                   </div>
                 </div>
               </div>
@@ -247,7 +258,12 @@ export const HomePage = () => {
         </div>
       </section>
 
-      {/* 2. ACCREDITATIONS STRIP */}
+      {/* 2. AUTO-SLIDING PROMOTIONAL VISUAL 3-BANNER SLIDER (Pure Visuals Without Text) */}
+      <section style={{ background: 'linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%)', paddingTop: '32px', paddingBottom: '8px' }}>
+        <VisualBannerSlider />
+      </section>
+
+      {/* 3. ACCREDITATIONS STRIP */}
       <section className="accreditation-strip">
         <div className="container">
           <div className="accreditation-grid">
