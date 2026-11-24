@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from '../../router/Router';
+import { useRouter, getApiUrl } from '../../router/Router';
 import { useApp } from '../../context/AppContext';
 import { 
   Users, 
@@ -76,7 +76,7 @@ export const PaytmDashboard = () => {
   // Fetch real database records from backend API
   useEffect(() => {
     let isMounted = true;
-    fetch('api/v1/dashboard_stats.php')
+    fetch(getApiUrl('api/v1/dashboard_stats.php'))
       .then(res => res.json())
       .then(res => {
         if (isMounted && res.status && res.data) {

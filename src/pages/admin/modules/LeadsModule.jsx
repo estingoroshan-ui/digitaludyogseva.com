@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from '../../../router/Router';
+import { useRouter, getApiUrl } from '../../../router/Router';
 import { useApp } from '../../../context/AppContext';
 import { 
   Users, 
@@ -41,8 +41,8 @@ export const LeadsModule = () => {
 
   // Sub-route matching
   const isCreateRoute = currentPath === '/admin/leads/create';
-  const detailMatch = matchPath('/admin/leads/:id');
   const editMatch = matchPath('/admin/leads/:id/edit');
+  const detailMatch = !isCreateRoute && !editMatch ? matchPath('/admin/leads/:id') : null;
   const isFollowupsRoute = currentPath === '/admin/follow-ups';
 
   // Lead Creation Form State
@@ -71,7 +71,7 @@ export const LeadsModule = () => {
   // Fetch leads from backend API
   useEffect(() => {
     let isMounted = true;
-    fetch('api/v1/lead_engine.php?action=list')
+    fetch(getApiUrl('api/v1/lead_engine.php?action=list'))
       .then(res => res.json())
       .then(res => {
         if (isMounted && res.status && Array.isArray(res.data) && res.data.length > 0) {
@@ -142,7 +142,7 @@ export const LeadsModule = () => {
     showToast(`Lead created successfully for ${formData.name}`, 'success');
 
     // Attempt persist to DB via API
-    fetch('api/v1/leads.php', {
+    fetch(getApiUrl('api/v1/leads.php'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -346,6 +346,42 @@ export const LeadsModule = () => {
   }
 
   // -------------------------------------------------------------
+  // VIEW 1.5: EDIT LEAD FORM (/admin/leads/:id/edit)
+  // -------------------------------------------------------------
+  if (editMatch) {
+    const editId = editMatch.params.id;
+    const currentLead = activeLeads.find(l => String(l.id) === String(editId)) || activeLeads[0] || {
+      id: editId,
+      name: '',
+      mobile: '',
+      email: '',
+      business_name: '',
+      value: 1500000,
+      stage: 'New Lead',
+      source: 'Website',
+      temperature: 'hot',
+      assigned_to: 'Project Team'
+    };
+
+    return (
+      <EditLeadForm 
+        lead={currentLead}
+        onCancel={() => navigate(`/admin/leads/${editId}`)}
+        onSave={(updatedData) => {
+          setDbLeads(prev => prev.map(l => String(l.id) === String(editId) ? { ...l, ...updatedData } : l));
+          showToast(`Lead ${updatedData.name || currentLead.name} updated successfully`, 'success');
+          fetch(getApiUrl('api/v1/leads.php'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: editId, ...updatedData })
+          }).catch(console.warn);
+          navigate(`/admin/leads/${editId}`);
+        }}
+      />
+    );
+  }
+
+  // -------------------------------------------------------------
   // VIEW 2: LEAD 360° DOSSIER DETAILS (/admin/leads/:id)
   // -------------------------------------------------------------
   if (detailMatch) {
@@ -384,6 +420,14 @@ export const LeadsModule = () => {
           </div>
 
           <div style={{ display: 'flex', gap: '10px' }}>
+            <button 
+              type="button"
+              onClick={() => navigate(`/admin/leads/${currentLead.id}/edit`)}
+              className="paytm-btn paytm-btn-outline paytm-btn-sm"
+              style={{ color: '#002970', borderColor: '#CBD5E1' }}
+            >
+              Edit Lead
+            </button>
             <button 
               type="button"
               onClick={() => navigate('/admin/eligibility')}
@@ -621,16 +665,27 @@ export const LeadsModule = () => {
                   <td style={{ fontSize: '0.82rem', color: '#64748B' }}>
                     {lead.assigned_to || 'Project Team'}
                   </td>
-                  <td style={{ textAlign: 'right' }}>
-                    <button 
-                      type="button"
-                      onClick={() => navigate(`/admin/leads/${lead.id}`)}
-                      className="paytm-btn paytm-btn-outline paytm-btn-sm"
-                      style={{ color: '#008BCB', borderColor: '#00BAF2' }}
-                    >
-                      <span>View 360°</span>
-                      <ChevronRight size={14} />
-                    </button>
+                  <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                    <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                      <button 
+                        type="button"
+                        onClick={() => navigate(`/admin/leads/${lead.id}/edit`)}
+                        className="paytm-btn paytm-btn-outline paytm-btn-sm"
+                        style={{ padding: '4px 8px', fontSize: '0.78rem' }}
+                        title="Edit Lead"
+                      >
+                        Edit
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => navigate(`/admin/leads/${lead.id}`)}
+                        className="paytm-btn paytm-btn-outline paytm-btn-sm"
+                        style={{ color: '#008BCB', borderColor: '#00BAF2', padding: '4px 10px', fontSize: '0.78rem' }}
+                      >
+                        <span>View 360°</span>
+                        <ChevronRight size={14} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -638,6 +693,196 @@ export const LeadsModule = () => {
           </table>
         </div>
       </div>
+    </div>
+  );
+};
+
+// -------------------------------------------------------------
+// HELPER COMPONENT: EDIT LEAD FORM
+// -------------------------------------------------------------
+const EditLeadForm = ({ lead, onCancel, onSave }) => {
+  const [formData, setFormData] = useState({
+    name: lead.name || '',
+    mobile: lead.mobile || '',
+    email: lead.email || '',
+    business_name: lead.business_name || lead.company || '',
+    value: lead.value || 1500000,
+    stage: lead.stage || 'New Lead',
+    source: lead.source || 'Website',
+    temperature: lead.temperature || 'hot',
+    assigned_to: lead.assigned_to || 'Project Team',
+    notes: lead.remarks || lead.notes || ''
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <div className="paytm-card" style={{ maxWidth: '900px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid #E2E8F0', paddingBottom: '16px', marginBottom: '24px' }}>
+        <button 
+          type="button" 
+          onClick={onCancel}
+          className="paytm-btn paytm-btn-outline paytm-btn-sm"
+        >
+          <ArrowLeft size={16} />
+          <span>Back</span>
+        </button>
+        <div>
+          <h2 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#002970', margin: 0 }}>
+            Edit Lead: {lead.name}
+          </h2>
+          <p style={{ margin: '2px 0 0', fontSize: '0.85rem', color: '#64748B' }}>
+            Update applicant profile, required loan amount and consultancy stage
+          </p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Applicant Name *
+            </label>
+            <input 
+              type="text" 
+              required
+              value={formData.name}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Primary Mobile Number *
+            </label>
+            <input 
+              type="tel" 
+              required
+              value={formData.mobile}
+              onChange={e => setFormData({ ...formData, mobile: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Email Address
+            </label>
+            <input 
+              type="email" 
+              value={formData.email}
+              onChange={e => setFormData({ ...formData, email: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Business / Proposed Enterprise Name
+            </label>
+            <input 
+              type="text" 
+              value={formData.business_name}
+              onChange={e => setFormData({ ...formData, business_name: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Required Loan Estimate (₹)
+            </label>
+            <input 
+              type="number" 
+              value={formData.value}
+              onChange={e => setFormData({ ...formData, value: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Stage / Status
+            </label>
+            <select 
+              value={formData.stage}
+              onChange={e => setFormData({ ...formData, stage: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', background: '#fff' }}
+            >
+              <option value="New Lead">New Lead</option>
+              <option value="Connected">Connected</option>
+              <option value="Eligibility Checked">Eligibility Checked</option>
+              <option value="Underwriting">Underwriting</option>
+              <option value="Converted">Converted to Customer</option>
+              <option value="Not Eligible">Not Eligible</option>
+            </select>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Consultancy Temperature
+            </label>
+            <select 
+              value={formData.temperature}
+              onChange={e => setFormData({ ...formData, temperature: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', background: '#fff' }}
+            >
+              <option value="hot">🔥 Hot (Immediate PMEGP Application)</option>
+              <option value="warm">⚡ Warm (Documentation Gathering)</option>
+              <option value="cold">❄️ Cold (Preliminary Inquiry)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Assigned Consultant / RM
+            </label>
+            <select 
+              value={formData.assigned_to}
+              onChange={e => setFormData({ ...formData, assigned_to: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', background: '#fff' }}
+            >
+              <option value="Project Team">Project Team</option>
+              <option value="CA Rajesh Verma">CA Rajesh Verma</option>
+              <option value="Neha Sharma">Neha Sharma</option>
+              <option value="Anil Tyagi">Anil Tyagi</option>
+            </select>
+          </div>
+        </div>
+
+        <div style={{ marginBottom: '24px' }}>
+          <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+            Consultant Notes &amp; Remarks
+          </label>
+          <textarea 
+            rows={3}
+            value={formData.notes}
+            onChange={e => setFormData({ ...formData, notes: e.target.value })}
+            style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+          />
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>
+          <button 
+            type="button" 
+            onClick={onCancel}
+            className="paytm-btn paytm-btn-outline"
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            className="paytm-btn paytm-btn-primary"
+            style={{ padding: '10px 24px', fontWeight: '700' }}
+          >
+            Save &amp; Update Lead
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

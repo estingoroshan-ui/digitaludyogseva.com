@@ -112,7 +112,8 @@ export const App = () => {
     } else if (
       currentPath === '/admin/schemes' ||
       currentPath === '/admin/schemes/create' ||
-      matchPath('/admin/schemes/:id')
+      matchPath('/admin/schemes/:id') ||
+      matchPath('/admin/schemes/:id/edit')
     ) {
       AdminViewComponent = SchemesModule;
     } else if (
@@ -122,12 +123,16 @@ export const App = () => {
       AdminViewComponent = EligibilityScorecardModule;
     } else if (
       currentPath === '/admin/customers' ||
-      matchPath('/admin/customers/:id')
+      currentPath === '/admin/customers/create' ||
+      matchPath('/admin/customers/:id') ||
+      matchPath('/admin/customers/:id/edit')
     ) {
       AdminViewComponent = CustomersModule;
     } else if (
       currentPath === '/admin/projects' ||
-      matchPath('/admin/projects/:id')
+      currentPath === '/admin/projects/create' ||
+      matchPath('/admin/projects/:id') ||
+      matchPath('/admin/projects/:id/edit')
     ) {
       AdminViewComponent = ProjectsModule;
     } else if (currentPath === '/admin/documents') {
@@ -143,6 +148,7 @@ export const App = () => {
     } else if (
       currentPath === '/admin/employees' ||
       currentPath === '/admin/employees/create' ||
+      matchPath('/admin/employees/:id') ||
       currentPath === '/admin/attendance' ||
       currentPath === '/admin/leaves' ||
       currentPath === '/admin/payroll'

@@ -79,6 +79,16 @@ function parseQueryParams() {
   return params;
 }
 
+/**
+ * Helper to construct an absolute API URL accounting for subdirectory base paths
+ */
+export function getApiUrl(endpoint) {
+  if (!endpoint) return '';
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+  const base = getBasePath();
+  return `${base}/${cleanEndpoint}`;
+}
+
 export const RouterProvider = ({ children }) => {
   const [currentPath, setCurrentPath] = useState(getNormalizedPath);
   const [queryParams, setQueryParams] = useState(parseQueryParams);

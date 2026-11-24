@@ -22,7 +22,8 @@ export const SchemesModule = () => {
   const { showToast } = useApp();
 
   const isCreate = currentPath === '/admin/schemes/create';
-  const detailMatch = matchPath('/admin/schemes/:id');
+  const editMatch = matchPath('/admin/schemes/:id/edit');
+  const detailMatch = !isCreate && !editMatch ? matchPath('/admin/schemes/:id') : null;
 
   const [schemes, setSchemes] = useState([
     {
@@ -262,6 +263,131 @@ export const SchemesModule = () => {
     );
   }
 
+  // -------------------------------------------------------------
+  // VIEW: EDIT SCHEME (/admin/schemes/:id/edit)
+  // -------------------------------------------------------------
+  if (editMatch) {
+    const editId = editMatch.params.id;
+    const existing = schemes.find(s => String(s.id) === String(editId)) || schemes[0];
+    return (
+      <EditSchemeView 
+        scheme={existing}
+        onCancel={() => navigate(`/admin/schemes/${editId}`)}
+        onSave={(updated) => {
+          setSchemes(prev => prev.map(s => String(s.id) === String(editId) ? { ...s, ...updated } : s));
+          showToast(`Scheme ${updated.name || existing.name} updated successfully`, 'success');
+          navigate(`/admin/schemes/${editId}`);
+        }}
+      />
+    );
+  }
+
+  // -------------------------------------------------------------
+  // VIEW: SCHEME DETAILS (/admin/schemes/:id)
+  // -------------------------------------------------------------
+  if (detailMatch) {
+    const schemeId = detailMatch.params.id;
+    const scheme = schemes.find(s => String(s.id) === String(schemeId)) || schemes[0];
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button 
+              type="button" 
+              onClick={() => navigate('/admin/schemes')}
+              className="paytm-btn paytm-btn-outline paytm-btn-sm"
+            >
+              <ArrowLeft size={16} />
+              <span>Back to Schemes</span>
+            </button>
+            <div>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#002970', margin: 0 }}>
+                {scheme.name}
+              </h2>
+              <span style={{ fontSize: '0.85rem', color: '#64748B' }}>
+                Code: {scheme.code} • Ministry: {scheme.ministry} • Type: {scheme.type}
+              </span>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button 
+              type="button"
+              onClick={() => navigate(`/admin/schemes/${scheme.id}/edit`)}
+              className="paytm-btn paytm-btn-outline paytm-btn-sm"
+              style={{ color: '#002970', borderColor: '#CBD5E1' }}
+            >
+              Edit Scheme
+            </button>
+            <button 
+              type="button"
+              onClick={() => navigate('/admin/eligibility')}
+              className="paytm-btn paytm-btn-primary paytm-btn-sm"
+            >
+              Check Eligibility for Client
+            </button>
+          </div>
+        </div>
+
+        {/* Scheme Parameters Card */}
+        <div className="paytm-card" style={{ padding: '24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', borderBottom: '1px solid #E2E8F0', paddingBottom: '20px', marginBottom: '20px' }}>
+            <div>
+              <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: '600' }}>MAXIMUM LOAN LIMIT</div>
+              <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#002970', marginTop: '4px' }}>{scheme.maxLoan}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: '600' }}>SUBSIDY / GUARANTEE BENEFIT</div>
+              <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#16A34A', marginTop: '4px' }}>{scheme.subsidy}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: '600' }}>APPLICANT CONTRIBUTION</div>
+              <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#F59E0B', marginTop: '4px' }}>{scheme.ownContribution}</div>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '24px' }}>
+            <div>
+              <h4 style={{ fontSize: '1rem', fontWeight: '800', color: '#002970', marginBottom: '12px' }}>
+                Scheme Description &amp; Target Beneficiaries
+              </h4>
+              <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '10px', fontSize: '0.88rem', lineHeight: '1.6', color: '#334155' }}>
+                <p style={{ margin: '0 0 10px 0' }}>
+                  <strong>Target Sector:</strong> {scheme.targetSector || 'Micro & Small Manufacturing, Service, Trading Units'}
+                </p>
+                <p style={{ margin: '0 0 10px 0' }}>
+                  <strong>Administering Agency:</strong> {scheme.ministry}
+                </p>
+                <p style={{ margin: '0 0 10px 0' }}>
+                  <strong>Verification Status:</strong> <span className="paytm-badge paytm-badge-success">{scheme.status}</span>
+                </p>
+                <p style={{ margin: 0 }}>
+                  <strong>Official Portal:</strong>{' '}
+                  <a href={scheme.officialUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#008BCB', fontWeight: '600', textDecoration: 'underline' }}>
+                    {scheme.officialUrl}
+                  </a>
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <h4 style={{ fontSize: '1rem', fontWeight: '800', color: '#002970', marginBottom: '12px' }}>
+                Eligible Documentation Checklist
+              </h4>
+              <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.85rem', color: '#334155' }}>
+                <li style={{ padding: '8px 12px', background: '#F8FAFC', borderRadius: '6px' }}>✓ Aadhaar Card &amp; PAN Card of Applicant</li>
+                <li style={{ padding: '8px 12px', background: '#F8FAFC', borderRadius: '6px' }}>✓ Udyam / MSME Registration Certificate</li>
+                <li style={{ padding: '8px 12px', background: '#F8FAFC', borderRadius: '6px' }}>✓ Detailed Project Report (DPR) with CMA Data</li>
+                <li style={{ padding: '8px 12px', background: '#F8FAFC', borderRadius: '6px' }}>✓ Land / Lease Agreement for Unit Location</li>
+                <li style={{ padding: '8px 12px', background: '#F8FAFC', borderRadius: '6px' }}>✓ Quotation for Plant &amp; Machinery from Authorized Vendor</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const filteredSchemes = schemes.filter(s => {
     const term = searchTerm.toLowerCase();
     const matchesSearch = s.name.toLowerCase().includes(term) || s.code.toLowerCase().includes(term);
@@ -377,15 +503,24 @@ export const SchemesModule = () => {
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '18px', paddingTop: '14px', borderTop: '1px solid #F1F5F9' }}>
-              <a 
-                href={s.officialUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                style={{ fontSize: '0.82rem', color: '#008BCB', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '600' }}
-              >
-                <span>Official Guidelines</span>
-                <ExternalLink size={13} />
-              </a>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button 
+                  type="button"
+                  onClick={() => navigate(`/admin/schemes/${s.id}`)}
+                  className="paytm-btn paytm-btn-outline paytm-btn-sm"
+                  style={{ color: '#002970', borderColor: '#CBD5E1', padding: '4px 10px', fontSize: '0.78rem' }}
+                >
+                  View Details
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => navigate(`/admin/schemes/${s.id}/edit`)}
+                  className="paytm-btn paytm-btn-outline paytm-btn-sm"
+                  style={{ padding: '4px 8px', fontSize: '0.78rem' }}
+                >
+                  Edit
+                </button>
+              </div>
 
               <button 
                 type="button"
@@ -398,6 +533,129 @@ export const SchemesModule = () => {
           </div>
         ))}
       </div>
+    </div>
+  );
+};
+
+// -------------------------------------------------------------
+// HELPER: EDIT SCHEME VIEW
+// -------------------------------------------------------------
+const EditSchemeView = ({ scheme, onCancel, onSave }) => {
+  const [formData, setFormData] = useState({
+    name: scheme.name || '',
+    code: scheme.code || '',
+    type: scheme.type || 'Central Government',
+    ministry: scheme.ministry || '',
+    maxLoan: scheme.maxLoan || '',
+    subsidy: scheme.subsidy || '',
+    ownContribution: scheme.ownContribution || '',
+    targetSector: scheme.targetSector || '',
+    officialUrl: scheme.officialUrl || ''
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <div className="paytm-card" style={{ maxWidth: '800px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid #E2E8F0', paddingBottom: '16px', marginBottom: '24px' }}>
+        <button type="button" onClick={onCancel} className="paytm-btn paytm-btn-outline paytm-btn-sm">
+          <ArrowLeft size={16} />
+          <span>Back</span>
+        </button>
+        <div>
+          <h2 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#002970', margin: 0 }}>
+            Edit Scheme: {scheme.name}
+          </h2>
+          <p style={{ margin: '2px 0 0', fontSize: '0.85rem', color: '#64748B' }}>
+            Modify maximum loan limits, subsidy percentages or official guidelines
+          </p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+          <div style={{ gridColumn: 'span 2' }}>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Official Scheme Name *
+            </label>
+            <input 
+              type="text" 
+              required
+              value={formData.name}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Scheme Code
+            </label>
+            <input 
+              type="text" 
+              value={formData.code}
+              onChange={e => setFormData({ ...formData, code: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Administering Ministry / Agency
+            </label>
+            <input 
+              type="text" 
+              value={formData.ministry}
+              onChange={e => setFormData({ ...formData, ministry: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Maximum Loan Limit
+            </label>
+            <input 
+              type="text" 
+              value={formData.maxLoan}
+              onChange={e => setFormData({ ...formData, maxLoan: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Subsidy Benefit Rate
+            </label>
+            <input 
+              type="text" 
+              value={formData.subsidy}
+              onChange={e => setFormData({ ...formData, subsidy: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div style={{ gridColumn: 'span 2' }}>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Official Portal URL
+            </label>
+            <input 
+              type="url" 
+              value={formData.officialUrl}
+              onChange={e => setFormData({ ...formData, officialUrl: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>
+          <button type="button" onClick={onCancel} className="paytm-btn paytm-btn-outline">Cancel</button>
+          <button type="submit" className="paytm-btn paytm-btn-primary" style={{ padding: '10px 24px', fontWeight: '700' }}>Save &amp; Update Scheme</button>
+        </div>
+      </form>
     </div>
   );
 };

@@ -22,7 +22,9 @@ export const CustomersModule = () => {
   const { currentPath, navigate, matchPath } = useRouter();
   const { showToast, customers: contextCustomers = [] } = useApp();
 
-  const detailMatch = matchPath('/admin/customers/:id');
+  const isCreateRoute = currentPath === '/admin/customers/create';
+  const editMatch = matchPath('/admin/customers/:id/edit');
+  const detailMatch = !isCreateRoute && !editMatch ? matchPath('/admin/customers/:id') : null;
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
 
@@ -88,6 +90,60 @@ export const CustomersModule = () => {
   const activeCustomers = customerList.length > 0 ? customerList : contextCustomers;
 
   // -------------------------------------------------------------
+  // VIEW: CREATE CUSTOMER (/admin/customers/create)
+  // -------------------------------------------------------------
+  if (isCreateRoute) {
+    return (
+      <CreateCustomerView 
+        onCancel={() => navigate('/admin/customers')}
+        onSave={(newCust) => {
+          const item = {
+            id: Date.now(),
+            customer_code: `CUST-${Date.now().toString().slice(-4)}`,
+            ...newCust,
+            active_projects: 0,
+            total_billed: 0
+          };
+          setCustomerList([item, ...customerList]);
+          showToast(`Customer ${newCust.name} created successfully`, 'success');
+          navigate('/admin/customers');
+        }}
+      />
+    );
+  }
+
+  // -------------------------------------------------------------
+  // VIEW: EDIT CUSTOMER (/admin/customers/:id/edit)
+  // -------------------------------------------------------------
+  if (editMatch) {
+    const editId = editMatch.params.id;
+    const existing = activeCustomers.find(c => String(c.id) === String(editId)) || activeCustomers[0] || {
+      id: editId,
+      name: '',
+      contact_person: '',
+      mobile: '',
+      email: '',
+      city: 'Jaipur',
+      state: 'Rajasthan',
+      gstin: '',
+      kyc_status: 'Verified',
+      assigned_rm: 'CA Rajesh Verma'
+    };
+
+    return (
+      <EditCustomerView 
+        customer={existing}
+        onCancel={() => navigate(`/admin/customers/${editId}`)}
+        onSave={(updated) => {
+          setCustomerList(prev => prev.map(c => String(c.id) === String(editId) ? { ...c, ...updated } : c));
+          showToast(`Customer ${updated.name || existing.name} updated successfully`, 'success');
+          navigate(`/admin/customers/${editId}`);
+        }}
+      />
+    );
+  }
+
+  // -------------------------------------------------------------
   // VIEW 1: CUSTOMER 360° DOSSIER (/admin/customers/:id)
   // -------------------------------------------------------------
   if (detailMatch) {
@@ -130,18 +186,19 @@ export const CustomersModule = () => {
           <div style={{ display: 'flex', gap: '10px' }}>
             <button 
               type="button"
-              onClick={() => navigate('/admin/projects')}
+              onClick={() => navigate(`/admin/customers/${customer.id}/edit`)}
               className="paytm-btn paytm-btn-outline paytm-btn-sm"
-              style={{ color: '#008BCB', borderColor: '#00BAF2' }}
+              style={{ color: '#002970', borderColor: '#CBD5E1' }}
             >
-              View Active Projects
+              Edit Profile
             </button>
             <button 
               type="button"
-              onClick={() => navigate('/admin/invoices')}
+              onClick={() => navigate('/admin/projects/create')}
               className="paytm-btn paytm-btn-primary paytm-btn-sm"
             >
-              Generate Invoice
+              <Plus size={16} />
+              <span>New Project Dossier</span>
             </button>
           </div>
         </div>
@@ -249,6 +306,15 @@ export const CustomersModule = () => {
         <div style={{ display: 'flex', gap: '10px' }}>
           <button 
             type="button"
+            onClick={() => navigate('/admin/customers/create')}
+            className="paytm-btn paytm-btn-primary"
+            style={{ fontWeight: '700' }}
+          >
+            <Plus size={16} />
+            <span>+ Add Customer</span>
+          </button>
+          <button 
+            type="button"
             onClick={() => showToast('Exporting Customer Master CSV...', 'success')}
             className="paytm-btn paytm-btn-outline"
           >
@@ -345,16 +411,26 @@ export const CustomersModule = () => {
                   <td style={{ fontSize: '0.85rem', color: '#475569' }}>
                     {cust.assigned_rm || 'CA Rajesh Verma'}
                   </td>
-                  <td style={{ textAlign: 'right' }}>
-                    <button 
-                      type="button"
-                      onClick={() => navigate(`/admin/customers/${cust.id}`)}
-                      className="paytm-btn paytm-btn-outline paytm-btn-sm"
-                      style={{ color: '#008BCB', borderColor: '#00BAF2' }}
-                    >
-                      <span>View 360°</span>
-                      <ChevronRight size={14} />
-                    </button>
+                  <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                    <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                      <button 
+                        type="button"
+                        onClick={() => navigate(`/admin/customers/${cust.id}/edit`)}
+                        className="paytm-btn paytm-btn-outline paytm-btn-sm"
+                        style={{ padding: '4px 8px', fontSize: '0.78rem' }}
+                      >
+                        Edit
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => navigate(`/admin/customers/${cust.id}`)}
+                        className="paytm-btn paytm-btn-outline paytm-btn-sm"
+                        style={{ color: '#008BCB', borderColor: '#00BAF2', padding: '4px 10px', fontSize: '0.78rem' }}
+                      >
+                        <span>View 360°</span>
+                        <ChevronRight size={14} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -362,6 +438,316 @@ export const CustomersModule = () => {
           </table>
         </div>
       </div>
+    </div>
+  );
+};
+
+// -------------------------------------------------------------
+// HELPER: CREATE CUSTOMER VIEW
+// -------------------------------------------------------------
+const CreateCustomerView = ({ onCancel, onSave }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    contact_person: '',
+    mobile: '',
+    email: '',
+    city: 'Jaipur',
+    state: 'Rajasthan',
+    gstin: '',
+    kyc_status: 'Verified',
+    assigned_rm: 'CA Rajesh Verma'
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.mobile) return;
+    onSave(formData);
+  };
+
+  return (
+    <div className="paytm-card" style={{ maxWidth: '850px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid #E2E8F0', paddingBottom: '16px', marginBottom: '24px' }}>
+        <button type="button" onClick={onCancel} className="paytm-btn paytm-btn-outline paytm-btn-sm">
+          <ArrowLeft size={16} />
+          <span>Back</span>
+        </button>
+        <div>
+          <h2 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#002970', margin: 0 }}>
+            Onboard New Client / Enterprise
+          </h2>
+          <p style={{ margin: '2px 0 0', fontSize: '0.85rem', color: '#64748B' }}>
+            Register new business for loan processing, DPR drafting &amp; compliance management
+          </p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Enterprise / Business Name *
+            </label>
+            <input 
+              type="text" 
+              required
+              value={formData.name}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
+              placeholder="e.g. Modern Fabtech Pvt Ltd"
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Authorized Contact Person *
+            </label>
+            <input 
+              type="text" 
+              required
+              value={formData.contact_person}
+              onChange={e => setFormData({ ...formData, contact_person: e.target.value })}
+              placeholder="e.g. Arvind Mehta (Managing Director)"
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Mobile Number (WhatsApp) *
+            </label>
+            <input 
+              type="tel" 
+              required
+              value={formData.mobile}
+              onChange={e => setFormData({ ...formData, mobile: e.target.value })}
+              placeholder="10-digit mobile number"
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Corporate Email Address
+            </label>
+            <input 
+              type="email" 
+              value={formData.email}
+              onChange={e => setFormData({ ...formData, email: e.target.value })}
+              placeholder="director@company.com"
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              City
+            </label>
+            <input 
+              type="text" 
+              value={formData.city}
+              onChange={e => setFormData({ ...formData, city: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              State
+            </label>
+            <input 
+              type="text" 
+              value={formData.state}
+              onChange={e => setFormData({ ...formData, state: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              GSTIN / Udyam Number
+            </label>
+            <input 
+              type="text" 
+              value={formData.gstin}
+              onChange={e => setFormData({ ...formData, gstin: e.target.value })}
+              placeholder="e.g. 08AABCM1234A1Z1"
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Assigned Relationship Manager
+            </label>
+            <select 
+              value={formData.assigned_rm}
+              onChange={e => setFormData({ ...formData, assigned_rm: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', background: '#fff' }}
+            >
+              <option value="CA Rajesh Verma">CA Rajesh Verma</option>
+              <option value="Neha Sharma">Neha Sharma</option>
+              <option value="Anil Tyagi">Anil Tyagi</option>
+            </select>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>
+          <button type="button" onClick={onCancel} className="paytm-btn paytm-btn-outline">Cancel</button>
+          <button type="submit" className="paytm-btn paytm-btn-primary" style={{ padding: '10px 24px', fontWeight: '700' }}>Save Customer Record</button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+// -------------------------------------------------------------
+// HELPER: EDIT CUSTOMER VIEW
+// -------------------------------------------------------------
+const EditCustomerView = ({ customer, onCancel, onSave }) => {
+  const [formData, setFormData] = useState({
+    name: customer.name || '',
+    contact_person: customer.contact_person || '',
+    mobile: customer.mobile || '',
+    email: customer.email || '',
+    city: customer.city || 'Jaipur',
+    state: customer.state || 'Rajasthan',
+    gstin: customer.gstin || '',
+    kyc_status: customer.kyc_status || 'Verified',
+    assigned_rm: customer.assigned_rm || 'CA Rajesh Verma'
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <div className="paytm-card" style={{ maxWidth: '850px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid #E2E8F0', paddingBottom: '16px', marginBottom: '24px' }}>
+        <button type="button" onClick={onCancel} className="paytm-btn paytm-btn-outline paytm-btn-sm">
+          <ArrowLeft size={16} />
+          <span>Back</span>
+        </button>
+        <div>
+          <h2 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#002970', margin: 0 }}>
+            Edit Customer: {customer.name}
+          </h2>
+          <p style={{ margin: '2px 0 0', fontSize: '0.85rem', color: '#64748B' }}>
+            Update client contact person, GST details and assigned consultant
+          </p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Enterprise / Business Name *
+            </label>
+            <input 
+              type="text" 
+              required
+              value={formData.name}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Authorized Contact Person *
+            </label>
+            <input 
+              type="text" 
+              required
+              value={formData.contact_person}
+              onChange={e => setFormData({ ...formData, contact_person: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Mobile Number (WhatsApp) *
+            </label>
+            <input 
+              type="tel" 
+              required
+              value={formData.mobile}
+              onChange={e => setFormData({ ...formData, mobile: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Corporate Email Address
+            </label>
+            <input 
+              type="email" 
+              value={formData.email}
+              onChange={e => setFormData({ ...formData, email: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              City
+            </label>
+            <input 
+              type="text" 
+              value={formData.city}
+              onChange={e => setFormData({ ...formData, city: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              State
+            </label>
+            <input 
+              type="text" 
+              value={formData.state}
+              onChange={e => setFormData({ ...formData, state: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              GSTIN / Udyam Number
+            </label>
+            <input 
+              type="text" 
+              value={formData.gstin}
+              onChange={e => setFormData({ ...formData, gstin: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              KYC Status
+            </label>
+            <select 
+              value={formData.kyc_status}
+              onChange={e => setFormData({ ...formData, kyc_status: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', background: '#fff' }}
+            >
+              <option value="Verified">Verified</option>
+              <option value="Under Review">Under Review</option>
+              <option value="Documents Pending">Documents Pending</option>
+            </select>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>
+          <button type="button" onClick={onCancel} className="paytm-btn paytm-btn-outline">Cancel</button>
+          <button type="submit" className="paytm-btn paytm-btn-primary" style={{ padding: '10px 24px', fontWeight: '700' }}>Save &amp; Update Customer</button>
+        </div>
+      </form>
     </div>
   );
 };

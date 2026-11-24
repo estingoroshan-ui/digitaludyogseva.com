@@ -25,24 +25,11 @@ export const Footer = () => {
               Empowering Indian entrepreneurs, MSMEs, and startups with digital business compliance, MCA filings, trademark protection, and subsidized bank loan approvals.
             </p>
 
-            <div style={{ marginBottom: '20px', padding: '10px 14px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.1)', fontSize: '0.85rem' }}>
-              <span style={{ color: '#94a3b8' }}>Operated &amp; </span>
-              <strong style={{ color: '#fff' }}>Managed By </strong>
-              <a 
-                href="https://digitalvyaparseva.com/" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                style={{ color: '#ffa726', fontWeight: '800', textDecoration: 'underline' }}
-              >
-                Digital Vyapar Seva ↗
-              </a>
-            </div>
-
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 mb-4">
               <span className="badge badge-emerald">
                 <ShieldCheck size={14} /> 100% Data Confidentiality
               </span>
-              <span className="badge badge-saffron">KVIC & MSME Partner</span>
+              <span className="badge badge-saffron">KVIC &amp; MSME Partner</span>
             </div>
           </div>
 
@@ -107,15 +94,7 @@ export const Footer = () => {
           <div>
             <p>© {new Date().getFullYear()} Digital Udyog Seva (DUS). All Rights Reserved.</p>
             <p style={{ fontSize: '0.82rem', color: '#94a3b8', marginTop: '4px' }}>
-              Platform Designed &amp; <span style={{ color: '#fff', fontWeight: '600' }}>Managed By </span>
-              <a 
-                href="https://digitalvyaparseva.com/" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                style={{ color: '#ffa726', fontWeight: '800', textDecoration: 'none' }}
-              >
-                Digital Vyapar Seva ↗
-              </a>
+              India's Premier Business &amp; MSME Advisory Platform • ISO 9001:2015 Certified
             </p>
           </div>
           <div className="flex items-center gap-4">

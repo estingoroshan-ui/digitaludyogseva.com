@@ -22,7 +22,9 @@ export const ProjectsModule = () => {
   const { currentPath, navigate, matchPath } = useRouter();
   const { showToast } = useApp();
 
-  const detailMatch = matchPath('/admin/projects/:id');
+  const isCreateRoute = currentPath === '/admin/projects/create';
+  const editMatch = matchPath('/admin/projects/:id/edit');
+  const detailMatch = !isCreateRoute && !editMatch ? matchPath('/admin/projects/:id') : null;
 
   const [projectsList, setProjectsList] = useState([
     {
@@ -95,6 +97,52 @@ export const ProjectsModule = () => {
   const [statusFilter, setStatusFilter] = useState('All');
 
   // -------------------------------------------------------------
+  // VIEW: CREATE PROJECT (/admin/projects/create)
+  // -------------------------------------------------------------
+  if (isCreateRoute) {
+    return (
+      <CreateProjectView 
+        onCancel={() => navigate('/admin/projects')}
+        onSave={(newProj) => {
+          const item = {
+            id: Date.now(),
+            code: `PRJ-${Date.now().toString().slice(-4)}`,
+            currentStage: 'Stage 1: Customer Onboarding',
+            stageIndex: 1,
+            progress: 5,
+            sanctioned: 0,
+            status: 'In Progress',
+            startDate: new Date().toISOString().split('T')[0],
+            ...newProj
+          };
+          setProjectsList([item, ...projectsList]);
+          showToast(`Project ${newProj.name} created successfully`, 'success');
+          navigate('/admin/projects');
+        }}
+      />
+    );
+  }
+
+  // -------------------------------------------------------------
+  // VIEW: EDIT PROJECT (/admin/projects/:id/edit)
+  // -------------------------------------------------------------
+  if (editMatch) {
+    const editId = editMatch.params.id;
+    const existing = projectsList.find(p => String(p.id) === String(editId)) || projectsList[0];
+    return (
+      <EditProjectView 
+        project={existing}
+        onCancel={() => navigate(`/admin/projects/${editId}`)}
+        onSave={(updated) => {
+          setProjectsList(prev => prev.map(p => String(p.id) === String(editId) ? { ...p, ...updated } : p));
+          showToast(`Project ${updated.name || existing.name} updated successfully`, 'success');
+          navigate(`/admin/projects/${editId}`);
+        }}
+      />
+    );
+  }
+
+  // -------------------------------------------------------------
   // VIEW 1: PROJECT WORKSPACE DETAILS (/admin/projects/:id)
   // -------------------------------------------------------------
   if (detailMatch) {
@@ -152,11 +200,32 @@ export const ProjectsModule = () => {
           <div style={{ display: 'flex', gap: '10px' }}>
             <button 
               type="button"
-              onClick={() => showToast('Stage completion approved and logged to audit trial', 'success')}
+              onClick={() => navigate(`/admin/projects/${project.id}/edit`)}
+              className="paytm-btn paytm-btn-outline paytm-btn-sm"
+              style={{ color: '#002970', borderColor: '#CBD5E1' }}
+            >
+              Edit Project
+            </button>
+            <button 
+              type="button"
+              onClick={() => {
+                const nextStageIndex = Math.min((project.stageIndex || 1) + 1, 23);
+                const nextProgress = Math.round((nextStageIndex / 23) * 100);
+                const nextStageName = `Stage ${nextStageIndex}: ${stages[nextStageIndex - 1]}`;
+                const isSanctioned = nextStageIndex >= 18;
+                setProjectsList(prev => prev.map(p => String(p.id) === String(project.id) ? {
+                  ...p,
+                  stageIndex: nextStageIndex,
+                  currentStage: nextStageName,
+                  progress: nextProgress,
+                  sanctioned: isSanctioned ? (p.sanctioned || p.loanAmount) : p.sanctioned
+                } : p));
+                showToast(`Advanced to ${nextStageName} (${nextProgress}% complete)`, 'success');
+              }}
               className="paytm-btn paytm-btn-primary paytm-btn-sm"
             >
               <CheckCircle2 size={16} />
-              <span>Approve Stage Progress</span>
+              <span>Advance to Next Stage</span>
             </button>
           </div>
         </div>
@@ -278,6 +347,15 @@ export const ProjectsModule = () => {
         <div style={{ display: 'flex', gap: '10px' }}>
           <button 
             type="button"
+            onClick={() => navigate('/admin/projects/create')}
+            className="paytm-btn paytm-btn-primary"
+            style={{ fontWeight: '700' }}
+          >
+            <Plus size={16} />
+            <span>+ Create Project</span>
+          </button>
+          <button 
+            type="button"
             onClick={() => showToast('Workflow templates configured for PMEGP, MUDRA & CGTMSE', 'success')}
             className="paytm-btn paytm-btn-outline"
           >
@@ -369,16 +447,26 @@ export const ProjectsModule = () => {
                   <td style={{ fontSize: '0.82rem', color: '#475569' }}>
                     {p.assignedTo}
                   </td>
-                  <td style={{ textAlign: 'right' }}>
-                    <button 
-                      type="button"
-                      onClick={() => navigate(`/admin/projects/${p.id}`)}
-                      className="paytm-btn paytm-btn-outline paytm-btn-sm"
-                      style={{ color: '#008BCB', borderColor: '#00BAF2' }}
-                    >
-                      <span>Workspace</span>
-                      <ChevronRight size={14} />
-                    </button>
+                  <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                    <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                      <button 
+                        type="button"
+                        onClick={() => navigate(`/admin/projects/${p.id}/edit`)}
+                        className="paytm-btn paytm-btn-outline paytm-btn-sm"
+                        style={{ padding: '4px 8px', fontSize: '0.78rem' }}
+                      >
+                        Edit
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => navigate(`/admin/projects/${p.id}`)}
+                        className="paytm-btn paytm-btn-outline paytm-btn-sm"
+                        style={{ color: '#008BCB', borderColor: '#00BAF2', padding: '4px 10px', fontSize: '0.78rem' }}
+                      >
+                        <span>Workspace</span>
+                        <ChevronRight size={14} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -386,6 +474,271 @@ export const ProjectsModule = () => {
           </table>
         </div>
       </div>
+    </div>
+  );
+};
+
+// -------------------------------------------------------------
+// HELPER: CREATE PROJECT VIEW
+// -------------------------------------------------------------
+const CreateProjectView = ({ onCancel, onSave }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    customer: '',
+    scheme: 'PMEGP Subsidy Loan',
+    loanAmount: 2500000,
+    assignedTo: 'Project Team',
+    targetBank: 'State Bank of India (SBI)',
+    deadline: '2026-12-31'
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.customer) return;
+    onSave(formData);
+  };
+
+  return (
+    <div className="paytm-card" style={{ maxWidth: '850px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid #E2E8F0', paddingBottom: '16px', marginBottom: '24px' }}>
+        <button type="button" onClick={onCancel} className="paytm-btn paytm-btn-outline paytm-btn-sm">
+          <ArrowLeft size={16} />
+          <span>Back</span>
+        </button>
+        <div>
+          <h2 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#002970', margin: 0 }}>
+            Create New Government Scheme Project
+          </h2>
+          <p style={{ margin: '2px 0 0', fontSize: '0.85rem', color: '#64748B' }}>
+            Initialize 23-stage project workflow for loan subsidy processing
+          </p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Project / Enterprise Title *
+            </label>
+            <input 
+              type="text" 
+              required
+              value={formData.name}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
+              placeholder="e.g. Sharma Agro Processing Unit"
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Associated Customer / Enterprise *
+            </label>
+            <input 
+              type="text" 
+              required
+              value={formData.customer}
+              onChange={e => setFormData({ ...formData, customer: e.target.value })}
+              placeholder="e.g. Sharma Industries"
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Government Scheme *
+            </label>
+            <select 
+              value={formData.scheme}
+              onChange={e => setFormData({ ...formData, scheme: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', background: '#fff' }}
+            >
+              <option value="PMEGP Subsidy Loan">PMEGP Subsidy Loan (Up to 35% Subsidy)</option>
+              <option value="MUDRA Tarun Scheme">MUDRA Tarun Scheme (₹10L to ₹20L)</option>
+              <option value="CGTMSE Collateral-Free">CGTMSE Collateral-Free Cover (Up to ₹5 Cr)</option>
+              <option value="Stand-Up India Scheme">Stand-Up India Scheme (SC/ST/Women)</option>
+              <option value="RIPS State Industrial Subsidy">State Industrial Investment Subsidy</option>
+            </select>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Requested Loan Amount (₹) *
+            </label>
+            <input 
+              type="number" 
+              required
+              value={formData.loanAmount}
+              onChange={e => setFormData({ ...formData, loanAmount: Number(e.target.value) })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Target Financing Bank &amp; Branch
+            </label>
+            <input 
+              type="text" 
+              value={formData.targetBank}
+              onChange={e => setFormData({ ...formData, targetBank: e.target.value })}
+              placeholder="e.g. State Bank of India, Jaipur"
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Assigned Consulting Team
+            </label>
+            <select 
+              value={formData.assignedTo}
+              onChange={e => setFormData({ ...formData, assignedTo: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', background: '#fff' }}
+            >
+              <option value="Project Team">Project Team</option>
+              <option value="Credit Team">Credit Team</option>
+              <option value="Documentation">Documentation Team</option>
+              <option value="CA Rajesh Verma">CA Rajesh Verma</option>
+            </select>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>
+          <button type="button" onClick={onCancel} className="paytm-btn paytm-btn-outline">Cancel</button>
+          <button type="submit" className="paytm-btn paytm-btn-primary" style={{ padding: '10px 24px', fontWeight: '700' }}>Initialize Project Workflow</button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+// -------------------------------------------------------------
+// HELPER: EDIT PROJECT VIEW
+// -------------------------------------------------------------
+const EditProjectView = ({ project, onCancel, onSave }) => {
+  const [formData, setFormData] = useState({
+    name: project.name || '',
+    customer: project.customer || '',
+    scheme: project.scheme || 'PMEGP Subsidy Loan',
+    loanAmount: project.loanAmount || 2500000,
+    sanctioned: project.sanctioned || 0,
+    status: project.status || 'In Progress',
+    assignedTo: project.assignedTo || 'Project Team'
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <div className="paytm-card" style={{ maxWidth: '850px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid #E2E8F0', paddingBottom: '16px', marginBottom: '24px' }}>
+        <button type="button" onClick={onCancel} className="paytm-btn paytm-btn-outline paytm-btn-sm">
+          <ArrowLeft size={16} />
+          <span>Back</span>
+        </button>
+        <div>
+          <h2 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#002970', margin: 0 }}>
+            Edit Project: {project.code}
+          </h2>
+          <p style={{ margin: '2px 0 0', fontSize: '0.85rem', color: '#64748B' }}>
+            Modify loan amounts, status, scheme or assigned consultancy team
+          </p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Project Name *
+            </label>
+            <input 
+              type="text" 
+              required
+              value={formData.name}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Associated Customer *
+            </label>
+            <input 
+              type="text" 
+              required
+              value={formData.customer}
+              onChange={e => setFormData({ ...formData, customer: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Government Scheme *
+            </label>
+            <input 
+              type="text" 
+              required
+              value={formData.scheme}
+              onChange={e => setFormData({ ...formData, scheme: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Requested Loan (₹) *
+            </label>
+            <input 
+              type="number" 
+              required
+              value={formData.loanAmount}
+              onChange={e => setFormData({ ...formData, loanAmount: Number(e.target.value) })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Sanctioned Loan (₹)
+            </label>
+            <input 
+              type="number" 
+              value={formData.sanctioned}
+              onChange={e => setFormData({ ...formData, sanctioned: Number(e.target.value) })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Status
+            </label>
+            <select 
+              value={formData.status}
+              onChange={e => setFormData({ ...formData, status: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', background: '#fff' }}
+            >
+              <option value="In Progress">In Progress</option>
+              <option value="Verification">Verification</option>
+              <option value="Sanctioned">Sanctioned</option>
+              <option value="Disbursed">Disbursed</option>
+              <option value="Pending">Pending</option>
+            </select>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>
+          <button type="button" onClick={onCancel} className="paytm-btn paytm-btn-outline">Cancel</button>
+          <button type="submit" className="paytm-btn paytm-btn-primary" style={{ padding: '10px 24px', fontWeight: '700' }}>Save &amp; Update Project</button>
+        </div>
+      </form>
     </div>
   );
 };

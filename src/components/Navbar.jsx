@@ -291,7 +291,7 @@ export const Navbar = () => {
             {/* Drawer Footer */}
             <div className="mobile-drawer-footer">
               <div style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
-                Managed by <a href="https://digitalvyaparseva.com/" target="_blank" rel="noopener noreferrer" style={{ color: '#ffa726', fontWeight: '700' }}>Digital Vyapar Seva ↗</a>
+                India's Trusted Business &amp; MSME Advisory Platform
               </div>
               <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '4px' }}>
                 ISO 9001:2015 Certified Portal

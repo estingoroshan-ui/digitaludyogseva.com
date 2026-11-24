@@ -27,6 +27,7 @@ export const StaffHrmModule = () => {
   const isAttendance = currentPath === '/admin/attendance';
   const isPayroll = currentPath === '/admin/payroll';
   const isLeaves = currentPath === '/admin/leaves';
+  const isCreateEmployee = currentPath === '/admin/employees/create';
 
   const hrmTabs = [
     { label: 'Employees Roster', path: '/admin/employees' },
@@ -35,7 +36,7 @@ export const StaffHrmModule = () => {
     { label: 'Payroll & Salary Slips', path: '/admin/payroll' }
   ];
 
-  const employees = [
+  const [employeeList, setEmployeeList] = useState([
     {
       id: 1,
       empCode: 'EMP-01',
@@ -96,7 +97,33 @@ export const StaffHrmModule = () => {
       presentToday: false,
       checkInTime: 'On Approved Leave'
     }
-  ];
+  ]);
+
+  const [myAttendance, setMyAttendance] = useState({ checkedIn: true, time: '09:30 AM' });
+
+  // -------------------------------------------------------------
+  // VIEW: CREATE EMPLOYEE (/admin/employees/create)
+  // -------------------------------------------------------------
+  if (isCreateEmployee) {
+    return (
+      <CreateEmployeeView 
+        onCancel={() => navigate('/admin/employees')}
+        onSave={(newEmp) => {
+          const item = {
+            id: Date.now(),
+            empCode: `EMP-0${employeeList.length + 1}`,
+            status: 'Active',
+            presentToday: false,
+            checkInTime: 'Not Punched',
+            ...newEmp
+          };
+          setEmployeeList([...employeeList, item]);
+          showToast(`Employee ${newEmp.name} enrolled successfully`, 'success');
+          navigate('/admin/employees');
+        }}
+      />
+    );
+  }
 
   return (
     <div>
@@ -114,11 +141,30 @@ export const StaffHrmModule = () => {
         <div style={{ display: 'flex', gap: '10px' }}>
           <button 
             type="button"
-            onClick={() => showToast('Self Check-in registered with timestamp 09:30 AM', 'success')}
+            onClick={() => navigate('/admin/employees/create')}
             className="paytm-btn paytm-btn-primary"
+            style={{ fontWeight: '700' }}
           >
-            <CalendarCheck size={16} />
-            <span>Mark Attendance</span>
+            <Plus size={16} />
+            <span>+ Add Employee</span>
+          </button>
+          <button 
+            type="button"
+            onClick={() => {
+              const now = new Date();
+              const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              if (myAttendance.checkedIn) {
+                setMyAttendance({ checkedIn: false, time: timeStr });
+                showToast(`Check-Out recorded at ${timeStr}`, 'success');
+              } else {
+                setMyAttendance({ checkedIn: true, time: timeStr });
+                showToast(`Check-In recorded at ${timeStr}`, 'success');
+              }
+            }}
+            className="paytm-btn paytm-btn-outline"
+          >
+            <CalendarCheck size={16} color="#00BAF2" />
+            <span>{myAttendance.checkedIn ? 'Punch Out' : 'Punch In'}</span>
           </button>
         </div>
       </div>
@@ -193,7 +239,7 @@ export const StaffHrmModule = () => {
               </tr>
             </thead>
             <tbody>
-              {employees.map((emp) => (
+              {employeeList.map((emp) => (
                 <tr key={emp.id}>
                   <td style={{ fontWeight: '700', color: '#002970', fontFamily: 'monospace' }}>
                     {emp.empCode}
@@ -237,6 +283,139 @@ export const StaffHrmModule = () => {
           </table>
         </div>
       </div>
+    </div>
+  );
+};
+
+// -------------------------------------------------------------
+// HELPER: CREATE EMPLOYEE VIEW
+// -------------------------------------------------------------
+const CreateEmployeeView = ({ onCancel, onSave }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    department: 'Corporate Accounts & Audit',
+    designation: 'Senior Consultant',
+    mobile: '',
+    basicSalary: 45000,
+    email: ''
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.mobile) return;
+    onSave(formData);
+  };
+
+  return (
+    <div className="paytm-card" style={{ maxWidth: '850px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid #E2E8F0', paddingBottom: '16px', marginBottom: '24px' }}>
+        <button type="button" onClick={onCancel} className="paytm-btn paytm-btn-outline paytm-btn-sm">
+          <ArrowLeft size={16} />
+          <span>Back</span>
+        </button>
+        <div>
+          <h2 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#002970', margin: 0 }}>
+            Enroll New Team Member
+          </h2>
+          <p style={{ margin: '2px 0 0', fontSize: '0.85rem', color: '#64748B' }}>
+            Add staff to consultancy payroll, project assignments and attendance register
+          </p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Full Name *
+            </label>
+            <input 
+              type="text" 
+              required
+              value={formData.name}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
+              placeholder="e.g. Vikas Gupta"
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Mobile Phone *
+            </label>
+            <input 
+              type="tel" 
+              required
+              value={formData.mobile}
+              onChange={e => setFormData({ ...formData, mobile: e.target.value })}
+              placeholder="10-digit mobile number"
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Department *
+            </label>
+            <select 
+              value={formData.department}
+              onChange={e => setFormData({ ...formData, department: e.target.value })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', background: '#fff' }}
+            >
+              <option value="Corporate Accounts & Audit">Corporate Accounts &amp; Audit</option>
+              <option value="Lead 360 & Sales Operations">Lead 360 &amp; Sales Operations</option>
+              <option value="Government Subsidy & Loans">Government Subsidy &amp; Loans</option>
+              <option value="Taxation & MCA Filings">Taxation &amp; MCA Filings</option>
+              <option value="Field & Bank Liaison">Field &amp; Bank Liaison</option>
+            </select>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Designation *
+            </label>
+            <input 
+              type="text" 
+              required
+              value={formData.designation}
+              onChange={e => setFormData({ ...formData, designation: e.target.value })}
+              placeholder="e.g. Project Associate"
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Monthly Basic Salary (₹) *
+            </label>
+            <input 
+              type="number" 
+              required
+              value={formData.basicSalary}
+              onChange={e => setFormData({ ...formData, basicSalary: Number(e.target.value) })}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
+              Email Address
+            </label>
+            <input 
+              type="email" 
+              value={formData.email}
+              onChange={e => setFormData({ ...formData, email: e.target.value })}
+              placeholder="employee@digitaludyogseva.com"
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>
+          <button type="button" onClick={onCancel} className="paytm-btn paytm-btn-outline">Cancel</button>
+          <button type="submit" className="paytm-btn paytm-btn-primary" style={{ padding: '10px 24px', fontWeight: '700' }}>Save Team Member</button>
+        </div>
+      </form>
     </div>
   );
 };
