@@ -13,8 +13,9 @@ require_once __DIR__ . '/../../db.php';
 
 try {
     $stmt = $pdo->query("
-        SELECT s.id, s.name, s.slug, s.short_description AS `desc`, s.base_price AS rawPrice,
-               CONCAT('₹', FORMAT(s.base_price, 0)) AS price,
+        SELECT s.id, s.name, s.slug, s.short_description AS `desc`, 
+               COALESCE(s.final_price, s.prof_fee + s.govt_fee, 0) AS rawPrice,
+               CONCAT('₹', FORMAT(COALESCE(s.final_price, s.prof_fee + s.govt_fee, 0), 0)) AS price,
                COALESCE(sc.name, 'General') AS category
         FROM services s
         LEFT JOIN service_categories sc ON s.category_id = sc.id
