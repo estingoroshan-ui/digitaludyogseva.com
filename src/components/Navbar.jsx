@@ -60,10 +60,24 @@ export const Navbar = ({ onOpenApplyModal }) => {
         <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#38BDF8', fontWeight: '600' }}>
-              <ShieldCheck size={14} color="#4ADE80" /> ISO 9001:2015 Certified Advisory Hub
+              <ShieldCheck size={14} color="#4ADE80" /> ISO 9001:2015 Certified
             </span>
-            <span className="hidden-mobile" style={{ color: '#94A3B8' }}>|</span>
-            <span className="hidden-mobile" style={{ color: '#CBD5E1' }}>KVIC, MSME &amp; Banking Assistance Platform</span>
+            <span className="hidden-mobile" style={{ color: '#475569' }}>|</span>
+            <button
+              onClick={() => navigateTo('/about')}
+              style={{ background: 'transparent', border: 'none', color: '#CBD5E1', cursor: 'pointer', fontSize: '0.78rem', padding: 0 }}
+              className="hidden-mobile"
+            >
+              About Us
+            </button>
+            <span className="hidden-mobile" style={{ color: '#475569' }}>|</span>
+            <button
+              onClick={() => navigateTo('/knowledge')}
+              style={{ background: 'transparent', border: 'none', color: '#CBD5E1', cursor: 'pointer', fontSize: '0.78rem', padding: 0 }}
+              className="hidden-mobile"
+            >
+              Knowledge Center
+            </button>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -95,26 +109,26 @@ export const Navbar = ({ onOpenApplyModal }) => {
             href="#"
             onClick={(e) => { e.preventDefault(); navigateTo('/'); }}
             className="brand-logo"
-            style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', flexShrink: 0 }}
+            style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0 }}
           >
             <img
               src="/assets/logo.webp"
               alt="Digital Udyog Seva Logo"
-              style={{ width: '46px', height: '46px', objectFit: 'contain', flexShrink: 0 }}
+              style={{ width: '40px', height: '40px', objectFit: 'contain', flexShrink: 0 }}
             />
             <div className="brand-text">
-              <h1 style={{ fontSize: '1.30rem', fontWeight: '800', color: '#002970', margin: 0, letterSpacing: '-0.02em', lineHeight: 1.15 }}>
+              <h1 style={{ fontSize: '1.18rem', fontWeight: '800', color: '#002970', margin: 0, letterSpacing: '-0.02em', lineHeight: 1.15, whiteSpace: 'nowrap' }}>
                 Digital Udyog Seva
               </h1>
-              <span className="brand-subtitle" style={{ fontSize: '0.70rem', fontWeight: '700', color: '#00BAF2', letterSpacing: '0.06em', textTransform: 'uppercase', display: 'block', marginTop: '2px' }}>
-                Government Scheme &amp; Business Advisory
+              <span className="brand-subtitle" style={{ fontSize: '0.64rem', fontWeight: '700', color: '#00BAF2', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block', marginTop: '1px', whiteSpace: 'nowrap' }}>
+                Government Scheme &amp; Advisory
               </span>
             </div>
           </a>
 
           {/* Desktop Navigation with Mega Menus */}
           <nav className="desktop-nav" style={{ display: 'flex', alignItems: 'center' }}>
-            <ul className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: '4px', listStyle: 'none', margin: 0, padding: 0 }}>
+            <ul className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: '2px', listStyle: 'none', margin: 0, padding: 0 }}>
 
               {/* 1. Home */}
               <li>
@@ -122,7 +136,7 @@ export const Navbar = ({ onOpenApplyModal }) => {
                   type="button"
                   onClick={() => navigateTo('/')}
                   className={`nav-link ${currentPath === '/' ? 'active' : ''}`}
-                  style={{ padding: '8px 12px', borderRadius: '6px', fontSize: '0.88rem', fontWeight: '600' }}
+                  style={{ padding: '6px 10px', borderRadius: '6px', fontSize: '0.84rem', fontWeight: '600' }}
                 >
                   Home
                 </button>
@@ -137,11 +151,11 @@ export const Navbar = ({ onOpenApplyModal }) => {
                 <button
                   type="button"
                   onClick={() => navigateTo('/schemes')}
-                  className={`nav-link ${currentPath.startsWith('/schemes') ? 'active' : ''}`}
-                  style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '8px 12px', borderRadius: '6px', fontSize: '0.88rem', fontWeight: '600' }}
+                  className={`nav-link ${currentPath.startsWith('/schemes') || currentPath.startsWith('/subsidies') ? 'active' : ''}`}
+                  style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '6px 10px', borderRadius: '6px', fontSize: '0.84rem', fontWeight: '600' }}
                 >
-                  <span>Government Schemes</span>
-                  <ChevronDown size={14} color="#64748B" />
+                  <span>Govt Schemes</span>
+                  <ChevronDown size={13} color="#64748B" />
                 </button>
 
                 {activeMegaMenu === 'schemes' && (
@@ -149,35 +163,35 @@ export const Navbar = ({ onOpenApplyModal }) => {
                     style={{
                       position: 'absolute',
                       top: '100%',
-                      left: '-100px',
-                      width: '680px',
+                      left: '-60px',
+                      width: '660px',
                       background: '#FFFFFF',
                       borderRadius: '12px',
                       boxShadow: '0 20px 40px rgba(0, 41, 112, 0.15)',
                       border: '1px solid #E2E8F0',
-                      padding: '24px',
+                      padding: '22px',
                       zIndex: 1000,
                       display: 'grid',
                       gridTemplateColumns: '1fr 1fr',
-                      gap: '20px'
+                      gap: '18px'
                     }}
                   >
                     <div>
                       <div style={{ fontSize: '0.75rem', fontWeight: '800', color: '#002970', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <Landmark size={14} color="#00BAF2" /> Central Government Programs
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         <a href="/schemes?type=pmegp" onClick={(e) => { e.preventDefault(); navigateTo('/schemes?type=pmegp'); }} style={{ textDecoration: 'none', color: '#1E293B', display: 'block', padding: '6px 8px', borderRadius: '6px', background: '#F8FAFC' }}>
-                          <div style={{ fontWeight: '700', fontSize: '0.86rem', color: '#002970' }}>PMEGP Scheme (35% Subsidy)</div>
-                          <div style={{ fontSize: '0.74rem', color: '#64748B' }}>Up to ₹50 Lakhs manufacturing &amp; ₹20L service setup</div>
+                          <div style={{ fontWeight: '700', fontSize: '0.85rem', color: '#002970' }}>PMEGP Scheme (35% Subsidy)</div>
+                          <div style={{ fontSize: '0.73rem', color: '#64748B' }}>Up to ₹50 Lakhs manufacturing &amp; ₹20L service</div>
                         </a>
                         <a href="/schemes?type=mudra" onClick={(e) => { e.preventDefault(); navigateTo('/schemes?type=mudra'); }} style={{ textDecoration: 'none', color: '#1E293B', display: 'block', padding: '6px 8px', borderRadius: '6px' }}>
-                          <div style={{ fontWeight: '700', fontSize: '0.86rem', color: '#002970' }}>Pradhan Mantri Mudra Yojana</div>
-                          <div style={{ fontSize: '0.74rem', color: '#64748B' }}>Shishu, Kishore &amp; Tarun loans up to ₹10 Lakhs</div>
+                          <div style={{ fontWeight: '700', fontSize: '0.85rem', color: '#002970' }}>Pradhan Mantri Mudra Yojana</div>
+                          <div style={{ fontSize: '0.73rem', color: '#64748B' }}>Loans up to ₹10 Lakhs with zero collateral</div>
                         </a>
                         <a href="/schemes?type=cgtmse" onClick={(e) => { e.preventDefault(); navigateTo('/schemes?type=cgtmse'); }} style={{ textDecoration: 'none', color: '#1E293B', display: 'block', padding: '6px 8px', borderRadius: '6px' }}>
-                          <div style={{ fontWeight: '700', fontSize: '0.86rem', color: '#002970' }}>CGTMSE Collateral-Free Loans</div>
-                          <div style={{ fontSize: '0.74rem', color: '#64748B' }}>Credit guarantee up to ₹5 Crores without mortgage</div>
+                          <div style={{ fontWeight: '700', fontSize: '0.85rem', color: '#002970' }}>CGTMSE Collateral-Free Loans</div>
+                          <div style={{ fontSize: '0.73rem', color: '#64748B' }}>Credit guarantee up to ₹5 Crores without mortgage</div>
                         </a>
                       </div>
                     </div>
@@ -186,22 +200,29 @@ export const Navbar = ({ onOpenApplyModal }) => {
                       <div style={{ fontSize: '0.75rem', fontWeight: '800', color: '#002970', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <Percent size={14} color="#16A34A" /> State Subsidies &amp; Grants
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <a href="/schemes?type=state-capital" onClick={(e) => { e.preventDefault(); navigateTo('/schemes?type=state-capital'); }} style={{ textDecoration: 'none', color: '#1E293B', display: 'block', padding: '6px 8px', borderRadius: '6px', background: '#F8FAFC' }}>
-                          <div style={{ fontWeight: '700', fontSize: '0.86rem', color: '#002970' }}>State Capital Investment Subsidy</div>
-                          <div style={{ fontSize: '0.74rem', color: '#64748B' }}>15% to 25% reimbursement on plant and machinery</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <a href="/subsidies" onClick={(e) => { e.preventDefault(); navigateTo('/subsidies'); }} style={{ textDecoration: 'none', color: '#1E293B', display: 'block', padding: '6px 8px', borderRadius: '6px', background: '#F8FAFC' }}>
+                          <div style={{ fontWeight: '700', fontSize: '0.85rem', color: '#002970' }}>State Capital Investment Subsidy</div>
+                          <div style={{ fontSize: '0.73rem', color: '#64748B' }}>15% to 25% reimbursement on plant &amp; machinery</div>
                         </a>
-                        <a href="/schemes?type=interest-subsidy" onClick={(e) => { e.preventDefault(); navigateTo('/schemes?type=interest-subsidy'); }} style={{ textDecoration: 'none', color: '#1E293B', display: 'block', padding: '6px 8px', borderRadius: '6px' }}>
-                          <div style={{ fontWeight: '700', fontSize: '0.86rem', color: '#002970' }}>Interest Subvention / Re-imbursement</div>
-                          <div style={{ fontSize: '0.74rem', color: '#64748B' }}>5% to 7% annual interest discount on term loans</div>
+                        <a href="/subsidies" onClick={(e) => { e.preventDefault(); navigateTo('/subsidies'); }} style={{ textDecoration: 'none', color: '#1E293B', display: 'block', padding: '6px 8px', borderRadius: '6px' }}>
+                          <div style={{ fontWeight: '700', fontSize: '0.85rem', color: '#002970' }}>Interest Subvention / Re-imbursement</div>
+                          <div style={{ fontSize: '0.73rem', color: '#64748B' }}>5% to 7% annual interest discount on term loans</div>
                         </a>
-                        <div style={{ paddingTop: '8px', borderTop: '1px solid #E2E8F0', marginTop: '4px' }}>
+                        <div style={{ paddingTop: '8px', borderTop: '1px solid #E2E8F0', marginTop: '2px', display: 'flex', gap: '8px' }}>
                           <button
                             onClick={() => navigateTo('/schemes')}
-                            style={{ background: '#002970', color: '#fff', border: 'none', borderRadius: '6px', padding: '8px 14px', fontSize: '0.80rem', fontWeight: '700', cursor: 'pointer', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                            style={{ background: '#002970', color: '#fff', border: 'none', borderRadius: '6px', padding: '7px 10px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
                           >
-                            <span>Browse All 45+ Schemes</span>
-                            <ArrowRight size={14} />
+                            <span>All Schemes</span>
+                            <ArrowRight size={13} />
+                          </button>
+                          <button
+                            onClick={() => navigateTo('/subsidies')}
+                            style={{ background: '#F0FDF4', color: '#16A34A', border: '1px solid #BBF7D0', borderRadius: '6px', padding: '7px 10px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+                          >
+                            <Percent size={13} />
+                            <span>Subsidies</span>
                           </button>
                         </div>
                       </div>
@@ -220,10 +241,10 @@ export const Navbar = ({ onOpenApplyModal }) => {
                   type="button"
                   onClick={() => navigateTo('/loans')}
                   className={`nav-link ${currentPath.startsWith('/loans') ? 'active' : ''}`}
-                  style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '8px 12px', borderRadius: '6px', fontSize: '0.88rem', fontWeight: '600' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '6px 10px', borderRadius: '6px', fontSize: '0.84rem', fontWeight: '600' }}
                 >
                   <span>Business Loans</span>
-                  <ChevronDown size={14} color="#64748B" />
+                  <ChevronDown size={13} color="#64748B" />
                 </button>
 
                 {activeMegaMenu === 'loans' && (
@@ -232,16 +253,16 @@ export const Navbar = ({ onOpenApplyModal }) => {
                       position: 'absolute',
                       top: '100%',
                       left: '-80px',
-                      width: '640px',
+                      width: '620px',
                       background: '#FFFFFF',
                       borderRadius: '12px',
                       boxShadow: '0 20px 40px rgba(0, 41, 112, 0.15)',
                       border: '1px solid #E2E8F0',
-                      padding: '24px',
+                      padding: '22px',
                       zIndex: 1000,
                       display: 'grid',
                       gridTemplateColumns: '1fr 1fr',
-                      gap: '20px'
+                      gap: '18px'
                     }}
                   >
                     <div>
@@ -249,13 +270,13 @@ export const Navbar = ({ onOpenApplyModal }) => {
                         <Banknote size={14} color="#00BAF2" /> MSME Funding Products
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <a href="/loans#working-capital" onClick={(e) => { e.preventDefault(); navigateTo('/loans'); }} style={{ textDecoration: 'none', color: '#002970', fontWeight: '700', fontSize: '0.86rem', padding: '6px 8px', borderRadius: '6px', background: '#F8FAFC', display: 'block' }}>
+                        <a href="/loans#working-capital" onClick={(e) => { e.preventDefault(); navigateTo('/loans'); }} style={{ textDecoration: 'none', color: '#002970', fontWeight: '700', fontSize: '0.85rem', padding: '6px 8px', borderRadius: '6px', background: '#F8FAFC', display: 'block' }}>
                           Cash Credit (CC) &amp; Overdraft (OD)
-                          <div style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: '400' }}>For daily working capital &amp; raw materials</div>
+                          <div style={{ fontSize: '0.73rem', color: '#64748B', fontWeight: '400' }}>For daily working capital &amp; raw materials</div>
                         </a>
-                        <a href="/loans#machinery" onClick={(e) => { e.preventDefault(); navigateTo('/loans'); }} style={{ textDecoration: 'none', color: '#002970', fontWeight: '700', fontSize: '0.86rem', padding: '6px 8px', borderRadius: '6px', display: 'block' }}>
-                          Machinery &amp; Equipment Term Loans
-                          <div style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: '400' }}>Up to 85% equipment financing with 7-yr tenure</div>
+                        <a href="/loans#machinery" onClick={(e) => { e.preventDefault(); navigateTo('/loans'); }} style={{ textDecoration: 'none', color: '#002970', fontWeight: '700', fontSize: '0.85rem', padding: '6px 8px', borderRadius: '6px', display: 'block' }}>
+                          Machinery &amp; Equipment Loans
+                          <div style={{ fontSize: '0.73rem', color: '#64748B', fontWeight: '400' }}>Up to 85% equipment financing with 7-yr tenure</div>
                         </a>
                       </div>
                     </div>
@@ -265,13 +286,13 @@ export const Navbar = ({ onOpenApplyModal }) => {
                         <FileSpreadsheet size={14} color="#16A34A" /> DPR &amp; Bank Documentation
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <a href="/services#dpr" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ textDecoration: 'none', color: '#002970', fontWeight: '700', fontSize: '0.86rem', padding: '6px 8px', borderRadius: '6px', background: '#F8FAFC', display: 'block' }}>
+                        <a href="/services#dpr" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ textDecoration: 'none', color: '#002970', fontWeight: '700', fontSize: '0.85rem', padding: '6px 8px', borderRadius: '6px', background: '#F8FAFC', display: 'block' }}>
                           Bank-Compliant Project Report (DPR)
-                          <div style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: '400' }}>5-Yr financial projections, CMA data, DSCR analysis</div>
+                          <div style={{ fontSize: '0.73rem', color: '#64748B', fontWeight: '400' }}>5-Yr financial projections, CMA data, DSCR</div>
                         </a>
-                        <a href="/eligibility" onClick={(e) => { e.preventDefault(); navigateTo('/eligibility'); }} style={{ textDecoration: 'none', color: '#002970', fontWeight: '700', fontSize: '0.86rem', padding: '6px 8px', borderRadius: '6px', display: 'block' }}>
-                          Instant 100-Point Loan Scorecard
-                          <div style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: '400' }}>Check sanction probability before bank submission</div>
+                        <a href="/eligibility" onClick={(e) => { e.preventDefault(); navigateTo('/eligibility'); }} style={{ textDecoration: 'none', color: '#002970', fontWeight: '700', fontSize: '0.85rem', padding: '6px 8px', borderRadius: '6px', display: 'block' }}>
+                          Instant 100-Point Scorecard
+                          <div style={{ fontSize: '0.73rem', color: '#64748B', fontWeight: '400' }}>Check sanction probability before bank submission</div>
                         </a>
                       </div>
                     </div>
@@ -279,19 +300,7 @@ export const Navbar = ({ onOpenApplyModal }) => {
                 )}
               </li>
 
-              {/* 4. Subsidy Schemes */}
-              <li>
-                <button
-                  type="button"
-                  onClick={() => navigateTo('/subsidies')}
-                  className={`nav-link ${currentPath === '/subsidies' ? 'active' : ''}`}
-                  style={{ padding: '8px 12px', borderRadius: '6px', fontSize: '0.88rem', fontWeight: '600' }}
-                >
-                  Subsidy Schemes
-                </button>
-              </li>
-
-              {/* 5. Our Services (Mega Menu) */}
+              {/* 4. Services (Mega Menu) */}
               <li
                 onMouseEnter={() => handleMouseEnter('services')}
                 onMouseLeave={handleMouseLeave}
@@ -301,10 +310,10 @@ export const Navbar = ({ onOpenApplyModal }) => {
                   type="button"
                   onClick={() => navigateTo('/services')}
                   className={`nav-link ${currentPath.startsWith('/services') ? 'active' : ''}`}
-                  style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '8px 12px', borderRadius: '6px', fontSize: '0.88rem', fontWeight: '600' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '6px 10px', borderRadius: '6px', fontSize: '0.84rem', fontWeight: '600' }}
                 >
-                  <span>Our Services</span>
-                  <ChevronDown size={14} color="#64748B" />
+                  <span>Services</span>
+                  <ChevronDown size={13} color="#64748B" />
                 </button>
 
                 {activeMegaMenu === 'services' && (
@@ -312,13 +321,13 @@ export const Navbar = ({ onOpenApplyModal }) => {
                     style={{
                       position: 'absolute',
                       top: '100%',
-                      left: '-160px',
-                      width: '740px',
+                      left: '-140px',
+                      width: '700px',
                       background: '#FFFFFF',
                       borderRadius: '12px',
                       boxShadow: '0 20px 40px rgba(0, 41, 112, 0.15)',
                       border: '1px solid #E2E8F0',
-                      padding: '24px',
+                      padding: '22px',
                       zIndex: 1000,
                       display: 'grid',
                       gridTemplateColumns: '1fr 1fr 1fr',
@@ -329,11 +338,11 @@ export const Navbar = ({ onOpenApplyModal }) => {
                       <div style={{ fontSize: '0.75rem', fontWeight: '800', color: '#002970', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px' }}>
                         Incorporation
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.84rem' }}>
-                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '4px 0' }}>Private Limited Company</a>
-                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '4px 0' }}>Limited Liability Partnership (LLP)</a>
-                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '4px 0' }}>One Person Company (OPC)</a>
-                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '4px 0' }}>Section 8 NGO / Trust</a>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.82rem' }}>
+                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '3px 0' }}>Private Limited Company</a>
+                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '3px 0' }}>LLP Registration</a>
+                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '3px 0' }}>One Person Company (OPC)</a>
+                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '3px 0' }}>Section 8 NGO / Trust</a>
                       </div>
                     </div>
 
@@ -341,11 +350,11 @@ export const Navbar = ({ onOpenApplyModal }) => {
                       <div style={{ fontSize: '0.75rem', fontWeight: '800', color: '#002970', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px' }}>
                         Registrations &amp; Tax
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.84rem' }}>
-                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '4px 0' }}>GST Registration &amp; Filing</a>
-                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '4px 0' }}>Udyam MSME Certificate</a>
-                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '4px 0' }}>Trademark (™) Registration</a>
-                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '4px 0' }}>FSSAI Food License</a>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.82rem' }}>
+                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '3px 0' }}>GST Registration &amp; Filing</a>
+                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '3px 0' }}>Udyam MSME Certificate</a>
+                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '3px 0' }}>Trademark (™) Registration</a>
+                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '3px 0' }}>FSSAI Food License</a>
                       </div>
                     </div>
 
@@ -353,60 +362,48 @@ export const Navbar = ({ onOpenApplyModal }) => {
                       <div style={{ fontSize: '0.75rem', fontWeight: '800', color: '#002970', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px' }}>
                         Financial Advisory
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.84rem' }}>
-                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '4px 0' }}>DPR &amp; CMA Data Prep</a>
-                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '4px 0' }}>CA Net Worth Certificate</a>
-                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '4px 0' }}>Income Tax Return (ITR)</a>
-                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '4px 0' }}>Industrial Subsidy Audits</a>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.82rem' }}>
+                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '3px 0' }}>DPR &amp; CMA Data Prep</a>
+                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '3px 0' }}>CA Net Worth Certificate</a>
+                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '3px 0' }}>Income Tax Return (ITR)</a>
+                        <a href="/services" onClick={(e) => { e.preventDefault(); navigateTo('/services'); }} style={{ color: '#334155', textDecoration: 'none', padding: '3px 0' }}>Industrial Subsidy Audits</a>
                       </div>
                     </div>
                   </div>
                 )}
               </li>
 
-              {/* 6. Eligibility Check */}
+              {/* 5. Eligibility Check */}
               <li>
                 <button
                   type="button"
                   onClick={() => navigateTo('/eligibility')}
                   className={`nav-link ${currentPath === '/eligibility' ? 'active' : ''}`}
-                  style={{ padding: '8px 12px', borderRadius: '6px', fontSize: '0.88rem', fontWeight: '600' }}
+                  style={{ padding: '6px 10px', borderRadius: '6px', fontSize: '0.84rem', fontWeight: '600' }}
                 >
                   Eligibility Check
                 </button>
               </li>
 
-              {/* 7. Track Case */}
+              {/* 6. Track Case */}
               <li>
                 <button
                   type="button"
                   onClick={() => navigateTo('/track')}
                   className={`nav-link ${currentPath === '/track' ? 'active' : ''}`}
-                  style={{ padding: '8px 12px', borderRadius: '6px', fontSize: '0.88rem', fontWeight: '600' }}
+                  style={{ padding: '6px 10px', borderRadius: '6px', fontSize: '0.84rem', fontWeight: '600' }}
                 >
                   Track Case
                 </button>
               </li>
 
-              {/* 8. Knowledge Center */}
-              <li>
-                <button
-                  type="button"
-                  onClick={() => navigateTo('/knowledge')}
-                  className={`nav-link ${currentPath === '/knowledge' ? 'active' : ''}`}
-                  style={{ padding: '8px 12px', borderRadius: '6px', fontSize: '0.88rem', fontWeight: '600' }}
-                >
-                  Knowledge
-                </button>
-              </li>
-
-              {/* 9. Contact Us */}
+              {/* 7. Contact Us */}
               <li>
                 <button
                   type="button"
                   onClick={() => navigateTo('/contact')}
                   className={`nav-link ${currentPath === '/contact' ? 'active' : ''}`}
-                  style={{ padding: '8px 12px', borderRadius: '6px', fontSize: '0.88rem', fontWeight: '600' }}
+                  style={{ padding: '6px 10px', borderRadius: '6px', fontSize: '0.84rem', fontWeight: '600' }}
                 >
                   Contact
                 </button>
@@ -415,7 +412,7 @@ export const Navbar = ({ onOpenApplyModal }) => {
           </nav>
 
           {/* Desktop Right Action Buttons */}
-          <div className="desktop-actions" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div className="desktop-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
             <button
               type="button"
               onClick={() => navigate('/portal/customer')}
@@ -423,18 +420,20 @@ export const Navbar = ({ onOpenApplyModal }) => {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '6px',
-                padding: '7px 14px',
-                borderRadius: '8px',
+                gap: '5px',
+                padding: '6px 12px',
+                borderRadius: '7px',
                 borderColor: '#CBD5E1',
                 color: '#002970',
-                fontSize: '0.84rem',
+                fontSize: '0.82rem',
                 fontWeight: '700',
-                background: '#F8FAFC'
+                background: '#F8FAFC',
+                whiteSpace: 'nowrap',
+                flexShrink: 0
               }}
               title="Customer Login & Case Tracking"
             >
-              <User size={15} color="#00BAF2" />
+              <User size={14} color="#00BAF2" />
               <span>Login</span>
             </button>
 
@@ -449,15 +448,16 @@ export const Navbar = ({ onOpenApplyModal }) => {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                padding: '8px 18px',
-                borderRadius: '8px',
+                padding: '7px 16px',
+                borderRadius: '7px',
                 background: '#002970',
                 color: '#FFFFFF',
-                fontSize: '0.86rem',
+                fontSize: '0.84rem',
                 fontWeight: '700',
                 border: 'none',
-                boxShadow: '0 2px 8px rgba(0, 41, 112, 0.25)',
-                whiteSpace: 'nowrap'
+                boxShadow: '0 2px 8px rgba(0, 41, 112, 0.2)',
+                whiteSpace: 'nowrap',
+                flexShrink: 0
               }}
             >
               <Sparkles size={14} color="#00BAF2" />
