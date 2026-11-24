@@ -5,6 +5,7 @@ import {
   Briefcase, 
   Search, 
   Filter, 
+  Plus,
   CheckCircle2, 
   Clock, 
   AlertCircle, 

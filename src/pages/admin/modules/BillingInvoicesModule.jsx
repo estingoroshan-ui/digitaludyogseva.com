@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useRouter } from '../../../router/Router';
+import React, { useState, useEffect } from 'react';
+import { useRouter, getApiUrl } from '../../../router/Router';
 import { useApp } from '../../../context/AppContext';
 import { 
   Receipt, 
@@ -15,7 +15,8 @@ import {
   ArrowLeft,
   Building2,
   TrendingUp,
-  Wallet
+  Wallet,
+  ExternalLink
 } from 'lucide-react';
 
 export const BillingInvoicesModule = () => {
@@ -365,15 +366,28 @@ export const BillingInvoicesModule = () => {
                       </span>
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      <button 
-                        type="button" 
-                        onClick={() => showToast(`Downloading Quotation ${q.quoteNo}...`, 'success')} 
-                        className="paytm-btn paytm-btn-outline paytm-btn-sm"
-                        style={{ color: '#008BCB', borderColor: '#00BAF2' }}
-                      >
-                        <Download size={14} />
-                        <span>PDF</span>
-                      </button>
+                      <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                        <a 
+                          href={getApiUrl(`api/v1/generate_pdf.php?type=quotation&id=${q.quoteNo}&mode=inline`)} 
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="paytm-btn paytm-btn-outline paytm-btn-sm"
+                          style={{ color: '#008BCB', borderColor: '#BAE6FD', padding: '4px 8px', fontSize: '0.78rem' }}
+                          title="Preview PDF"
+                        >
+                          <ExternalLink size={13} />
+                          <span>Preview</span>
+                        </a>
+                        <a 
+                          href={getApiUrl(`api/v1/generate_pdf.php?type=quotation&id=${q.quoteNo}&mode=download`)} 
+                          className="paytm-btn paytm-btn-primary paytm-btn-sm"
+                          style={{ padding: '4px 8px', fontSize: '0.78rem' }}
+                          title="Download PDF"
+                        >
+                          <Download size={13} />
+                          <span>Download</span>
+                        </a>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -491,15 +505,28 @@ export const BillingInvoicesModule = () => {
                       {inv.paymentMode}
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      <button 
-                        type="button"
-                        onClick={() => showToast(`Generating PDF for ${inv.invoiceNo}...`, 'success')}
-                        className="paytm-btn paytm-btn-outline paytm-btn-sm"
-                        style={{ color: '#008BCB', borderColor: '#00BAF2' }}
-                      >
-                        <Download size={14} />
-                        <span>PDF</span>
-                      </button>
+                      <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                        <a 
+                          href={getApiUrl(`api/v1/generate_pdf.php?type=invoice&id=${inv.invoiceNo}&mode=inline`)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="paytm-btn paytm-btn-outline paytm-btn-sm"
+                          style={{ color: '#008BCB', borderColor: '#BAE6FD', padding: '4px 8px', fontSize: '0.78rem' }}
+                          title="Preview PDF"
+                        >
+                          <ExternalLink size={13} />
+                          <span>Preview</span>
+                        </a>
+                        <a 
+                          href={getApiUrl(`api/v1/generate_pdf.php?type=invoice&id=${inv.invoiceNo}&mode=download`)}
+                          className="paytm-btn paytm-btn-primary paytm-btn-sm"
+                          style={{ padding: '4px 8px', fontSize: '0.78rem' }}
+                          title="Download PDF"
+                        >
+                          <Download size={13} />
+                          <span>Download</span>
+                        </a>
+                      </div>
                     </td>
                   </tr>
                 ))}

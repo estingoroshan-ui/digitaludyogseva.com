@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useRouter } from '../../../router/Router';
+import { useRouter, getApiUrl } from '../../../router/Router';
 import { useApp } from '../../../context/AppContext';
 import { 
   Calculator, 
@@ -318,14 +318,14 @@ export const EligibilityScorecardModule = () => {
             </div>
 
             <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <button 
-                type="button"
-                onClick={() => showToast('Scorecard PDF exported with company letterhead', 'success')}
+              <a 
+                href={getApiUrl('api/v1/generate_pdf.php?type=scorecard&id=101&mode=download')}
                 className="paytm-btn paytm-btn-primary"
+                style={{ textAlign: 'center', justifyContent: 'center' }}
               >
                 <Download size={16} />
                 <span>Export Official Scorecard PDF</span>
-              </button>
+              </a>
               <button 
                 type="button"
                 onClick={() => {

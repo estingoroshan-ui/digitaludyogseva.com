@@ -1,17 +1,14 @@
-import React, { useState } from 'react';
-import { useRouter, Link } from '../../router/Router';
+import React, { useState, useEffect } from 'react';
+import { useRouter, getApiUrl } from '../../router/Router';
 import { useApp } from '../../context/AppContext';
 import { 
-  Building2, 
   LayoutDashboard, 
   Users, 
-  Briefcase, 
-  UserCheck, 
-  IndianRupee, 
-  FileText, 
-  FileCheck, 
   Award, 
   Calculator, 
+  UserCheck, 
+  Briefcase, 
+  FileCheck, 
   Receipt, 
   CreditCard, 
   UserCog, 
@@ -21,12 +18,10 @@ import {
   Settings, 
   Search, 
   Bell, 
-  Menu, 
-  X, 
   ChevronRight, 
-  ChevronDown, 
+  Menu, 
+  X,
   ExternalLink,
-  ShieldCheck,
   Smartphone,
   Globe,
   SlidersHorizontal,
@@ -43,15 +38,40 @@ export const AdminLayout = ({ children }) => {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [globalSearch, setGlobalSearch] = useState('');
+  const [searchDropdownOpen, setSearchDropdownOpen] = useState(false);
+
+  // Dynamic Metrics for Sidebar Badges
+  const [metrics, setMetrics] = useState({
+    total_leads: 769,
+    total_customers: 319,
+    active_projects: 86
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch(getApiUrl('api/v1/dashboard_stats.php'))
+      .then(res => res.json())
+      .then(res => {
+        if (isMounted && res.status && res.data && res.data.metrics) {
+          setMetrics({
+            total_leads: res.data.metrics.total_leads || 769,
+            total_customers: res.data.metrics.total_customers || 319,
+            active_projects: res.data.metrics.active_projects || 86
+          });
+        }
+      })
+      .catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
 
   // Nav Menu Items matching Paytm UI and user specification
   const navMenuItems = [
     { label: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
-    { label: 'Lead Management', path: '/admin/leads', icon: Users, badge: '769' },
+    { label: 'Lead Management', path: '/admin/leads', icon: Users, badge: String(metrics.total_leads) },
     { label: 'Government Schemes', path: '/admin/schemes', icon: Award },
     { label: 'Eligibility & Scorecard', path: '/admin/eligibility', icon: Calculator },
-    { label: 'Customers', path: '/admin/customers', icon: UserCheck, badge: '319' },
-    { label: 'Project Management', path: '/admin/projects', icon: Briefcase, badge: '86' },
+    { label: 'Customers', path: '/admin/customers', icon: UserCheck, badge: String(metrics.total_customers) },
+    { label: 'Project Management', path: '/admin/projects', icon: Briefcase, badge: String(metrics.active_projects) },
     { label: 'Document Management', path: '/admin/documents', icon: FileCheck },
     { label: 'Billing & Invoices', path: '/admin/invoices', icon: Receipt },
     { label: 'Payments & Accounts', path: '/admin/payments', icon: CreditCard },
@@ -64,10 +84,18 @@ export const AdminLayout = ({ children }) => {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
+    setSearchDropdownOpen(false);
     if (globalSearch.trim()) {
       navigate(`/admin/leads?search=${encodeURIComponent(globalSearch.trim())}`);
     }
   };
+
+  // Instant Quick Search Results
+  const searchResults = globalSearch.trim().length > 1 ? [
+    { type: 'Lead', label: `Lead: "${globalSearch}"`, path: `/admin/leads?search=${encodeURIComponent(globalSearch.trim())}` },
+    { type: 'Customer', label: `Customer: "${globalSearch}"`, path: `/admin/customers?search=${encodeURIComponent(globalSearch.trim())}` },
+    { type: 'Project', label: `Project Case: "${globalSearch}"`, path: `/admin/projects?search=${encodeURIComponent(globalSearch.trim())}` },
+  ] : [];
 
   return (
     <div className="paytm-app">
@@ -85,25 +113,89 @@ export const AdminLayout = ({ children }) => {
             <Menu size={18} color="#002970" />
           </button>
 
+          {/* Official Brand Logo matching Wireframe Image 1 & 2 */}
           <div 
             onClick={() => navigate('/admin/dashboard')}
             className="paytm-logo"
+            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
           >
-            <span className="paytm-logo-navy">Consultancy</span>
-            <span className="paytm-logo-sky">ERP</span>
+            <span style={{ fontSize: '1.25rem', fontWeight: '800', color: '#002970' }}>Digital Udyog</span>
+            <span style={{ fontSize: '1.25rem', fontWeight: '800', color: '#00BAF2' }}>Seva</span>
           </div>
         </div>
 
         {/* Center: Global Search Bar */}
-        <form onSubmit={handleSearchSubmit} className="paytm-search-box">
-          <Search size={16} color="#64748B" />
-          <input 
-            type="text" 
-            placeholder="Search leads, customers, projects..."
-            value={globalSearch}
-            onChange={(e) => setGlobalSearch(e.target.value)}
-          />
-        </form>
+        <div style={{ position: 'relative', width: '380px' }}>
+          <form onSubmit={handleSearchSubmit} className="paytm-search-box" style={{ width: '100%' }}>
+            <Search size={16} color="#64748B" />
+            <input 
+              type="text" 
+              placeholder="Search leads, customers, projects..."
+              value={globalSearch}
+              onChange={(e) => {
+                setGlobalSearch(e.target.value);
+                setSearchDropdownOpen(e.target.value.trim().length > 1);
+              }}
+              onFocus={() => {
+                if (globalSearch.trim().length > 1) setSearchDropdownOpen(true);
+              }}
+            />
+            {globalSearch && (
+              <X 
+                size={14} 
+                color="#94A3B8" 
+                style={{ cursor: 'pointer' }} 
+                onClick={() => { setGlobalSearch(''); setSearchDropdownOpen(false); }} 
+              />
+            )}
+          </form>
+
+          {/* Quick Search Dropdown */}
+          {searchDropdownOpen && searchResults.length > 0 && (
+            <div style={{
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              right: 0,
+              marginTop: '4px',
+              background: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+              borderRadius: '8px',
+              boxShadow: '0 10px 25px rgba(0,0,0,0.12)',
+              zIndex: 100,
+              padding: '8px 0'
+            }}>
+              <div style={{ padding: '6px 14px', fontSize: '0.74rem', color: '#64748B', fontWeight: '700' }}>
+                MATCHING ENTITIES
+              </div>
+              {searchResults.map((res, idx) => (
+                <div 
+                  key={idx}
+                  onClick={() => {
+                    setSearchDropdownOpen(false);
+                    navigate(res.path);
+                  }}
+                  style={{
+                    padding: '8px 14px',
+                    fontSize: '0.84rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    borderBottom: idx === searchResults.length - 1 ? 'none' : '1px solid #F1F5F9'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#F0F9FF'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = '#FFFFFF'}
+                >
+                  <span style={{ color: '#002970', fontWeight: '600' }}>{res.label}</span>
+                  <span style={{ fontSize: '0.72rem', background: '#E0F2FE', color: '#008BCB', padding: '2px 6px', borderRadius: '4px', fontWeight: '700' }}>
+                    {res.type}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Right: Quick Portal Links, Notifications & Profile */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -162,7 +254,7 @@ export const AdminLayout = ({ children }) => {
                   </div>
                   <div style={{ padding: '8px', background: '#F8FAFC', borderRadius: '6px' }}>
                     <div style={{ fontWeight: '600' }}>12 Documents Awaiting Verification</div>
-                    <div style={{ fontSize: '0.72rem', color: '#64748B' }}>PMEGP & MUDRA applicant files</div>
+                    <div style={{ fontSize: '0.72rem', color: '#64748B' }}>PMEGP &amp; MUDRA applicant files</div>
                   </div>
                 </div>
               </div>
