@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from './context/AppContext';
 import { useRouter } from './router/Router';
 
@@ -8,6 +8,7 @@ import { Footer } from './components/Footer';
 import { Toast } from './components/Toast';
 import { ServiceDetailModal } from './components/ServiceDetailModal';
 import { BottomNav } from './components/BottomNav';
+import { QuickApplyModal } from './components/QuickApplyModal';
 
 // Public Website Pages
 import { HomePage } from './pages/HomePage';
@@ -15,6 +16,12 @@ import { ServicesPage } from './pages/ServicesPage';
 import { LoansPage } from './pages/LoansPage';
 import { TrackApplicationPage } from './pages/TrackApplicationPage';
 import { FranchisePage } from './pages/FranchisePage';
+import { SchemesDiscoveryPage } from './pages/SchemesDiscoveryPage';
+import { SubsidiesPage } from './pages/SubsidiesPage';
+import { EligibilityWizardPage } from './pages/EligibilityWizardPage';
+import { AboutUsPage } from './pages/AboutUsPage';
+import { KnowledgePage } from './pages/KnowledgePage';
+import { ContactUsPage } from './pages/ContactUsPage';
 
 // Admin ERP Shell & Modules (Paytm-Inspired Enterprise Design)
 import { AdminLayout } from './pages/admin/AdminLayout';
@@ -94,6 +101,7 @@ class ErrorBoundary extends React.Component {
 
 export const App = () => {
   const { currentPath, matchPath } = useRouter();
+  const [applyModalOpen, setApplyModalOpen] = useState(false);
 
   // -------------------------------------------------------------
   // ROUTE BRANCH 1: SUPER ADMIN ERP (/admin/*)
@@ -208,6 +216,12 @@ export const App = () => {
   // -------------------------------------------------------------
   // ROUTE BRANCH 4: PUBLIC CONSULTANCY WEBSITE
   // -------------------------------------------------------------
+  const isSchemes = currentPath.startsWith('/schemes');
+  const isSubsidies = currentPath.startsWith('/subsidies');
+  const isEligibility = currentPath.startsWith('/eligibility');
+  const isAbout = currentPath.startsWith('/about');
+  const isKnowledge = currentPath.startsWith('/knowledge');
+  const isContact = currentPath.startsWith('/contact');
   const isServices = currentPath === '/services';
   const isLoans = currentPath === '/loans';
   const isTrack = currentPath === '/track';
@@ -216,18 +230,27 @@ export const App = () => {
   return (
     <ErrorBoundary>
       <div className="app-viewport-wrapper" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <Navbar />
+        <Navbar onOpenApplyModal={() => setApplyModalOpen(true)} />
 
         <main className="app-main-content" style={{ flex: 1 }}>
+          {isSchemes && <SchemesDiscoveryPage onOpenApplyModal={() => setApplyModalOpen(true)} />}
+          {isSubsidies && <SubsidiesPage onOpenApplyModal={() => setApplyModalOpen(true)} />}
+          {isEligibility && <EligibilityWizardPage />}
+          {isAbout && <AboutUsPage onOpenApplyModal={() => setApplyModalOpen(true)} />}
+          {isKnowledge && <KnowledgePage onOpenApplyModal={() => setApplyModalOpen(true)} />}
+          {isContact && <ContactUsPage />}
           {isServices && <ServicesPage />}
           {isLoans && <LoansPage />}
           {isTrack && <TrackApplicationPage />}
           {isFranchise && <FranchisePage />}
-          {!isServices && !isLoans && !isTrack && !isFranchise && <HomePage />}
+          {!isSchemes && !isSubsidies && !isEligibility && !isAbout && !isKnowledge && !isContact && !isServices && !isLoans && !isTrack && !isFranchise && (
+            <HomePage onOpenApplyModal={() => setApplyModalOpen(true)} />
+          )}
         </main>
 
         <Footer />
-        <BottomNav />
+        <BottomNav onOpenApplyModal={() => setApplyModalOpen(true)} />
+        <QuickApplyModal isOpen={applyModalOpen} onClose={() => setApplyModalOpen(false)} />
         <ServiceDetailModal />
         <Toast />
       </div>
