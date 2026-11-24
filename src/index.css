@@ -342,14 +342,15 @@ button, input, select, textarea {
 }
 
 .nav-link.active {
-  color: var(--saffron-600);
-  background: var(--saffron-100);
+  color: #002970;
+  background: rgba(0, 186, 242, 0.12);
+  border-radius: var(--radius-md);
   font-weight: 700;
 }
 
 /* Mobile Header & App Drawer Controls */
 .mobile-header-controls {
-  display: none;
+  display: none !important;
   align-items: center;
   gap: 8px;
 }
@@ -1649,6 +1650,13 @@ button, input, select, textarea {
 }
 
 @media (max-width: 992px) {
+  .desktop-nav,
+  .desktop-actions {
+    display: none !important;
+  }
+  .mobile-header-controls {
+    display: flex !important;
+  }
   .hero-grid { grid-template-columns: 1fr; }
   .calc-card { grid-template-columns: 1fr; }
   .simulator-grid { grid-template-columns: 1fr; }
@@ -1662,16 +1670,6 @@ button, input, select, textarea {
   /* Complete removal of the desktop top bar on mobile */
   .top-bar {
     display: none !important;
-  }
-
-  /* Desktop nav hidden, show mobile controls */
-  .desktop-nav,
-  .desktop-actions {
-    display: none !important;
-  }
-
-  .mobile-header-controls {
-    display: flex;
   }
 
   /* App Header Styling */

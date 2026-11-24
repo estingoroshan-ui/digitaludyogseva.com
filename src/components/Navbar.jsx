@@ -118,54 +118,36 @@ export const Navbar = () => {
           </nav>
 
           {/* Desktop Quick Actions */}
-          <div className="desktop-actions flex items-center gap-3">
+          <div className="desktop-actions">
             <a 
               href="tel:18008901234"
-              className="nav-helpline-pill"
+              className="btn btn-sm"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                padding: '7px 16px',
-                borderRadius: '9999px',
-                border: '1px solid #E2E8F0',
-                background: '#F8FAFC',
-                color: '#002970',
-                fontSize: '0.84rem',
-                fontWeight: '700',
-                textDecoration: 'none',
-                transition: 'all 0.2s ease'
-              }}
-              title="Toll Free Business Helpline"
-            >
-              <PhoneCall size={15} color="#00BAF2" />
-              <span>1800-890-1234</span>
-            </a>
-            <button 
-              type="button"
-              onClick={() => navigateTo('track')}
-              className="btn btn-sm"
-              style={{
+                padding: '8px 18px',
+                borderRadius: '30px',
                 background: '#002970',
                 color: '#FFFFFF',
-                borderRadius: '8px',
+                fontSize: '0.86rem',
                 fontWeight: '700',
-                padding: '7px 18px',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
+                textDecoration: 'none',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
                 border: 'none',
-                boxShadow: '0 2px 8px rgba(0,41,112,0.2)'
+                boxShadow: '0 2px 8px rgba(0, 41, 112, 0.25)',
+                transition: 'all 0.2s ease'
               }}
-              title="Track Application Status"
+              title="Toll Free Business Helpline: 1800-890-1234"
             >
-              <Search size={14} />
-              <span>Track Application</span>
-            </button>
+              <PhoneCall size={15} color="#00BAF2" />
+              <span style={{ whiteSpace: 'nowrap' }}>1800-890-1234</span>
+            </a>
           </div>
 
           {/* Mobile App Header Controls */}
-          <div className="mobile-header-controls" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="mobile-header-controls">
             <a 
               href="tel:18008901234"
               className="mobile-phone-btn"
