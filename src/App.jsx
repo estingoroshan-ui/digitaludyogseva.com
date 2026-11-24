@@ -26,6 +26,7 @@ import { CustomersModule } from './pages/admin/modules/CustomersModule';
 import { ProjectsModule } from './pages/admin/modules/ProjectsModule';
 import { DocumentsModule } from './pages/admin/modules/DocumentsModule';
 import { BillingInvoicesModule } from './pages/admin/modules/BillingInvoicesModule';
+import { PaymentsAccountsModule } from './pages/admin/modules/PaymentsAccountsModule';
 import { StaffHrmModule } from './pages/admin/modules/StaffHrmModule';
 import { ReportsModule } from './pages/admin/modules/ReportsModule';
 import { SettingsModule } from './pages/admin/modules/SettingsModule';
@@ -140,11 +141,14 @@ export const App = () => {
     } else if (
       currentPath === '/admin/services' ||
       currentPath === '/admin/quotations' ||
-      currentPath === '/admin/invoices' ||
+      currentPath === '/admin/invoices'
+    ) {
+      AdminViewComponent = BillingInvoicesModule;
+    } else if (
       currentPath === '/admin/payments' ||
       currentPath === '/admin/accounts'
     ) {
-      AdminViewComponent = BillingInvoicesModule;
+      AdminViewComponent = PaymentsAccountsModule;
     } else if (
       currentPath === '/admin/employees' ||
       currentPath === '/admin/employees/create' ||
