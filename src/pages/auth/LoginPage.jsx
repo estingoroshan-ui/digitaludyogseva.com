@@ -49,7 +49,7 @@ export const LoginPage = ({ initialPortal = 'admin' }) => {
       badgeColor: '#00BAF2',
       defaultRedirect: '/portal/customer',
       icon: Users,
-      demoCreds: { user: 'amitkumhar0099@gmail.com', pass: 'admin123' },
+      demoCreds: { user: 'customer@digitaludyogseva.com', pass: 'admin123' },
       secondaryAction: {
         text: "Don't have an account?",
         linkText: 'Register as New Customer',
@@ -77,7 +77,7 @@ export const LoginPage = ({ initialPortal = 'admin' }) => {
       badgeColor: '#DC2626',
       defaultRedirect: '/admin/leads',
       icon: ShieldCheck,
-      demoCreds: { user: 'manish872@gmail.com', pass: 'admin123' },
+      demoCreds: { user: 'admin@digitaludyogseva.com', pass: 'admin123' },
       secondaryAction: {
         text: 'Forgot administrative credentials?',
         linkText: 'Reset Password',
