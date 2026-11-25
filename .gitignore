@@ -5,6 +5,7 @@
 # Logs and databases dumps
 *.log
 oldperfex.sql
+backup_*.sql
 
 # OS Generated Files
 .DS_Store

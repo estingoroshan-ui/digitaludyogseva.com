@@ -163,86 +163,213 @@ export const Customer360Modal = () => {
     window.print();
   };
 
+  const custCode = cust.customer_code || cust.id || 'CUST-301';
+  const custName = cust.company_name || cust.name || 'Sharma Agro Solutions Pvt. Ltd.';
+  const initials = custName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'SA';
+
   return (
     <div className="modal-overlay" onClick={() => setSelectedCustomerFor360(null)}>
       <div 
         className="modal-card" 
-        style={{ maxWidth: '1100px', padding: 0, overflow: 'hidden', maxHeight: '92vh', display: 'flex', flexDirection: 'column' }} 
+        style={{ maxWidth: '1180px', padding: 0, overflow: 'hidden', maxHeight: '94vh', display: 'flex', flexDirection: 'column', background: '#F4F8FC' }} 
         onClick={e => e.stopPropagation()}
       >
         {/* ======================================================== */}
-        {/* TOP HEADER: MASTER CLIENT BAR                            */}
+        {/* TOP HEADER: MASTER CLIENT BAR (Paytm Theme - Image 1)    */}
         {/* ======================================================== */}
-        <div style={{ background: 'linear-gradient(135deg, #070e17 0%, #1e1b4b 50%, #172554 100%)', color: '#fff', padding: '20px 26px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-          <div className="flex justify-between items-start flex-wrap gap-3">
-            <div>
-              <div className="flex items-center gap-3 flex-wrap">
-                <span className="badge badge-saffron" style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)' }}>
-                  {cust.id}
-                </span>
-                <span className="badge badge-emerald" style={{ fontSize: '0.75rem' }}>
-                  <ShieldCheck size={13} /> KYC {cust.kycStatus || 'Verified'}
-                </span>
-                <span className="badge" style={{ background: '#3b82f6', color: '#fff', fontSize: '0.75rem' }}>
-                  {cust.customer360?.tier || 'Platinum Corporate'}
-                </span>
-                <span className="badge" style={{ background: '#8b5cf6', color: '#fff', fontSize: '0.75rem' }}>
-                  RM: {assignedRm.name}
-                </span>
+        <div style={{ background: '#FFFFFF', padding: '20px 28px', borderBottom: '1px solid #E2E8F0' }}>
+          
+          {/* Breadcrumb & Close */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+            <div style={{ fontSize: '0.8rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span>Customers</span>
+              <span>/</span>
+              <span>Customer Profile</span>
+              <span>/</span>
+              <span style={{ color: '#002970', fontWeight: '700' }}>{custCode}</span>
+            </div>
+
+            <button 
+              onClick={() => setSelectedCustomerFor360(null)} 
+              style={{ background: '#F1F5F9', border: 'none', color: '#64748B', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              title="Close Dossier"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              {/* Circular Avatar */}
+              <div style={{ 
+                width: '56px', 
+                height: '56px', 
+                borderRadius: '50%', 
+                background: '#E0F2FE', 
+                color: '#002970', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                fontSize: '1.25rem', 
+                fontWeight: '900',
+                border: '2px solid #BAE6FD'
+              }}>
+                {initials}
               </div>
 
-              <h2 style={{ fontSize: '1.6rem', fontWeight: '900', color: '#fff', margin: '6px 0 2px' }}>
-                {cust.name}
-              </h2>
+              <div>
+                <h2 style={{ fontSize: '1.45rem', fontWeight: '900', color: '#002970', margin: 0, lineHeight: 1.2 }}>
+                  {custName}
+                </h2>
 
-              <div className="flex items-center gap-4 flex-wrap" style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>
-                <span className="flex items-center gap-1"><User size={13} /> {cust.contactPerson}</span>
-                <span className="flex items-center gap-1"><Phone size={13} color="#4ade80" /> {cust.phone}</span>
-                <span className="flex items-center gap-1"><MapPin size={13} /> {cust.city}</span>
-                <span style={{ fontFamily: 'var(--font-mono)', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '4px' }}>
-                  GSTIN: {cust.gstin}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#64748B', marginTop: '4px', flexWrap: 'wrap' }}>
+                  <span>{custCode}</span>
+                  <span>•</span>
+                  <span>{cust.city || 'Jaipur'}, {cust.state || 'Rajasthan'}</span>
+                  <span>•</span>
+                  <span>{cust.industry || cust.business_type || 'Manufacturing'}</span>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.74rem', fontWeight: '700', color: '#16A34A', background: '#DCFCE7', padding: '2px 8px', borderRadius: '12px' }}>
+                    <CheckCircle2 size={12} /> KYC Verified
+                  </span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.74rem', fontWeight: '700', color: '#007AA6', background: '#E0F2FE', padding: '2px 8px', borderRadius: '12px' }}>
+                    ● Active Customer
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Quick Header Metric & Close */}
-            <div className="flex items-center gap-3">
-              <div style={{ textAlign: 'right', background: 'rgba(255,255,255,0.06)', padding: '8px 16px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.12)' }}>
-                <div style={{ fontSize: '0.7rem', color: '#93c5fd', textTransform: 'uppercase', fontWeight: '700' }}>Lifetime Billed</div>
-                <div style={{ fontSize: '1.3rem', fontWeight: '900', color: '#4ade80', fontFamily: 'var(--font-mono)' }}>
-                  {cust.totalBilled || '₹28,500'}
-                </div>
-                <div style={{ fontSize: '0.72rem', color: '#fca5a5' }}>
-                  Outstanding: <strong>₹8,500</strong>
-                </div>
-              </div>
-
-              <button 
-                onClick={() => setSelectedCustomerFor360(null)} 
-                style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                title="Close Dossier"
+            {/* Quick Header Action Buttons */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => { setActiveTab('business_details'); showToast('Editing business profile', 'info'); }}
+                style={{
+                  background: '#FFFFFF',
+                  border: '1px solid #CBD5E1',
+                  color: '#002970',
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  fontSize: '0.84rem',
+                  fontWeight: '700',
+                  cursor: 'pointer'
+                }}
               >
-                <X size={20} />
+                Edit Profile
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setActiveTab('projects'); showToast('Open New Project workflow', 'info'); }}
+                style={{
+                  background: '#00BAF2',
+                  border: 'none',
+                  color: '#FFFFFF',
+                  padding: '8px 18px',
+                  borderRadius: '8px',
+                  fontSize: '0.84rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <Plus size={15} />
+                <span>New Project</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setActiveTab('payments'); showToast('Record Payment modal opened', 'info'); }}
+                style={{
+                  background: '#FFFFFF',
+                  border: '1px solid #CBD5E1',
+                  color: '#002970',
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  fontSize: '0.84rem',
+                  fontWeight: '700',
+                  cursor: 'pointer'
+                }}
+              >
+                Add Payment
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setActiveTab('invoices'); showToast('Invoice Generator opened', 'info'); }}
+                style={{
+                  background: '#FFFFFF',
+                  border: '1px solid #CBD5E1',
+                  color: '#002970',
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  fontSize: '0.84rem',
+                  fontWeight: '700',
+                  cursor: 'pointer'
+                }}
+              >
+                Create Invoice
               </button>
             </div>
           </div>
         </div>
 
         {/* ======================================================== */}
-        {/* TAB NAVIGATION STRIP (9 Enterprise Sections)              */}
+        {/* 4 STAT CARDS (Total Billed, Received, Outstanding, Projects) */}
         {/* ======================================================== */}
-        <div style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', display: 'flex', overflowX: 'auto', padding: '0 12px' }}>
+        <div style={{ padding: '16px 28px 0', background: '#FFFFFF' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+            <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px 20px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+              <div style={{ fontSize: '0.82rem', color: '#64748B', fontWeight: '600' }}>Total Billed</div>
+              <div style={{ fontSize: '1.65rem', fontWeight: '900', color: '#002970', marginTop: '4px' }}>
+                ₹45,000
+              </div>
+            </div>
+
+            <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px 20px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+              <div style={{ fontSize: '0.82rem', color: '#64748B', fontWeight: '600' }}>Received</div>
+              <div style={{ fontSize: '1.65rem', fontWeight: '900', color: '#16A34A', marginTop: '4px' }}>
+                ₹35,000
+              </div>
+            </div>
+
+            <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px 20px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+              <div style={{ fontSize: '0.82rem', color: '#64748B', fontWeight: '600' }}>Outstanding</div>
+              <div style={{ fontSize: '1.65rem', fontWeight: '900', color: '#EA580C', marginTop: '4px' }}>
+                ₹10,000
+              </div>
+            </div>
+
+            <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px 20px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+              <div style={{ fontSize: '0.82rem', color: '#64748B', fontWeight: '600' }}>Active Projects</div>
+              <div style={{ fontSize: '1.65rem', fontWeight: '900', color: '#002970', marginTop: '4px' }}>
+                02
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ======================================================== */}
+        {/* TAB NAVIGATION STRIP (12 Tabs matching Image 1)          */}
+        {/* ======================================================== */}
+        <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E2E8F0', display: 'flex', overflowX: 'auto', padding: '8px 28px 0' }}>
           {[
-            { id: 'overview', label: '1. Master 360° Dashboard' },
-            { id: 'profile_rm', label: '2. Profile & RM Allocation' },
-            { id: 'statement_billing', label: '3. Statement, Invoices & Notes' },
-            { id: 'subscriptions', label: `4. Subscriptions (${subscriptions.length})` },
-            { id: 'documents_vault', label: `5. Document Vault (${allDocuments.length})` },
-            { id: 'notes_voice', label: `6. Notes & Audio (${notesList.length})` },
-            { id: 'projects_tasks', label: `7. Projects & Tasks (${clientTasks.length})` },
-            { id: 'reminders_support', label: '8. Reminders & Support' },
-            { id: 'audit_security', label: '9. Security & Access Logs' },
-            { id: 'client_billing', label: '💼 10. Client Sales & Bill Book' }
+            { id: 'overview', label: 'Overview' },
+            { id: 'business_details', label: 'Business Details' },
+            { id: 'projects', label: 'Projects' },
+            { id: 'documents', label: 'Documents' },
+            { id: 'eligibility', label: 'Eligibility' },
+            { id: 'scorecard', label: 'Scorecard' },
+            { id: 'invoices', label: 'Invoices' },
+            { id: 'payments', label: 'Payments' },
+            { id: 'ledger', label: 'Ledger' },
+            { id: 'followups', label: 'Follow-ups' },
+            { id: 'notes', label: 'Notes' },
+            { id: 'activity_history', label: 'Activity History' }
           ].map(t => {
             const isActive = activeTab === t.id;
             return (
@@ -250,13 +377,14 @@ export const Customer360Modal = () => {
                 key={t.id}
                 onClick={() => setActiveTab(t.id)}
                 style={{
-                  background: 'none',
+                  background: isActive ? '#E0F2FE' : 'transparent',
                   border: 'none',
-                  borderBottom: isActive ? '3px solid #ff6f00' : '3px solid transparent',
-                  color: isActive ? '#ff6f00' : '#475569',
+                  borderRadius: '6px 6px 0 0',
+                  borderBottom: isActive ? '3px solid #00BAF2' : '3px solid transparent',
+                  color: isActive ? '#002970' : '#64748B',
                   fontWeight: isActive ? '800' : '600',
-                  padding: '12px 14px',
-                  fontSize: '0.82rem',
+                  padding: '10px 16px',
+                  fontSize: '0.84rem',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
                   transition: 'all 0.15s'
@@ -271,94 +399,114 @@ export const Customer360Modal = () => {
         {/* ======================================================== */}
         {/* TAB BODY CONTENTS                                        */}
         {/* ======================================================== */}
-        <div className="modal-body" style={{ flex: 1, overflowY: 'auto', padding: '22px' }}>
+        <div className="modal-body" style={{ flex: 1, overflowY: 'auto', padding: '24px 28px', background: '#F4F8FC' }}>
           
           {/* ------------------------------------------------------ */}
-          {/* TAB 1: MASTER 360° DASHBOARD                           */}
+          {/* TAB 1: OVERVIEW (Active Projects & Recent Activity)     */}
           {/* ------------------------------------------------------ */}
           {activeTab === 'overview' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {/* Quick 4 KPI Cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
-                <div className="card" style={{ padding: '16px', borderLeft: '4px solid #10b981' }}>
-                  <small style={{ color: '#64748b', fontSize: '0.75rem', fontWeight: '700' }}>Account Health Score</small>
-                  <div style={{ fontSize: '1.6rem', fontWeight: '900', color: '#15803d' }}>
-                    {cust.customer360?.healthScore || 95} / 100
-                  </div>
-                  <div style={{ fontSize: '0.72rem', color: '#15803d' }}>● Excellent Relationship &amp; Zero NPA</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '20px' }}>
+              
+              {/* Left Column: Active Projects */}
+              <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#002970', margin: 0 }}>
+                    Active Projects
+                  </h3>
+                  <span style={{ fontSize: '0.78rem', color: '#007AA6', fontWeight: '700', cursor: 'pointer' }} onClick={() => setActiveTab('projects')}>
+                    View All →
+                  </span>
                 </div>
 
-                <div className="card" style={{ padding: '16px', borderLeft: '4px solid #2563eb' }}>
-                  <small style={{ color: '#64748b', fontSize: '0.75rem', fontWeight: '700' }}>Assigned RM Officer</small>
-                  <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#1e40af', marginTop: '2px' }}>
-                    {assignedRm.name}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {/* Project 1: PMEGP */}
+                  <div style={{ background: '#F8FAFC', borderRadius: '10px', padding: '16px', border: '1px solid #E2E8F0' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '0.94rem', fontWeight: '800', color: '#002970' }}>
+                        PMEGP Business Loan
+                      </span>
+                      <span style={{ fontSize: '0.84rem', fontWeight: '800', color: '#00BAF2' }}>
+                        65%
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: '#64748B', marginBottom: '10px' }}>
+                      Documentation &amp; Verification
+                    </div>
+                    {/* Progress Bar */}
+                    <div style={{ height: '7px', background: '#E2E8F0', borderRadius: '10px', overflow: 'hidden' }}>
+                      <div style={{ width: '65%', height: '100%', background: '#00BAF2', borderRadius: '10px' }} />
+                    </div>
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b' }}>{assignedRm.cabin}</div>
-                </div>
 
-                <div className="card" style={{ padding: '16px', borderLeft: '4px solid #f59e0b' }}>
-                  <small style={{ color: '#64748b', fontSize: '0.75rem', fontWeight: '700' }}>Ledger Outstanding</small>
-                  <div style={{ fontSize: '1.6rem', fontWeight: '900', color: '#b45309', fontFamily: 'var(--font-mono)' }}>
-                    ₹8,500.00
+                  {/* Project 2: State Subsidy */}
+                  <div style={{ background: '#F8FAFC', borderRadius: '10px', padding: '16px', border: '1px solid #E2E8F0' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '0.94rem', fontWeight: '800', color: '#002970' }}>
+                        State Subsidy Application
+                      </span>
+                      <span style={{ fontSize: '0.84rem', fontWeight: '800', color: '#00BAF2' }}>
+                        25%
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: '#64748B', marginBottom: '10px' }}>
+                      Eligibility Assessment
+                    </div>
+                    {/* Progress Bar */}
+                    <div style={{ height: '7px', background: '#E2E8F0', borderRadius: '10px', overflow: 'hidden' }}>
+                      <div style={{ width: '25%', height: '100%', background: '#00BAF2', borderRadius: '10px' }} />
+                    </div>
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b' }}>2 Billed Invoices • 1 Advance</div>
-                </div>
-
-                <div className="card" style={{ padding: '16px', borderLeft: '4px solid #8b5cf6' }}>
-                  <small style={{ color: '#64748b', fontSize: '0.75rem', fontWeight: '700' }}>Active Projects &amp; Subs</small>
-                  <div style={{ fontSize: '1.6rem', fontWeight: '900', color: '#6d28d9' }}>
-                    {(cust.projects?.length || 1) + subscriptions.length} Active
-                  </div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b' }}>1 DPR Project • 2 Retainers</div>
                 </div>
               </div>
 
-              {/* Executive Summary & AI Insights */}
-              <div style={{ background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)', padding: '18px 22px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-                <div className="flex items-center gap-2 mb-2">
-                  <Sparkles size={18} color="#ff6f00" />
-                  <strong style={{ fontSize: '0.98rem', color: '#0b1727' }}>AI Client Intelligence &amp; Relationship Digest:</strong>
+              {/* Right Column: Recent Activity */}
+              <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#002970', margin: '0 0 16px 0' }}>
+                  Recent Activity
+                </h3>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#00BAF2', marginTop: '5px', flexShrink: 0 }} />
+                    <div>
+                      <div style={{ fontSize: '0.86rem', fontWeight: '700', color: '#002970' }}>Payment received</div>
+                      <div style={{ fontSize: '0.78rem', color: '#64748B' }}>₹15,000 • Today</div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#0284C7', marginTop: '5px', flexShrink: 0 }} />
+                    <div>
+                      <div style={{ fontSize: '0.86rem', fontWeight: '700', color: '#002970' }}>Document uploaded</div>
+                      <div style={{ fontSize: '0.78rem', color: '#64748B' }}>Bank Statement</div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#F59E0B', marginTop: '5px', flexShrink: 0 }} />
+                    <div>
+                      <div style={{ fontSize: '0.86rem', fontWeight: '700', color: '#002970' }}>Follow-up scheduled</div>
+                      <div style={{ fontSize: '0.78rem', color: '#64748B' }}>Tomorrow, 11:00 AM</div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#002970', marginTop: '5px', flexShrink: 0 }} />
+                    <div>
+                      <div style={{ fontSize: '0.86rem', fontWeight: '700', color: '#002970' }}>Project stage updated</div>
+                      <div style={{ fontSize: '0.78rem', color: '#64748B' }}>Document Verification</div>
+                    </div>
+                  </div>
                 </div>
-                <p style={{ margin: 0, color: '#334155', fontSize: '0.88rem', lineHeight: '1.6' }}>
-                  {cust.customer360?.summary || 'Client profile established with active compliance tracking and prompt payment track. Currently expanding manufacturing capacity with ₹25 Lakhs PMEGP subsidy file logged at SBI Industrial Branch.'}
-                </p>
               </div>
 
-              {/* Two Column Address & Overview Cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <div className="card" style={{ padding: '18px' }}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Building2 size={18} color="#2563eb" />
-                    <strong style={{ fontSize: '0.92rem', color: '#0b1727' }}>Registered Commercial / Factory Address:</strong>
-                  </div>
-                  <p style={{ margin: 0, fontSize: '0.85rem', color: '#475569', lineHeight: '1.5' }}>
-                    {businessAddress}
-                  </p>
-                  <div style={{ marginTop: '8px', fontSize: '0.78rem', color: '#64748b' }}>
-                    Status: <strong>Verified by RoC &amp; Electricity Utility Bill</strong>
-                  </div>
-                </div>
-
-                <div className="card" style={{ padding: '18px' }}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <User size={18} color="#10b981" />
-                    <strong style={{ fontSize: '0.92rem', color: '#0b1727' }}>Director / Signatory Personal Residential Address:</strong>
-                  </div>
-                  <p style={{ margin: 0, fontSize: '0.85rem', color: '#475569', lineHeight: '1.5' }}>
-                    {personalAddress}
-                  </p>
-                  <div style={{ marginTop: '8px', fontSize: '0.78rem', color: '#64748b' }}>
-                    Signatory: <strong>{cust.contactPerson} (Aadhaar KYC Matched)</strong>
-                  </div>
-                </div>
-              </div>
             </div>
           )}
 
           {/* ------------------------------------------------------ */}
-          {/* TAB 2: PROFILE & RM ALLOCATION                         */}
+          {/* TAB 2: PROFILE & RM ALLOCATION / BUSINESS DETAILS      */}
           {/* ------------------------------------------------------ */}
-          {activeTab === 'profile_rm' && (
+          {(activeTab === 'profile_rm' || activeTab === 'business_details') && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               
               {/* Assigned RM Card */}
@@ -451,7 +599,7 @@ export const Customer360Modal = () => {
           {/* ------------------------------------------------------ */}
           {/* TAB 3: STATEMENT OF ACCOUNT, INVOICES & NOTES          */}
           {/* ------------------------------------------------------ */}
-          {activeTab === 'statement_billing' && (
+          {(activeTab === 'statement_billing' || activeTab === 'invoices' || activeTab === 'payments' || activeTab === 'ledger') && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
               
               {/* Sub Navigation */}
@@ -832,7 +980,7 @@ export const Customer360Modal = () => {
           {/* ------------------------------------------------------ */}
           {/* TAB 5: FOLDER-WISE DOCUMENT VAULT                      */}
           {/* ------------------------------------------------------ */}
-          {activeTab === 'documents_vault' && (
+          {(activeTab === 'documents_vault' || activeTab === 'documents') && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
               <div className="flex justify-between items-center flex-wrap gap-2">
                 <div>
@@ -904,7 +1052,7 @@ export const Customer360Modal = () => {
           {/* ------------------------------------------------------ */}
           {/* TAB 6: INTERNAL NOTES & VOICE RECORDINGS               */}
           {/* ------------------------------------------------------ */}
-          {activeTab === 'notes_voice' && (
+          {(activeTab === 'notes_voice' || activeTab === 'notes') && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
               <div className="flex justify-between items-center">
                 <h4 style={{ fontSize: '1.1rem', margin: 0, color: '#0b1727' }}>
@@ -988,7 +1136,7 @@ export const Customer360Modal = () => {
           {/* ------------------------------------------------------ */}
           {/* TAB 7: PROJECTS & OPERATIONAL TASKS                    */}
           {/* ------------------------------------------------------ */}
-          {activeTab === 'projects_tasks' && (
+          {(activeTab === 'projects_tasks' || activeTab === 'projects') && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div>
                 <h4 style={{ fontSize: '1.05rem', margin: '0 0 12px', color: '#0b1727' }}>
@@ -1036,7 +1184,7 @@ export const Customer360Modal = () => {
           {/* ------------------------------------------------------ */}
           {/* TAB 8: REMINDERS & CLIENT SUPPORT HELPDESK             */}
           {/* ------------------------------------------------------ */}
-          {activeTab === 'reminders_support' && (
+          {(activeTab === 'reminders_support' || activeTab === 'followups') && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               {/* Reminders Block */}
               <div className="card" style={{ padding: '18px' }}>
@@ -1092,7 +1240,7 @@ export const Customer360Modal = () => {
           {/* ------------------------------------------------------ */}
           {/* TAB 9: SECURITY & ACCESS AUDIT LOGS                    */}
           {/* ------------------------------------------------------ */}
-          {activeTab === 'audit_security' && (
+          {(activeTab === 'audit_security' || activeTab === 'activity_history') && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
               <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                 <div className="flex items-center gap-2 mb-1">
@@ -1127,6 +1275,50 @@ export const Customer360Modal = () => {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          )}
+
+          {/* ------------------------------------------------------ */}
+          {/* TAB 11: ELIGIBILITY & 100-PT SCORECARD                 */}
+          {/* ------------------------------------------------------ */}
+          {(activeTab === 'eligibility' || activeTab === 'scorecard') && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '24px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <div>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#002970', margin: 0 }}>
+                      100-Point Government Scheme Eligibility Scorecard
+                    </h3>
+                    <p style={{ fontSize: '0.82rem', color: '#64748B', margin: '4px 0 0 0' }}>
+                      Automated appraisal for PMEGP, Mudra, CGTMSE and State Industrial Capital Subsidies
+                    </p>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <span style={{ fontSize: '1.8rem', fontWeight: '900', color: '#16A34A' }}>88 / 100</span>
+                    <span style={{ display: 'block', fontSize: '0.74rem', fontWeight: '700', color: '#16A34A' }}>High Approval Probability</span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginTop: '16px' }}>
+                  <div style={{ background: '#F8FAFC', borderRadius: '8px', padding: '14px', border: '1px solid #E2E8F0' }}>
+                    <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: '600' }}>PMEGP Subsidy Match</div>
+                    <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#002970', marginTop: '4px' }}>Eligible (35% Grant)</div>
+                    <div style={{ fontSize: '0.74rem', color: '#16A34A', marginTop: '2px' }}>Special Category Rural Unit</div>
+                  </div>
+
+                  <div style={{ background: '#F8FAFC', borderRadius: '8px', padding: '14px', border: '1px solid #E2E8F0' }}>
+                    <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: '600' }}>Collateral-Free Loan (CGTMSE)</div>
+                    <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#002970', marginTop: '4px' }}>Eligible (up to ₹2 Cr)</div>
+                    <div style={{ fontSize: '0.74rem', color: '#0284C7', marginTop: '2px' }}>Zero Third-Party Guarantee</div>
+                  </div>
+
+                  <div style={{ background: '#F8FAFC', borderRadius: '8px', padding: '14px', border: '1px solid #E2E8F0' }}>
+                    <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: '600' }}>DSCR Debt Service Ratio</div>
+                    <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#002970', marginTop: '4px' }}>1.85 (Bank Compliant)</div>
+                    <div style={{ fontSize: '0.74rem', color: '#16A34A', marginTop: '2px' }}>Exceeds RBI 1.50 threshold</div>
+                  </div>
+                </div>
               </div>
             </div>
           )}

@@ -1739,6 +1739,19 @@ button, input, select, textarea {
     background: linear-gradient(180deg, rgba(0, 27, 72, 0.94) 0%, rgba(0, 27, 72, 0.86) 65%, rgba(0, 27, 72, 0.72) 100%) !important;
   }
 
+  .hidden-mobile {
+    display: none !important;
+  }
+
+  .top-utility-bar {
+    padding: 4px 0 !important;
+    font-size: 0.72rem !important;
+  }
+
+  .top-utility-bar .container {
+    padding: 0 12px !important;
+  }
+
   /* Bottom Native Navigation Bar (Paytm-inspired Pure White) */
   .bottom-app-nav {
     display: block !important;
@@ -1749,7 +1762,7 @@ button, input, select, textarea {
     z-index: 1000 !important;
     background: #FFFFFF !important;
     border-top: 1px solid #E2E8F0 !important;
-    box-shadow: 0 -4px 16px rgba(0, 41, 112, 0.08) !important;
+    box-shadow: 0 -4px 20px rgba(0, 41, 112, 0.1) !important;
     padding-bottom: env(safe-area-inset-bottom, 0) !important;
   }
 

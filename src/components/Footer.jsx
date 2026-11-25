@@ -109,24 +109,61 @@ export const Footer = () => {
                 <Mail size={15} color="#00BAF2" />
                 <span>support@digitaludyogseva.com</span>
               </div>
-              <div style={{ marginTop: '8px' }}>
+              <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <button
                   type="button"
-                  onClick={() => navigate('/portal/customer')}
+                  onClick={() => navigate('/customer/login')}
                   style={{
                     width: '100%',
-                    padding: '8px 14px',
+                    padding: '7px 12px',
                     borderRadius: '6px',
                     background: '#002970',
                     border: '1px solid #00BAF2',
                     color: '#FFFFFF',
-                    fontSize: '0.80rem',
+                    fontSize: '0.78rem',
                     fontWeight: '700',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    textAlign: 'center'
                   }}
                 >
                   Customer Portal Login
                 </button>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/employee/login')}
+                    style={{
+                      flex: 1,
+                      padding: '6px 8px',
+                      borderRadius: '6px',
+                      background: 'rgba(255,255,255,0.06)',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      color: '#E2E8F0',
+                      fontSize: '0.74rem',
+                      fontWeight: '600',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Staff Login
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/admin/login')}
+                    style={{
+                      flex: 1,
+                      padding: '6px 8px',
+                      borderRadius: '6px',
+                      background: 'rgba(255,255,255,0.06)',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      color: '#E2E8F0',
+                      fontSize: '0.74rem',
+                      fontWeight: '600',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Admin ERP
+                  </button>
+                </div>
               </div>
             </div>
           </div>

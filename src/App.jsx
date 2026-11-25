@@ -42,6 +42,12 @@ import { SettingsModule } from './pages/admin/modules/SettingsModule';
 import { CustomerPortal } from './pages/portal/CustomerPortal';
 import { EmployeePortal } from './pages/portal/EmployeePortal';
 
+// Authentication & Portal Access
+import { PortalSelectionPage } from './pages/auth/PortalSelectionPage';
+import { LoginPage } from './pages/auth/LoginPage';
+import { CustomerRegisterPage } from './pages/auth/CustomerRegisterPage';
+import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
+
 // Modals
 import { Lead360Modal } from './pages/crm/lead360/Lead360Modal';
 import { Customer360Modal } from './pages/crm/Customer360Modal';
@@ -104,9 +110,93 @@ export const App = () => {
   const [applyModalOpen, setApplyModalOpen] = useState(false);
 
   // -------------------------------------------------------------
+  // AUTHENTICATION & LOGIN ROUTES
+  // -------------------------------------------------------------
+  if (currentPath === '/login') {
+    return (
+      <ErrorBoundary>
+        <PortalSelectionPage />
+        <Toast />
+      </ErrorBoundary>
+    );
+  }
+
+  if (currentPath === '/customer/login') {
+    return (
+      <ErrorBoundary>
+        <LoginPage initialPortal="customer" />
+        <Toast />
+      </ErrorBoundary>
+    );
+  }
+
+  if (currentPath === '/employee/login') {
+    return (
+      <ErrorBoundary>
+        <LoginPage initialPortal="employee" />
+        <Toast />
+      </ErrorBoundary>
+    );
+  }
+
+  if (currentPath === '/admin/login') {
+    return (
+      <ErrorBoundary>
+        <LoginPage initialPortal="admin" />
+        <Toast />
+      </ErrorBoundary>
+    );
+  }
+
+  if (currentPath === '/customer/register') {
+    return (
+      <ErrorBoundary>
+        <CustomerRegisterPage />
+        <Toast />
+      </ErrorBoundary>
+    );
+  }
+
+  if (currentPath === '/forgot-password') {
+    return (
+      <ErrorBoundary>
+        <ForgotPasswordPage />
+        <Toast />
+      </ErrorBoundary>
+    );
+  }
+
+  // Session Token & Auth Guard Check
+  const authToken = localStorage.getItem('dus_auth_token');
+  let authUser = null;
+  try {
+    authUser = JSON.parse(localStorage.getItem('dus_auth_user'));
+  } catch (e) {}
+  const authPortal = localStorage.getItem('dus_portal');
+
+  // -------------------------------------------------------------
   // ROUTE BRANCH 1: SUPER ADMIN ERP (/admin/*)
   // -------------------------------------------------------------
   if (currentPath.startsWith('/admin')) {
+    // Route guard: if not authenticated as admin or staff, redirect to /admin/login
+    const isAdminOrStaff = authUser && (
+      authUser.user_type === 'admin' || 
+      authUser.user_type === 'super_admin' || 
+      authUser.user_type === 'staff' ||
+      authUser.role_id === 1 || 
+      authUser.role_id === 2 ||
+      authPortal === 'admin'
+    );
+
+    if (!authToken || !isAdminOrStaff) {
+      return (
+        <ErrorBoundary>
+          <LoginPage initialPortal="admin" />
+          <Toast />
+        </ErrorBoundary>
+      );
+    }
+
     // Dynamic matching of admin modules
     let AdminViewComponent = PaytmDashboard;
 
@@ -193,6 +283,14 @@ export const App = () => {
   // ROUTE BRANCH 2: CUSTOMER SELF-SERVICE PORTAL (/portal/customer/*)
   // -------------------------------------------------------------
   if (currentPath.startsWith('/portal/customer')) {
+    if (!authToken || !authUser) {
+      return (
+        <ErrorBoundary>
+          <LoginPage initialPortal="customer" />
+          <Toast />
+        </ErrorBoundary>
+      );
+    }
     return (
       <ErrorBoundary>
         <CustomerPortal />
@@ -205,6 +303,14 @@ export const App = () => {
   // ROUTE BRANCH 3: EMPLOYEE SELF-SERVICE PORTAL (/portal/employee/*)
   // -------------------------------------------------------------
   if (currentPath.startsWith('/portal/employee')) {
+    if (!authToken || !authUser || authPortal === 'customer') {
+      return (
+        <ErrorBoundary>
+          <LoginPage initialPortal="employee" />
+          <Toast />
+        </ErrorBoundary>
+      );
+    }
     return (
       <ErrorBoundary>
         <EmployeePortal />

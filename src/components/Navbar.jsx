@@ -8,6 +8,7 @@ import {
   X,
   ChevronDown,
   User,
+  Users,
   ArrowRight,
   Award,
   Banknote,
@@ -33,7 +34,45 @@ export const Navbar = ({ onOpenApplyModal }) => {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeMegaMenu, setActiveMegaMenu] = useState(null); // 'schemes' | 'loans' | 'services' | null
+  const [loginDropdownOpen, setLoginDropdownOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
   const megaMenuTimeoutRef = useRef(null);
+  const loginDropdownRef = useRef(null);
+
+  useEffect(() => {
+    try {
+      const userStr = localStorage.getItem('dus_auth_user');
+      const token = localStorage.getItem('dus_auth_token');
+      if (token && userStr) {
+        setCurrentUser(JSON.parse(userStr));
+      } else {
+        setCurrentUser(null);
+      }
+    } catch (e) {
+      setCurrentUser(null);
+    }
+  }, [currentPath]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (loginDropdownRef.current && !loginDropdownRef.current.contains(event.target)) {
+        setLoginDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('dus_auth_token');
+    localStorage.removeItem('dus_auth_user');
+    localStorage.removeItem('dus_portal');
+    localStorage.removeItem('dus_permissions');
+    localStorage.removeItem('dus_linked_entity');
+    setCurrentUser(null);
+    setLoginDropdownOpen(false);
+    navigate('/');
+  };
 
   const handleMouseEnter = (menu) => {
     if (megaMenuTimeoutRef.current) clearTimeout(megaMenuTimeoutRef.current);
@@ -413,29 +452,252 @@ export const Navbar = ({ onOpenApplyModal }) => {
 
           {/* Desktop Right Action Buttons */}
           <div className="desktop-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-            <button
-              type="button"
-              onClick={() => navigate('/portal/customer')}
-              className="btn btn-outline"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-                padding: '6px 12px',
-                borderRadius: '7px',
-                borderColor: '#CBD5E1',
-                color: '#002970',
-                fontSize: '0.82rem',
-                fontWeight: '700',
-                background: '#F8FAFC',
-                whiteSpace: 'nowrap',
-                flexShrink: 0
-              }}
-              title="Customer Login & Case Tracking"
-            >
-              <User size={14} color="#00BAF2" />
-              <span>Login</span>
-            </button>
+            {currentUser ? (
+              <div ref={loginDropdownRef} style={{ position: 'relative' }}>
+                <button
+                  type="button"
+                  onClick={() => setLoginDropdownOpen(!loginDropdownOpen)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '6px 14px',
+                    borderRadius: '8px',
+                    background: '#F0F9FF',
+                    border: '1px solid #BAE6FD',
+                    color: '#002970',
+                    fontSize: '0.82rem',
+                    fontWeight: '700',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#002970', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.72rem', fontWeight: '800' }}>
+                    {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
+                  </div>
+                  <span>{currentUser.name ? currentUser.name.split(' ')[0] : 'Account'}</span>
+                  <ChevronDown size={13} color="#007AA6" />
+                </button>
+
+                {loginDropdownOpen && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '110%',
+                    right: 0,
+                    width: '240px',
+                    background: '#FFFFFF',
+                    borderRadius: '12px',
+                    boxShadow: '0 12px 32px rgba(0, 41, 112, 0.16)',
+                    border: '1px solid #E2E8F0',
+                    padding: '12px',
+                    zIndex: 1100
+                  }}>
+                    <div style={{ paddingBottom: '10px', borderBottom: '1px solid #F1F5F9', marginBottom: '8px' }}>
+                      <div style={{ fontWeight: '800', color: '#002970', fontSize: '0.88rem' }}>{currentUser.name}</div>
+                      <div style={{ fontSize: '0.72rem', color: '#64748B' }}>{currentUser.email}</div>
+                      <span style={{ display: 'inline-block', marginTop: '4px', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', color: '#007AA6', background: '#F0F9FF', padding: '2px 8px', borderRadius: '4px' }}>
+                        {currentUser.role_name || currentUser.user_type}
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        setLoginDropdownOpen(false);
+                        const portal = localStorage.getItem('dus_portal');
+                        if (portal === 'customer') navigate('/portal/customer');
+                        else if (portal === 'employee') navigate('/portal/employee');
+                        else navigate('/admin/leads');
+                      }}
+                      style={{
+                        width: '100%',
+                        textAlign: 'left',
+                        padding: '8px 10px',
+                        borderRadius: '6px',
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#002970',
+                        fontSize: '0.82rem',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#F8FAFC'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <Briefcase size={14} color="#00BAF2" />
+                      <span>Go to Dashboard</span>
+                    </button>
+
+                    <button
+                      onClick={handleLogout}
+                      style={{
+                        width: '100%',
+                        textAlign: 'left',
+                        padding: '8px 10px',
+                        borderRadius: '6px',
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#DC2626',
+                        fontSize: '0.82rem',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        marginTop: '4px'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#FEF2F2'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <X size={14} color="#DC2626" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div ref={loginDropdownRef} style={{ position: 'relative' }}>
+                <button
+                  type="button"
+                  onClick={() => setLoginDropdownOpen(!loginDropdownOpen)}
+                  className="btn btn-outline"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '7px 14px',
+                    borderRadius: '7px',
+                    borderColor: '#CBD5E1',
+                    color: '#002970',
+                    fontSize: '0.84rem',
+                    fontWeight: '700',
+                    background: loginDropdownOpen ? '#F1F5F9' : '#F8FAFC',
+                    cursor: 'pointer'
+                  }}
+                  title="Select Portal to Login"
+                >
+                  <User size={14} color="#00BAF2" />
+                  <span>Login</span>
+                  <ChevronDown size={13} color="#64748B" />
+                </button>
+
+                {loginDropdownOpen && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '115%',
+                    right: 0,
+                    width: '270px',
+                    background: '#FFFFFF',
+                    borderRadius: '12px',
+                    boxShadow: '0 16px 36px rgba(0, 41, 112, 0.16)',
+                    border: '1px solid #E2E8F0',
+                    padding: '8px',
+                    zIndex: 1100
+                  }}>
+                    <div style={{ padding: '8px 10px 6px', borderBottom: '1px solid #F1F5F9', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                        Enterprise Portals
+                      </span>
+                    </div>
+
+                    <a
+                      href="/customer/login"
+                      onClick={(e) => { e.preventDefault(); setLoginDropdownOpen(false); navigate('/customer/login'); }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        textDecoration: 'none',
+                        color: '#002970',
+                        transition: 'background 0.15s'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#F0F9FF'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(0, 186, 242, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#00BAF2', flexShrink: 0 }}>
+                        <Users size={16} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '0.84rem', fontWeight: '800', color: '#002970' }}>Customer Login</div>
+                        <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Track loans, subsidies &amp; docs</div>
+                      </div>
+                    </a>
+
+                    <a
+                      href="/employee/login"
+                      onClick={(e) => { e.preventDefault(); setLoginDropdownOpen(false); navigate('/employee/login'); }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        textDecoration: 'none',
+                        color: '#002970',
+                        transition: 'background 0.15s'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#F8FAFC'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(0, 41, 112, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#002970', flexShrink: 0 }}>
+                        <Briefcase size={16} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '0.84rem', fontWeight: '800', color: '#002970' }}>Staff / Employee Login</div>
+                        <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Consultancy desk &amp; attendance</div>
+                      </div>
+                    </a>
+
+                    <a
+                      href="/admin/login"
+                      onClick={(e) => { e.preventDefault(); setLoginDropdownOpen(false); navigate('/admin/login'); }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        textDecoration: 'none',
+                        color: '#002970',
+                        transition: 'background 0.15s'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#FEF2F2'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(220, 38, 38, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#DC2626', flexShrink: 0 }}>
+                        <ShieldCheck size={16} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '0.84rem', fontWeight: '800', color: '#002970' }}>Admin ERP Login</div>
+                        <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Full executive CRM control</div>
+                      </div>
+                    </a>
+
+                    <div style={{ borderTop: '1px solid #F1F5F9', marginTop: '4px', paddingTop: '6px' }}>
+                      <button
+                        onClick={() => { setLoginDropdownOpen(false); navigate('/login'); }}
+                        style={{
+                          width: '100%',
+                          textAlign: 'center',
+                          padding: '6px',
+                          background: 'transparent',
+                          border: 'none',
+                          color: '#007AA6',
+                          fontSize: '0.78rem',
+                          fontWeight: '700',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        View All Portals Overview →
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             <button
               type="button"
@@ -574,27 +836,76 @@ export const Navbar = ({ onOpenApplyModal }) => {
                 <span>Contact Us</span>
               </button>
 
-              <div style={{ margin: '14px 0', borderTop: '1px solid #E2E8F0' }} />
+              <div style={{ margin: '14px 0 10px', borderTop: '1px solid #E2E8F0', paddingTop: '10px' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '8px' }}>
+                  Secure Portals
+                </span>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); navigate('/customer/login'); }}
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      background: 'rgba(0, 186, 242, 0.1)',
+                      color: '#007AA6',
+                      border: '1px solid #BAE6FD',
+                      fontWeight: '700',
+                      fontSize: '0.82rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <Users size={16} color="#00BAF2" />
+                    <span>Customer Portal Login</span>
+                  </button>
 
-              <button
-                onClick={() => navigateTo('/portal/customer')}
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  borderRadius: '8px',
-                  background: '#002970',
-                  color: '#FFFFFF',
-                  border: 'none',
-                  fontWeight: '700',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px'
-                }}
-              >
-                <User size={16} color="#00BAF2" />
-                <span>Customer Portal Login</span>
-              </button>
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); navigate('/employee/login'); }}
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      background: '#F8FAFC',
+                      color: '#002970',
+                      border: '1px solid #CBD5E1',
+                      fontWeight: '700',
+                      fontSize: '0.82rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <Briefcase size={16} color="#002970" />
+                    <span>Staff / Employee Login</span>
+                  </button>
+
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); navigate('/admin/login'); }}
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      background: '#002970',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      fontWeight: '700',
+                      fontSize: '0.82rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <ShieldCheck size={16} color="#00BAF2" />
+                    <span>Admin ERP Login</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
